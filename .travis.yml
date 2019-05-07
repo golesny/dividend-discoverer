@@ -1,5 +1,5 @@
 language: generic
 
 after_success:
-  - echo "uploading to ${FTP_SERVER}"
-  - curl ---verbose -ftp-create-dirs -T server/data.php ftp://${FTP_USER}:${FTP_PASSWORD}@${FTP_SERVER}
+  - echo "uploading to $FTP_SERVER"
+  - curl ---verbose -ftp-create-dirs -T server/data.php ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER
