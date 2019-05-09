@@ -1,5 +1,17 @@
-language: generic
-
+language: nodes_js
+node_js:
+  - "10.15"
+branches:
+  only:
+  - master
+before_script:
+  - npm install -g @angular/cli
+script:
+  - npm install
+  - cd webapp
+  - ng build --prod
+deploy:
+  skip_cleanup: true
 after_success:
   - echo "uploading to $FTP_SERVER"
   - curl --verbose -ftp-create-dirs -T server/data.php ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER
