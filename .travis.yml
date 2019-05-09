@@ -10,8 +10,7 @@ script:
   - cd webapp
   - npm install
   - ng build --prod
-deploy:
-  skip_cleanup: true
+  - ll
 after_success:
   - echo "uploading to $FTP_SERVER"
   - curl --verbose -ftp-create-dirs -T server/data.php ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER
