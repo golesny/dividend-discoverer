@@ -7,7 +7,7 @@ import { Stock } from '../_interface/stock';
   providedIn: 'root'
 })
 export class DataService {
-  private stocksUrl : string = "http://www.nettesheim.name/dividend-discoverer/data.php";
+  private stocksUrl : string = "http://dividend-discoverer.nettesheim.name/data.php";
 
   constructor(private http: HttpClient) { }
 
