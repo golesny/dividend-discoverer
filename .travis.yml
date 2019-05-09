@@ -5,6 +5,7 @@ branches:
   only:
   - master
 before_script:
+  - sudo apt-get install -y findutils
   - npm install -g @angular/cli
 script:
   - cd webapp
