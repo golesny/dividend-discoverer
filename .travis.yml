@@ -17,6 +17,6 @@ after_success:
   - cp server/data.php webapp/dist/webapp/
   - cd webapp/dist/webapp/
   - ls -l
-  - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
+  - echo $SSH_KNOWN_HOST >> ~/.ssh/known_hosts
   - cat ~/.ssh/known_hosts
   - sshpass -p "$FTP_PASSWORD" scp -vrC * $FTP_USER@$FTP_SERVER:/
