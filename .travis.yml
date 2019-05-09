@@ -5,7 +5,7 @@ branches:
   only:
   - master
 before_script:
-  - sudo apt-get install -y findutils
+  - sudo apt-get install -y findutils openssh-client sshpass
   - npm install -g @angular/cli
 script:
   - cd webapp
@@ -14,9 +14,7 @@ script:
 after_success:
   - echo "uploading to $FTP_SERVER"
   - cd ..
-  - FILES=`ls webapp/dist/webapp | tr "\n" "," | head -c -1 | sed -e 's/,/,webapp\/dist\/webapp\//g'`
-  - FILES="webapp/dist/webapp/"$FILES",server/data.php"
-  - echo $FILES
-  - curl --verbose -ftp-create-dirs --disable-epsv -T "{$FILES}" ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER/
-  - res=$?
-  - if test "$res" != "0"; then exit -1; fi
+  - cp server/data.php webapp/dist/webapp/
+  - cd webapp/dist/webapp/
+  - $SSH_FINGERPRINT >> ~/.ssh/known_hosts
+  - sshpass -p "$FTP_PASSWORD" scp -vrC * $FTP_USER@$FTP_SERVER:/
