@@ -13,5 +13,6 @@ script:
   - ng build --prod
 after_success:
   - echo "uploading to $FTP_SERVER"
+  - cd ..
   - curl --verbose -ftp-create-dirs -T server/data.php ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER
   - find webapp/dist/ -type f -exec curl --ftp-create-dirs -T {} ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER/{} \;
