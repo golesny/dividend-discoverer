@@ -11,10 +11,13 @@ script:
   - cd webapp
   - npm install
   - ng build --prod
+  - rm webapp/dist/webapp/3rdpartylicenses.txt
 after_success:
   - echo "uploading to $FTP_SERVER"
   - cd ..
   - FILES=`ls webapp/dist/webapp | tr "\n" "," | head -c -1 | sed -e 's/,/,webapp\/dist\/webapp\//g'`
-  - FILES="server/data.php,webapp/dist/webapp/"$FILES
+  - FILES="webapp/dist/webapp/"$FILES",server/data.php"
   - echo $FILES
-  - curl --verbose -ftp-create-dirs --disable-epsv --ftp-port - -T "{$FILES}" ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER/
+  - curl --verbose -ftp-create-dirs --disable-epsv -T "{$FILES}" ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER/
+  - res=$?
+  - if test "$res" != "0"; then exit -1; fi
