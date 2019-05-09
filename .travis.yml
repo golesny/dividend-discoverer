@@ -5,7 +5,7 @@ branches:
   only:
   - master
 before_script:
-  - sudo apt-get install -y findutils openssh-client sshpass
+  - sudo apt-get install -y sshpass
   - npm install -g @angular/cli
 script:
   - cd webapp
@@ -16,5 +16,7 @@ after_success:
   - cd ..
   - cp server/data.php webapp/dist/webapp/
   - cd webapp/dist/webapp/
+  - ls -l
   - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
+  - cat ~/.ssh/known_hosts
   - sshpass -p "$FTP_PASSWORD" scp -vrC * $FTP_USER@$FTP_SERVER:/
