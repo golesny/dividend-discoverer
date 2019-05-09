@@ -16,5 +16,5 @@ after_success:
   - cd ..
   - cp server/data.php webapp/dist/webapp/
   - cd webapp/dist/webapp/
-  - $SSH_FINGERPRINT >> ~/.ssh/known_hosts
+  - echo $SSH_FINGERPRINT >> ~/.ssh/known_hosts
   - sshpass -p "$FTP_PASSWORD" scp -vrC * $FTP_USER@$FTP_SERVER:/
