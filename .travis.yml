@@ -17,4 +17,4 @@ after_success:
   - FILES=`ls webapp/dist/webapp | tr "\n" "," | head -c -1 | sed -e 's/,/,webapp\/dist\/webapp\//g'`
   - FILES="server/data.php,webapp/dist/webapp/"$FILES
   - echo $FILES
-  - curl --verbose -ftp-create-dirs --disable-epsv --ftp-port $FTP_SERVER -T "{$FILES}" ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER/
+  - curl --verbose -ftp-create-dirs --disable-epsv --ftp-port - -T "{$FILES}" ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER/
