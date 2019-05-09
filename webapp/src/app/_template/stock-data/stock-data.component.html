@@ -1,0 +1,22 @@
+<table class="table">
+    <thead class="thead-dark">
+  <tr>
+    <th scope="col">Name</th>
+    <th scope="col">ISIN</th>
+    <th scope="col">Last 10 y</th>
+    <th scope="col">Last 20 y</th>
+    <th scope="col">Div in 30y p.a.</th>
+    <th scope="col">Div cum. 30y</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let stock of stocks">
+    <td>{{stock.isin.name}}</td>
+    <td>{{stock.isin.isin}}</td>
+    <td>{{stock.last10yPercentage}}%</td>
+    <td>{{stock.last20yPercentage}}%</td>
+    <td>{{stock.divIn30y}} {{stock.isin.currency}}</td>
+    <td>{{stock.divCum30y}} {{stock.isin.currency}}</td>
+  </tr>
+</tbody>
+</table>
