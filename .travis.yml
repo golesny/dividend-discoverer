@@ -14,5 +14,7 @@ script:
 after_success:
   - echo "uploading to $FTP_SERVER"
   - cd ..
-  - curl --verbose -ftp-create-dirs -T server/data.php ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER
-  - find webapp/dist/ -type f -exec curl --ftp-create-dirs -T {} ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER/{} \;
+  - FILES="server/data.php"
+  - find webapp/dist/webapp -type f -exec FILES="$FILES,{}" \;
+  - echo $FILES
+  - curl --verbose -ftp-create-dirs -T "{$FILES}" ftp://$FTP_USER:$FTP_PASSWORD@$FTP_SERVER
