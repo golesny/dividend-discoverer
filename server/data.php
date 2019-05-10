@@ -1,6 +1,9 @@
 <?php
 
 header("Content-type: text/json");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+
 
  $retVal = array(createStockObj("DE1", "Lbl1"), createStockObj("DE2", "Lbl2"));
 

@@ -9,6 +9,7 @@ import { PriceFormComponent } from './_template/price-form/price-form.component'
 import { StockHeaderComponent } from './_template/stock-header/stock-header.component';
 import { StockDataComponent } from './_template/stock-data/stock-data.component';
 import { DataService } from './_service/data.service';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { DataService } from './_service/data.service';
   ],
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    AppRoutingModule
   ],
   providers: [DataService],
   bootstrap: [AppComponent]
