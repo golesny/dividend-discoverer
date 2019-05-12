@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from "angularx-social-login";
 import { GoogleLoginProvider } from "angularx-social-login";
 import { SocialUser } from "angularx-social-login";
+import { environment } from 'src/environments/environment.prod';
 
 
 @Component({
@@ -12,8 +13,8 @@ import { SocialUser } from "angularx-social-login";
 })
 export class AppComponent implements OnInit {
   title = 'Dividend Discoverer';
-  private user: SocialUser;
-  private loggedIn: boolean;
+  public user: SocialUser;
+  public loggedIn: boolean;
 
   constructor(private authService: AuthService) { }
 
