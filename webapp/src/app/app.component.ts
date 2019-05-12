@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from "angularx-social-login";
 import { GoogleLoginProvider } from "angularx-social-login";
 import { SocialUser } from "angularx-social-login";
-import { environment } from 'src/environments/environment.prod';
+import { environment } from '../environments/environment';
 
 
 @Component({
@@ -27,9 +27,16 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.authService.authState.subscribe((user) => {
-      this.user = user;
-      this.loggedIn = (user != null);
-    });
+    if (environment.production) {
+      this.authService.authState.subscribe((user) => {
+        this.user = user;
+        this.loggedIn = (user != null);
+      });
+    } else {
+      console.info("developer auto-login");
+      this.user = new SocialUser();
+      this.user.email = "d@veloper.de"
+      this.loggedIn = true;
+    }
   }
 }
