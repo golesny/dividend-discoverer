@@ -1,10 +1,10 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Divident Discoverer</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+  <a class="navbar-brand" href="#">Dividend Discoverer</a>
+ <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+  <div *ngIf="user" class="collapse navbar-collapse" id="navbarSupportedContent">    
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
         <a class="nav-link" routerLink="/data">Data</a>
@@ -12,10 +12,23 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/stock-form">Stock-Form</a>
       </li>
+      <li class="nav-item"><img class="card-img-top img-responsive photo" src="{{ user.photoUrl }}"></li>      
     </ul>
   </div>
 </nav>
-<div style="text-align:center">
+
+<div *ngIf="user" style="text-align:center">
   <router-outlet></router-outlet>
 </div>
 
+<div class="jumbotron bg-transparent text-center">
+  <div *ngIf="!user" class="card text-center">
+    <div class="card-block">
+      <h4 class="card-title">Not signed in</h4>
+    </div>
+    <div class="card-block">
+      <button class="btn btn-social-icon btn-google mx-1" (click)="signInWithGoogle()"><span class="fa fa-google">Sign in with Google</span></button>
+    </div>
+  </div>
+   
+</div>
