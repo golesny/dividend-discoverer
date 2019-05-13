@@ -2,20 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Stock } from '../_interface/stock';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private stocksUrl : string = "http://dividend-discoverer.nettesheim.name/data.php";
 
   constructor(private http: HttpClient) { }
 
   getStockList(): Observable<Stock[]> {
-    // https://www.youtube.com/watch?v=ZVMXOxwKQA0&t=871s
     const httpOptions = {
-      headers: new HttpHeaders({'Content-Type': 'aplication/json'})
+      headers: new HttpHeaders({'Content-Type': 'application/json'})
     };
-    return this.http.get<Stock[]>(this.stocksUrl, httpOptions );
+    return this.http.get<Stock[]>(environment.apiUrl, httpOptions );
   }
 }

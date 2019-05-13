@@ -1,0 +1,10 @@
+Order Deny,Allow
+deny from all
+
+<Files data.php>
+    allow from all
+</Files>
+
+<Files google-auth-library-php/*>
+    deny from all
+</Files>
