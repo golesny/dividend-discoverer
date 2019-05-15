@@ -1,4 +1,3 @@
 **/node_modules/**
 \.vscode
-package-lock.json
-google-auth-library-php-1.5.1
+\.editorconfig

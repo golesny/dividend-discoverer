@@ -13,11 +13,12 @@ import { StockHeaderComponent } from './_template/stock-header/stock-header.comp
 import { StockDataComponent } from './_template/stock-data/stock-data.component';
 import { DataService } from './_service/data.service';
 import { AppRoutingModule } from './app-routing.module';
+import { environment } from 'src/environments/environment';
  
 let config = new AuthServiceConfig([
   {
     id: GoogleLoginProvider.PROVIDER_ID,
-    provider: new GoogleLoginProvider("105887568427-v423v8eb1fc5a5d2umvvbt7irmuotus9.apps.googleusercontent.com")
+    provider: new GoogleLoginProvider(environment.googleOAuthId)
   }
 ]);
  

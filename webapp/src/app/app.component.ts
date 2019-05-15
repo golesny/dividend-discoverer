@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (environment.production) {
+    if (environment.loginEnabled) {
       this.authService.authState.subscribe((user) => {
         this.user = user;
         this.loggedIn = (user != null);

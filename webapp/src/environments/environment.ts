@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  apiUrl: "https://dividend-discoverer.nettesheim.name/data.php"
+  loginEnabled : false,
+  apiUrl: "http://localhost:8080/api",
+  googleOAuthId: ""
 };
 
 /*

@@ -15,6 +15,6 @@ export class DataService {
     const httpOptions = {
       headers: new HttpHeaders({'Content-Type': 'application/json'})
     };
-    return this.http.get<Stock[]>(environment.apiUrl, httpOptions );
+    return this.http.get<Stock[]>(environment.apiUrl + "/stock", httpOptions );
   }
 }
