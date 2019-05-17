@@ -1,4 +1,4 @@
-// Copyright 2018, Google LLC.
+// Copyright 2019, Daniel Nettesheim.
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,7 +11,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-'use strict';
+'use strict'; 
+
+const isDevMode = (process.argv.length >= 3 && process.argv[2] == "dev");
+console.log("isDevMode="+isDevMode);
 
 const path = require('path');
 const express = require('express');
@@ -25,10 +28,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.set('trust proxy', true);
 
-app.use('/api/stock', require('./server/stock.js'));
-
-// static content
+// static content (accessable without login)
 app.use(express.static("webapp/dist/webapp"));
+
+// authentification of all other requests
+app.use("*", require('./server/auth.js')); 
+// business logic modules
+app.use('/api/stock', require('./server/stock.js'));
 
 // Basic 404 handler
 app.use((req, res) => {
@@ -36,13 +42,10 @@ app.use((req, res) => {
 });
 
 if (module === require.main) {
-  // [START server]
-  // Start the server
   const server = app.listen(process.env.PORT || 8080, () => {
     const port = server.address().port;
     console.log(`App listening on port ${port}`);
   });
-  // [END server]
 }
 
 module.exports = app;

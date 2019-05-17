@@ -22,7 +22,7 @@ export class StockDataComponent implements OnInit {
 
   loadStockList() : void {
     console.log('loading stock list');
-    this.stocks = [];//[{"isin":{"isin":"DE1111","name":"Lbl1","currency":"s"},"last10yPercentage":5.6,"last20yPercentage":3.5,"divIn30y":4000,"divCum30y":30000},{"isin":{"isin":"DE2","name":"Lbl2","currency":"s"},"last10yPercentage":5.6,"last20yPercentage":3.5,"divIn30y":4000,"divCum30y":30000}];
+    this.stocks = [];
     this.dataService.getStockList()
       .subscribe((data: Stock[]) => {
         this.stocks = data;        

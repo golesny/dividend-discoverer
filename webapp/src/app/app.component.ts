@@ -1,42 +1,26 @@
-import { Component, OnInit } from '@angular/core';
-
-import { AuthService } from "angularx-social-login";
-import { GoogleLoginProvider } from "angularx-social-login";
-import { SocialUser } from "angularx-social-login";
-import { environment } from '../environments/environment';
-
+import { Component } from '@angular/core';
+import { DataService } from './_service/data.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.sass']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {  
   title = 'Dividend Discoverer';
-  public user: SocialUser;
-  public loggedIn: boolean;
+  
 
-  constructor(private authService: AuthService) { }
+  constructor(private dataService:DataService) { }
 
   signInWithGoogle(): void {
-    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID);
+    this.dataService.signInWithGoogle();
   }
 
   signOut(): void {
-    this.authService.signOut();
+    this.dataService.signOut();
   }
 
-  ngOnInit() {
-    if (environment.loginEnabled) {
-      this.authService.authState.subscribe((user) => {
-        this.user = user;
-        this.loggedIn = (user != null);
-      });
-    } else {
-      console.info("developer auto-login");
-      this.user = new SocialUser();
-      this.user.email = "d@veloper.de"
-      this.loggedIn = true;
-    }
+  get user() {
+    return this.dataService.user;
   }
 }

@@ -34,6 +34,7 @@ router.get('/', (req, res, next) => {
     'last20yPercentage': 3.5,
     'divIn30y': 4000,
     'divCum30y': 30000 }];
+    console.log("sending stocks");
     res.json(entity);
   });
 
