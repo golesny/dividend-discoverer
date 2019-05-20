@@ -1,3 +1,46 @@
-<p>
-  stock-form works!
-</p>
+<h3>Stocks</h3>
+
+<div class="container">
+  <form (ngSubmit)="onSubmit()" #isinForm="ngForm">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" name="name" [(ngModel)]="model.name" required>
+    </div>
+
+    <div class="form-group">
+      <label for="isin">ISIN</label>
+      <input type="text" class="form-control" id="isin" name="isin" [(ngModel)]="model.isin" required>
+    </div>
+
+    <div class="form-group">
+      <label for="power">Currency</label>
+      <select class="form-control" id="currency" name="currency" [(ngModel)]="model.currency" required>
+        <option *ngFor="let currs of currencies" [value]="currs">{{currs}}</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Add</button>
+
+  </form>
+</div>
+
+<div class="container">
+<table class="table">
+  <thead class="thead-dark">
+<tr>
+  <th scope="col">Name</th>
+  <th scope="col">ISIN</th>
+  <th scope="col">Currency</th>
+  <th scope="col">Last Update</th>
+</tr>
+</thead>
+<tbody>
+<tr *ngFor="let isin of isinlist">
+  <td>{{isin.name}}</td>
+  <td>{{isin.isin}}</td>
+  <td>{{isin.currency}}</td>
+  <td>{{isin.updated_ts}}</td>
+</tr>
+</tbody>
+</table>
+</div>

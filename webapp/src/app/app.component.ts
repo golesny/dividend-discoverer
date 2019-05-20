@@ -8,7 +8,6 @@ import { DataService } from './_service/data.service';
 })
 export class AppComponent {  
   title = 'Dividend Discoverer';
-  
 
   constructor(private dataService:DataService) { }
 

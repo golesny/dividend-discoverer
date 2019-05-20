@@ -1,7 +1,7 @@
 CREATE TABLE `isin` (
  `isin` varchar(20) NOT NULL,
  `name` varchar(50) NOT NULL,
- `in_portfolio` tinyint(1) NOT NULL,
+ `currency` varchar(3) NOT NULL,
  `updated_ts` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
  PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

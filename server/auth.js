@@ -13,8 +13,8 @@
 
 'use strict';
 
-const config = require("../config.json");
 const isDevMode = (process.argv.length >= 3 && process.argv[2] == "dev");
+const config = require("../config"+(isDevMode?"":".prod")+".json");
 
 const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client(config.googleOAuthId);
@@ -30,7 +30,7 @@ router.use(bodyParser.json());
  * Retrieve a book.
  */
 router.get('/', (req, res, next) => {
-    console.log("incoming request");
+    console.log("incoming request", req.url, req.method);
     if (isDevMode) {
         console.log("overriding oauth verification in dev mode");
         next();

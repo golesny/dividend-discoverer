@@ -1,4 +1,5 @@
 **/node_modules/**
 \.vscode
 \.editorconfig
-config.json
+config\.json
+config\.prod\.json

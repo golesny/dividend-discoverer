@@ -21,8 +21,6 @@ const express = require('express');
 
 const app = express();
 
-const staticExtensions = ['.js', '.ico', '.css'];
-
 app.disable('etag');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -31,14 +29,15 @@ app.set('trust proxy', true);
 // static content (accessable without login)
 app.use(express.static("webapp/dist/webapp"));
 
-// authentification of all other requests
-app.use("*", require('./server/auth.js')); 
+// authentification of api requests
+app.use("/api", require('./server/auth.js')); 
 // business logic modules
 app.use('/api/stock', require('./server/stock.js'));
 
-// Basic 404 handler
+// Redirect the rest to /index.html (that the sub-pathes are supported)
 app.use((req, res) => {
-  res.status(404).send('Not Found');
+  console.log("unhandled request for url", req.url);
+  res.sendFile(path.resolve("./webapp/dist/webapp/index.html"));
 });
 
 if (module === require.main) {

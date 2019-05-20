@@ -25,3 +25,4 @@ webapp/node_modules
 webapp/dist/webapp/*.map
 webapp/dist/webapp/*.txt
 config.json.template
+config.json
