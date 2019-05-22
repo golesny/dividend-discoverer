@@ -38,8 +38,8 @@ function connect() {
   if (config.SQL_USE_UNIXSOCKET) {
     dbconf.socketPath = `/cloudsql/${config.INSTANCE_CONNECTION_NAME}`;
   } else {
-    dbconf.host = config.INSTANCE_CONNECTION_NAME,
-    dbconf.port = 3307
+    dbconf.host = config.INSTANCE_CONNECTION_NAME
+    //dbconf.port = 3307
   }
   const knex = Knex({
     client: 'mysql',
@@ -70,6 +70,9 @@ router.get('/', (req, res, next) => {
     res.json(entity);
 });
 
+/*
+ * get ISINs 
+ */
 router.get('/isin/list', (req, res, next) => {
   db.select().from('isin').orderBy('name').then((result) => {
     var isinList = [];
@@ -86,18 +89,45 @@ router.get('/isin/list', (req, res, next) => {
 });
 
 /**
- * 
+ * create new ISIN
  */
   router.post('/isin/create', (req, res, next) => {
     var entity = req.body;
-    console.log("creating ", util.inspect(entity, false, null, isDevMode /* enable colors */))
+    console.log("creating ", util.inspect(entity, false, null, isDevMode /* enable colors */));
     db.insert(entity).into("isin").then((result) => {      
-      console.log("created isin", result);
-      res.redirect("/api/stock/isin/list");
+      console.log("created isin", entity.isin);
+      entity.updated_ts = new Date();
+      res.json(entity);
     }
     ).catch((err) => {
       console.error("Could not create isin", err.message);
        res.status(500).json({ 'error': "Could not insert isin", 'errorcode': 2 });
+    });
+  });
+
+  router.post('/price/create', (req, res, next) => {
+    var entity = req.body; // array of PriceDatePairs
+    console.log("creating ", util.inspect(entity, false, null, isDevMode /* enable colors */));
+    db.insert(entity).into("price").then((result) => {      
+      console.log("created price", result);
+      res.json(entity);
+    }
+    ).catch((err) => {
+      console.error("Could not create price", err.message);
+       res.status(500).json({ 'error': "Could not insert price", 'errorcode': 2 });
+    });
+  });
+
+  router.post('/dividend/create', (req, res, next) => {
+    var entity = req.body; // array of PriceDatePairs
+    console.log("creating ", util.inspect(entity, false, null, isDevMode /* enable colors */));
+    db.insert(entity).into("dividend").then((result) => {      
+      console.log("created dividend", result);
+      res.json(entity);
+    }
+    ).catch((err) => {
+      console.error("Could not create dividend", err.message);
+       res.status(500).json({ 'error': "Could not insert dividend", 'errorcode': 2 });
     });
   });
 

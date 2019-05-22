@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ISIN } from 'src/app/_interface/isin';
 import { DataService } from 'src/app/_service/data.service';
-import { ISO8601_DATE_REGEX } from '@angular/common/src/i18n/format_date';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'stock-form',
@@ -11,10 +11,16 @@ import { ISO8601_DATE_REGEX } from '@angular/common/src/i18n/format_date';
 export class StockFormComponent {
   public isinlist:ISIN[];
   currencies = ['EUR', 'USD', 'SKR'];
-  public model = new ISIN('', '', this.currencies[0]);
+  public model;
 
-  constructor(private dataService:DataService) {
+  constructor(private dataService:DataService,
+              private toastr: ToastrService) {
+    this.resetISIN();
     this.loadISINList();
+  }
+
+  resetISIN() {
+    this.model = new ISIN('', '', this.currencies[0]);
   }
 
   loadISINList() : void {
@@ -25,7 +31,8 @@ export class StockFormComponent {
         this.isinlist = data;        
         console.log('isin loaded %s', this.isinlist);
       }, error => {
-        console.error('%cERROR: ${error.message}', 'color:red');
+        console.error('ERROR: ${error.message}');
+        this.toastr.error("error "+error.message);
       }
       );
   }
@@ -34,13 +41,16 @@ export class StockFormComponent {
     console.log("creating new isin");
 
     return this.dataService.post(this.model, "isin").subscribe(
-        res => {
-            // the complete list is resend
-            this.isinlist = res.body;
+        data => {
+          console.log("ISIN created", JSON.stringify(data));
+          this.toastr.success("ISIN created: " + data.isin);
+          // the complete list is resend
+          this.isinlist.push(data);
+          this.resetISIN();
         },
-        err => {
-            //TODO good error message to user
+        err => {            
             console.log("error on creating isin:", err);
+            this.toastr.error("error on creating isin: " + err);
         }
     );
 }

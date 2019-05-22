@@ -1,4 +1,3 @@
-import { Dividend } from './dividend';
 
 export class ISIN {
 

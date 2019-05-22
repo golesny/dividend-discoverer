@@ -1,5 +1,4 @@
 import { ISIN } from './isin';
-import { Dividend } from './dividend';
 
 export interface Stock {
     isin: ISIN;

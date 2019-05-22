@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Stock } from '../_interface/stock';
 import { environment } from 'src/environments/environment';
@@ -7,6 +7,7 @@ import { AuthService } from "angularx-social-login";
 import { GoogleLoginProvider } from "angularx-social-login";
 import { SocialUser } from "angularx-social-login";
 import { ISIN } from '../_interface/isin';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Injectable({
@@ -15,7 +16,9 @@ import { ISIN } from '../_interface/isin';
 export class DataService {
   public user: SocialUser;
 
-  constructor(private http: HttpClient, private authService: AuthService) {
+  constructor(private http: HttpClient,
+              private authService: AuthService,
+              private toastr: ToastrService) {
     this.init();
   }
 
@@ -35,14 +38,14 @@ export class DataService {
   }
 
   // create
-  post(entity: any, entityName: string): Observable<any> {
+  post<T>(entity: T, entityName: string): Observable<T> {
       if (this.isUserLoggedIn()) {
         console.log("posting", entityName, JSON.stringify(entity));
-        return this.http.post(environment.apiUrl + "/stock/"+entityName+"/create", JSON.stringify(entity), this.createHttpHeader());
+        return this.http.post<T>(environment.apiUrl + "/stock/"+entityName+"/create", JSON.stringify(entity), this.createHttpHeader());
       }
   }
 
-  // auth
+  // --------------- auth ------------------
   signInWithGoogle(): void {
     console.log("sign in with google")
     this.authService.signIn(GoogleLoginProvider.PROVIDER_ID);
@@ -68,6 +71,7 @@ export class DataService {
       return true;
     } else {
       console.error("User not logged in and may not access the service");
+      this.toastr.error("Please login");
       return false;
     }
   }
@@ -85,6 +89,7 @@ export class DataService {
       this.authService.authState.subscribe((user) => {
         this.user = user;
         console.log("login successful: token "+this.bearerToken());
+        this.toastr.success("Logged in successfully");
       });
     } else {
       console.info("developer auto-login");

@@ -15,7 +15,7 @@ CREATE TABLE `dividend` (
 
 CREATE TABLE `price` (
  `isin` varchar(20) NOT NULL,
- `ts` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+ `date` date NOT NULL,
  `price` decimal(10,2) NOT NULL,
- PRIMARY KEY (`isin`,`ts`)
+ PRIMARY KEY (`isin`,`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

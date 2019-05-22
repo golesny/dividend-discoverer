@@ -1,3 +1,37 @@
-<p>
-  price-form works!
-</p>
+<h3>{{title}} for {{isin}}</h3>
+
+<div class="container">
+
+  <form #priceForm="ngForm">
+      <div class="row">
+          <div class="col-md-auto">
+              <div class="form-group">
+                  <label for="inArea">Input Area</label>
+                  <textarea id="inArea" [(ngModel)]="inArea" [ngModelOptions]="{standalone: true}"></textarea>
+              </div>
+          </div>
+          <div class="col-sm-auto">
+            <button (click)="transferData()"><span class="oi oi-share"></span></button>
+            <button (click)="saveData()"><span class="oi oi-cloud-upload"></span></button>
+          </div>
+          <div class="col-md-auto">
+              <table class="table" style="fill: 100%">
+                  <thead class="thead-dark">
+                <tr>
+                  <th scope="col-lg-2">Date</th>
+                  <th scope="col-lg-2">{{title}}</th>
+                  <th scope="col-sm">Status</th>                
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let price of prices">
+                  <td>{{price.date | date: 'y-MM-dd'}}</td>
+                  <td>{{price.price}}</td>
+                  <td><span class="oi oi-circle-check" *ngIf="price.inDB"></span></td>
+                </tr>
+                </tbody>
+                </table>
+          </div>
+        </div>    
+  </form>
+</div>

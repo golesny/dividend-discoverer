@@ -13,7 +13,7 @@
     </div>
 
     <div class="form-group">
-      <label for="power">Currency</label>
+      <label for="currency">Currency</label>
       <select class="form-control" id="currency" name="currency" [(ngModel)]="model.currency" required>
         <option *ngFor="let currs of currencies" [value]="currs">{{currs}}</option>
       </select>
@@ -28,6 +28,7 @@
 <table class="table">
   <thead class="thead-dark">
 <tr>
+  <th scope="col"></th>
   <th scope="col">Name</th>
   <th scope="col">ISIN</th>
   <th scope="col">Currency</th>
@@ -36,6 +37,8 @@
 </thead>
 <tbody>
 <tr *ngFor="let isin of isinlist">
+  <td><a href="/price/{{isin.isin}}"><span class="oi oi-dollar"></span></a>
+    <a href="/dividend/{{isin.isin}}"><span class="oi oi-bar-chart"></span></a></td>
   <td>{{isin.name}}</td>
   <td>{{isin.isin}}</td>
   <td>{{isin.currency}}</td>

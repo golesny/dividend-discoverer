@@ -6,11 +6,12 @@ import { FormsModule } from '@angular/forms';
 import { SocialLoginModule, AuthServiceConfig } from "angularx-social-login";
 import { GoogleLoginProvider} from "angularx-social-login";
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';  
+import { ToastrModule } from 'ngx-toastr';
+
 import { AppComponent } from './app.component';
 import { StockFormComponent } from './_template/stock-form/stock-form.component';
-import { DividendFormComponent } from './_template/dividend-form/dividend-form.component';
 import { PriceFormComponent } from './_template/price-form/price-form.component';
-import { StockHeaderComponent } from './_template/stock-header/stock-header.component';
 import { StockDataComponent } from './_template/stock-data/stock-data.component';
 import { DataService } from './_service/data.service';
 import { AppRoutingModule } from './app-routing.module';
@@ -31,9 +32,7 @@ export function provideConfig() {
   declarations: [
     AppComponent,
     StockFormComponent,
-    DividendFormComponent,
     PriceFormComponent,
-    StockHeaderComponent,
     StockDataComponent
   ],
   imports: [
@@ -41,7 +40,9 @@ export function provideConfig() {
     HttpClientModule,
     AppRoutingModule,
     SocialLoginModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot()
   ],
   providers: [DataService,
     {
