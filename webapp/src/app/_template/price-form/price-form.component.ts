@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PriceDatePair } from 'src/app/_interface/price-date-pair';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/_service/data.service';
-import { ToastrService } from 'ngx-toastr';
+import { NotifyService } from '../../_service/notify.service';
 
 @Component({
   selector: 'app-price-form',
@@ -18,7 +18,7 @@ export class PriceFormComponent implements OnInit {
 
   constructor(private route:  ActivatedRoute,
               private dataService: DataService,
-              private toastr: ToastrService) {
+              private notifyService: NotifyService) {
     this.prices = [];
   }
 
@@ -31,8 +31,7 @@ export class PriceFormComponent implements OnInit {
         this.transferDividendsFromFinanzenDotNet();
         break;
         default:
-          console.error("Unsupported type "+this.type)
-          this.toastr.error("Unsupported type "+this.type);
+            this.notifyService.showError("Unsupported type ", this.type);
     }
   }
   transferDividendsFromFinanzenDotNet() {
@@ -86,7 +85,7 @@ export class PriceFormComponent implements OnInit {
     this.dataService.post(pricesToStore, this.type).subscribe(
       res => {
         res.forEach(r => {
-          console.log("searching for " + r.isin);
+          console.log("searching for " + r.isin + " " + r.date);
           this.prices.forEach((pr) => {
             if (this.compareDate(pr.date,r.date)) {
               console.log("updating: "+pr.isin);
@@ -97,20 +96,19 @@ export class PriceFormComponent implements OnInit {
         );
       },
       err => {
-          console.error("error on creating isin:", err.body.error);
-          this.toastr.error("error on creating isin:" + err.body.error);
+          this.notifyService.showError("error on saaving "+this.type, err);
       }
   )
   }
 
   compareDate(d1:Date, d2:Date):boolean {
-    if (d1.getFullYear != d2.getFullYear) {
-      return true;
-    }
-    if (d1.getMonth != d2.getMonth) {
+    if (d1.getFullYear() != d2.getFullYear()) {
       return false;
     }
-    if (d1.getDay != d2.getDay) {
+    if (d1.getMonth() != d2.getMonth()) {
+      return false;
+    }
+    if (d1.getDay() != d2.getDay()) {
       return false;
     }
     return true;

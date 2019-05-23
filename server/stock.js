@@ -84,7 +84,7 @@ router.get('/isin/list', (req, res, next) => {
     res.json(isinList);
   }).catch((error) => {
     console.error(error);
-    res.status(500).json({ 'error': "Could not read isin", 'errorcode': 3 })
+    res.status(500).send("Could not read isin");
   });
 });
 
@@ -101,7 +101,7 @@ router.get('/isin/list', (req, res, next) => {
     }
     ).catch((err) => {
       console.error("Could not create isin", err.message);
-       res.status(500).json({ 'error': "Could not insert isin", 'errorcode': 2 });
+       res.status(500).send("Could not insert isin");
     });
   });
 
@@ -114,7 +114,7 @@ router.get('/isin/list', (req, res, next) => {
     }
     ).catch((err) => {
       console.error("Could not create price", err.message);
-       res.status(500).json({ 'error': "Could not insert price", 'errorcode': 2 });
+       res.status(500).send("Could not insert price");
     });
   });
 
@@ -127,7 +127,7 @@ router.get('/isin/list', (req, res, next) => {
     }
     ).catch((err) => {
       console.error("Could not create dividend", err.message);
-       res.status(500).json({ 'error': "Could not insert dividend", 'errorcode': 2 });
+       res.status(500).send("Could not insert dividend");
     });
   });
 

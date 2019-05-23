@@ -41,14 +41,14 @@ router.get('/', (req, res, next) => {
             // verify token
             verify(authorizationToken).catch((err) => {
                 console.error("Could not verify user");
-                res.status(403).json({ 'error': 'Authentification failed', 'errorcode': 1 });
+                res.status(403).send('Authentification failed');
                 next(err);
             }).then(() => {
                 console.log("ok, proceed with request");
                 next();
             });
         } else {
-            res.status(403).json({ 'error': 'Please login', 'errorcode': 2 });
+            res.status(403).send('Please login');
         }
     }
   });
