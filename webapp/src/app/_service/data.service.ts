@@ -8,6 +8,7 @@ import { GoogleLoginProvider } from "angularx-social-login";
 import { SocialUser } from "angularx-social-login";
 import { ISIN } from '../_interface/isin';
 import { ToastrService } from 'ngx-toastr';
+import { PriceDatePair } from '../_interface/price-date-pair';
 
 
 @Injectable({
@@ -33,6 +34,13 @@ export class DataService {
   getISINList(): Observable<ISIN[]> {
     if (this.isUserLoggedIn()) {
       return this.http.get<ISIN[]>(environment.apiUrl + "/stock/isin/list", this.createHttpHeader());
+    }
+    return null;
+  }
+
+  getPricePairList(type: string, isin: string): Observable<PriceDatePair[]> {
+    if (this.isUserLoggedIn()) {
+      return this.http.get<PriceDatePair[]>(environment.apiUrl + "/stock/"+type+"/list/"+isin, this.createHttpHeader());
     }
     return null;
   }

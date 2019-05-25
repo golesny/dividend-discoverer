@@ -88,6 +88,44 @@ router.get('/isin/list', (req, res, next) => {
   });
 });
 
+/*
+ * get Dividends 
+ */
+router.get('/dividend/list/:isin', (req, res, next) => {
+  handleList("dividend", req, res);
+});
+/*
+ * get Prices 
+ */
+router.get('/price/list/:isin', (req, res, next) => {
+  handleList("price", req, res);
+});
+
+function handleList(type, req, res) {
+  var isin = req.params.isin;
+  db.select().from(type).where({"isin": isin}).orderBy('date', 'desc').then((rows) => {
+    var resLst = [];
+    rows.map((entry) => {
+      entry.inDB = true;
+      entry.date = convertDateToUTC(entry.date); 
+      resLst.push(entry);
+    });
+    console.log("sending "+type+" list, count="+resLst.length);
+    res.json(resLst);
+  }).catch((error) => {
+    console.error(error);
+    res.status(500).send("Could not read "+type+" for isin "+isin);
+  });
+}
+
+function convertDateToUTC(d) {
+        var hoursDiff = d.getHours() - d.getTimezoneOffset() / 60;
+        var minutesDiff = (d.getHours() - d.getTimezoneOffset()) % 60;
+        d.setHours(hoursDiff);
+        d.setMinutes(minutesDiff);
+        return d;
+}
+
 /**
  * create new ISIN
  */

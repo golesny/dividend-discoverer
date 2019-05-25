@@ -40,11 +40,18 @@ export class PriceFormComponent implements OnInit {
       if (line != null && line.length > 10 && line.indexOf("**") == -1) {
         var lineTok = line.split('\t');
         var p:number = Number.parseFloat(lineTok[2].replace(",","."));
-        var d:Date = new Date(Number.parseInt(lineTok[4]), 0);
+        var d:Date = this.convertDateToUTC(new Date(Number.parseInt(lineTok[4]), 0));
         var pd = new PriceDatePair(this.isin, d,  p);
-        this.prices.push(pd);
+        // search for entry
+        var sameDateEntries: PriceDatePair[] = this.prices.filter(e => this.compareDate(e.date, pd.date));
+        if (sameDateEntries.length == 0) {
+          this.prices.unshift(pd);
+        } else {
+          // update entries? not yet implemented
+        }
       }
     });
+    this.sortPrices();
   }
 
   transferPricesFromFinanzenDotNet() {
@@ -54,9 +61,16 @@ export class PriceFormComponent implements OnInit {
         var lineTok = line.split('\t');
         var p:number = Number.parseFloat(lineTok[2].replace(".","").replace(",","."));
         var pd = new PriceDatePair(this.isin, this.dateString2Date(lineTok[0]),  p);
-        this.prices.push(pd);
+        // search for entry
+        var sameDateEntries: PriceDatePair[] = this.prices.filter(e => this.compareDate(e.date, pd.date));
+        if (sameDateEntries.length == 0) {
+          this.prices.unshift(pd);
+        } else {
+          // update entries? not yet implemented
+        }
       }
     });
+    this.sortPrices();
   }
 
   // convert german format 30.05.16 --> iso 2016-05-30
@@ -69,7 +83,7 @@ export class PriceFormComponent implements OnInit {
     } else {
       y += 1900;
     }
-    return new Date(y+"-"+dt[1]+"-"+dt[0]);
+    return this.convertDateToUTC(new Date(y+"-"+dt[1]+"-"+dt[0]));
   }
 
   ngOnInit() {
@@ -78,6 +92,16 @@ export class PriceFormComponent implements OnInit {
       this.title = d['title'];
       this.type = d['type'];
     });
+    this.dataService.getPricePairList(this.type, this.isin).subscribe(data =>{
+      data.forEach(r => {
+        r.date = new Date(r.date);
+      });
+      this.prices = data;
+    },
+    err => {
+      this.notifyService.showError("Could not load "+this.type, err);
+    }
+    );
   }
 
   saveData() {
@@ -85,6 +109,7 @@ export class PriceFormComponent implements OnInit {
     this.dataService.post(pricesToStore, this.type).subscribe(
       res => {
         res.forEach(r => {
+          r.date = new Date(r.date);
           console.log("searching for " + r.isin + " " + r.date);
           this.prices.forEach((pr) => {
             if (this.compareDate(pr.date,r.date)) {
@@ -92,6 +117,7 @@ export class PriceFormComponent implements OnInit {
                pr.inDB = true;
             }
           });
+          this.sortPrices();
         }
         );
       },
@@ -102,15 +128,37 @@ export class PriceFormComponent implements OnInit {
   }
 
   compareDate(d1:Date, d2:Date):boolean {
-    if (d1.getFullYear() != d2.getFullYear()) {
+    if (d1.getUTCFullYear() != d2.getUTCFullYear()) {
       return false;
     }
-    if (d1.getMonth() != d2.getMonth()) {
+    if (d1.getUTCMonth() != d2.getUTCMonth()) {
       return false;
     }
-    if (d1.getDay() != d2.getDay()) {
+    if (d1.getUTCDay() != d2.getUTCDay()) {
       return false;
     }
     return true;
+  }
+
+  sortPrices(): void {
+    this.prices.sort((a: PriceDatePair, b: PriceDatePair) => {
+      if (a.date > b.date) {
+        return -1;
+    }
+
+    if (a.date < b.date) {
+        return 1;
+    }
+
+    return 0;
+    });
+  }
+
+  convertDateToUTC(d:Date): Date {
+        var hoursDiff = d.getHours() - d.getTimezoneOffset() / 60;
+        var minutesDiff = (d.getHours() - d.getTimezoneOffset()) % 60;
+        d.setHours(hoursDiff);
+        d.setMinutes(minutesDiff);
+        return d;
   }
 }
