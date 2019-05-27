@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Stock } from '../_interface/stock';
+import { Report } from '../_interface/report';
 import { environment } from 'src/environments/environment';
 import { AuthService } from "angularx-social-login";
 import { GoogleLoginProvider } from "angularx-social-login";
@@ -24,9 +24,9 @@ export class DataService {
   }
 
   // api calls
-  getStockList(): Observable<Stock[]> {
+  getReportList(): Observable<Report[]> {
     if (this.isUserLoggedIn()) {
-      return this.http.get<Stock[]>(environment.apiUrl + "/stock", this.createHttpHeader());
+      return this.http.get<Report[]>(environment.apiUrl + "/stock", this.createHttpHeader());
     }
     return null;
   }

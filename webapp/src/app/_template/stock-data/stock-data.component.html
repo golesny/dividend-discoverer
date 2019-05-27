@@ -7,16 +7,23 @@
     <th scope="col">Last 20 y</th>
     <th scope="col">Div in 30y p.a.</th>
     <th scope="col">Div cum. 30y</th>
+    <th scope="col">Div inc</th>
+    <th scope="col">Div eq</th>
+    <th scope="col">Div dec</th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let stock of stocks">
-    <td>{{stock.isin.name}}</td>
-    <td>{{stock.isin.isin}}</td>
+  <tr *ngFor="let stock of reports">
+    <td>{{stock.name}}</td>
+    <td>{{stock.isin}}</td>
     <td>{{stock.last10yPercentage}}%</td>
     <td>{{stock.last20yPercentage}}%</td>
     <td>{{stock.divIn30y}} {{stock.isin.currency}}</td>
     <td>{{stock.divCum30y}} {{stock.isin.currency}}</td>
+    <td>{{stock.div_increases}}</td>
+    <td>{{stock.div_equal}}</td>
+    <td>{{stock.div_decreases}}</td>
+    
   </tr>
 </tbody>
 </table>

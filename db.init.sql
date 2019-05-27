@@ -1,8 +1,7 @@
 CREATE TABLE `isin` (
  `isin` varchar(20) NOT NULL,
  `name` varchar(50) NOT NULL,
- `currency` varchar(3) NOT NULL,
- `updated_ts` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+ `currency` varchar(3) NOT NULL
  PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -18,4 +17,14 @@ CREATE TABLE `price` (
  `date` date NOT NULL,
  `price` decimal(10,2) NOT NULL,
  PRIMARY KEY (`isin`,`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `report` (
+ `isin` varchar(20) NOT NULL,
+ `updated_ts` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+ `last10yPercentage` decimal(10,2),
+ `last20yPercentage` decimal(10,2),
+ `divIn30y` decimal(10,2),
+ `divCum30y` decimal(10,2),
+ PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

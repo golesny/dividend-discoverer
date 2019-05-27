@@ -5,7 +5,7 @@ import { StockDataComponent }      from 'src/app/_template/stock-data/stock-data
 import { PriceFormComponent } from './_template/price-form/price-form.component';
 
 const routes: Routes = [
-  { path: 'data', component: StockDataComponent },
+  { path: 'report', component: StockDataComponent },
   { path: 'stock-form', component: StockFormComponent },
   { path: 'price/:isin', component: PriceFormComponent,
       data: {

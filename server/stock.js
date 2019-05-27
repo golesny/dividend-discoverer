@@ -51,24 +51,54 @@ function connect() {
 const db = connect();
     
 /**
- * GET /api/books/:id
+ * GET /api/stock/
  *
- * Retrieve a book.
+ * Retrieve reports
  */
 router.get('/', (req, res, next) => {
-    var entity = [{"isin" : {'isin': "DE1", 'name': "NDE1", 'currency': '€'},
-    'last10yPercentage': 5.6,
-    'last20yPercentage': 3.5,
-    'divIn30y': 4000,
-    'divCum30y': 30000 },
-    {"isin" : {'isin': "DE2", 'name': "NDE2", 'currency': '€'},
-    'last10yPercentage': 5.6,
-    'last20yPercentage': 3.5,
-    'divIn30y': 4000,
-    'divCum30y': 30000 }];
-    console.log("sending stocks");
-    res.json(entity);
+    // prepare report
+    console.log("preparing reports");
+    var reports = {};
+    db.select().from('report').then((repRow) => {      
+      repRow.forEach((rep) => {
+        if (rep.isin != undefined) {
+          console.log("add report with isin "+rep.isin);
+          reports[rep.isin] = rep;
+        }
+      });
+      console.log("Reports: "+util.inspect(reports, false, null, isDevMode /* enable colors */));
+      // 
+    db.select().from('isin').orderBy('name').then((result) => {
+      // join
+      var resLst = [];
+      result.forEach((row) => {
+        console.log("isin row: "+util.inspect(row, false, null, isDevMode /* enable colors */))
+          // merge report + isin
+          var rep = reports[row.isin];
+          if (rep != undefined) {
+            rep["name"] = row.name;
+            rep["currency"] = row.currency;
+            resLst.push(rep);
+            console.log("Merged: "+util.inspect(rep, false, null, isDevMode /* enable colors */))
+          }
+      });
+      console.log("sending report list, count="+resLst.length);
+      res.json(resLst);
+    }).catch((error) => {
+      console.error(error);
+      res.status(500).send("Could not read isin");
+    });
+
+
+    }).catch((err) => {
+      console.error(err);
+      res.status(500).send("Could not read reports");
+    });
+    
+    
 });
+
+
 
 /*
  * get ISINs 
@@ -92,16 +122,16 @@ router.get('/isin/list', (req, res, next) => {
  * get Dividends 
  */
 router.get('/dividend/list/:isin', (req, res, next) => {
-  handleList("dividend", req, res);
+  handleGetList("dividend", req, res);
 });
 /*
  * get Prices 
  */
 router.get('/price/list/:isin', (req, res, next) => {
-  handleList("price", req, res);
+  handleGetList("price", req, res);
 });
 
-function handleList(type, req, res) {
+function handleGetList(type, req, res) {
   var isin = req.params.isin;
   db.select().from(type).where({"isin": isin}).orderBy('date', 'desc').then((rows) => {
     var resLst = [];
@@ -124,6 +154,70 @@ function convertDateToUTC(d) {
         d.setHours(hoursDiff);
         d.setMinutes(minutesDiff);
         return d;
+}
+
+function updateReportForISIN(isin) {
+  db.select().from("dividend").where({"isin": isin}).orderBy('date', 'desc').then((rows) => {
+    console.log("start updating report for isin "+isin);
+    var last10yPercentage = undefined;
+    var last20yPercentage = undefined;
+    var div_increases = 0;
+	  var div_equal = 0;
+	  var div_decreases = 0;
+    var resLst = [];
+    rows.map((entry) => {
+      entry.date = convertDateToUTC(entry.date); 
+      resLst.push(entry);
+    });
+    var maxYear = new Date(resLst[0].date).getFullYear();
+    // calculate last10y dividends
+    if (resLst.length >= 10) {
+      if (resLst[9].price != 0) {
+        console.log("last10yPerc: [9]="+resLst[9].price+" [0]="+resLst[0].price);
+        last10yPercentage = (resLst[0].price / resLst[9].price - 1) * 100; // Example 10€ / 5 € - 1 = 1 => 100%
+      }
+    }
+    // calculate last20y dividends
+    if (resLst.length >= 20) {
+      if (resLst[19].price != 0) {
+        last20yPercentage = (resLst[0].price /  - 1) * 100;
+      }
+    }
+    // count div increases/equal/decreases streak
+    for (let i = 1; i < resLst.length; i++) {
+      const prevY = resLst[i];
+      const thisY = resLst[i-1];
+      console.log("compare: "+prevY.price + " vs. "+ thisY.price);
+      if (prevY.price == thisY.price) {
+        div_equal++;
+      } else if (prevY.price < thisY.price) {
+        div_increases++;
+      } else {
+        div_decreases++;
+      }
+    }
+    // delete old report data
+    db.delete().from("report").where("isin", isin).then((r) => console.log("report deleted for "+isin))
+    .catch((err) => {console.error("Could not delete old report: "+error);return 2;});
+    // insert new data
+    db("report").insert({"isin":isin,
+                         "last10yPercentage": last10yPercentage,
+                         "last20yPercentage": last20yPercentage,
+                         "divIn30y":0,
+                         "divCum30y":0,
+                         "div_increases": div_increases,
+                         "div_equal": div_equal,
+                         "div_decreases": div_decreases
+                        })
+    .then((r) => {
+      console.log("report created for "+isin);
+                    return 0;
+                 })
+    .catch((err) => {console.error("Could not insert report: "+err);return 3;});
+  }).catch((error) => {
+    console.error("Could not update report for isin " + isin+": " + error);
+    return 1;
+  });
 }
 
 /**
@@ -149,6 +243,7 @@ function convertDateToUTC(d) {
     db.insert(entity).into("price").then((result) => {      
       console.log("created price", result);
       res.json(entity);
+      updateReportForISIN(entity.isin);
     }
     ).catch((err) => {
       console.error("Could not create price", err.message);
@@ -162,6 +257,7 @@ function convertDateToUTC(d) {
     db.insert(entity).into("dividend").then((result) => {      
       console.log("created dividend", result);
       res.json(entity);
+      updateReportForISIN(entity[0].isin);
     }
     ).catch((err) => {
       console.error("Could not create dividend", err.message);

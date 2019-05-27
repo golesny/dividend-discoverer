@@ -38,6 +38,7 @@ export class StockFormComponent {
   }
 
   onSubmit() {
+    // TODO trim fields
     console.log("creating new isin");
 
     return this.dataService.post(this.model, "isin").subscribe(

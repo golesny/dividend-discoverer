@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Stock } from 'src/app/_interface/stock';
+import { Report } from 'src/app/_interface/report';
 import { DataService } from 'src/app/_service/data.service';
+import { NotifyService } from 'src/app/_service/notify.service';
 
 @Component({
   selector: 'app-stock-data',
@@ -8,10 +9,11 @@ import { DataService } from 'src/app/_service/data.service';
   styleUrls: ['./stock-data.component.sass']
 })
 export class StockDataComponent implements OnInit {
-  public stocks: Stock[];
+  public reports: Report[];
 
-  constructor(public dataService: DataService) { 
-    this.stocks = [];
+  constructor(private dataService: DataService,
+              private notifyService: NotifyService) { 
+    this.reports = [];
     this.loadStockList();
   }
 
@@ -22,13 +24,13 @@ export class StockDataComponent implements OnInit {
 
   loadStockList() : void {
     console.log('loading stock list');
-    this.stocks = [];
-    this.dataService.getStockList()
-      .subscribe((data: Stock[]) => {
-        this.stocks = data;        
-        console.log('data loaded %s', this.stocks);
-      }, error => {
-        console.error('%cERROR: ${error.message}', 'color:red');
+    this.reports = [];
+    this.dataService.getReportList()
+      .subscribe((data: Report[]) => {
+        this.reports = data;        
+        console.log('data loaded %s', this.reports);
+      }, err => {
+        this.notifyService.showError("Could not load reports", err);
       }
       );
   }
