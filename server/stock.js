@@ -28,6 +28,9 @@ router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 // db
 const Knex = require("knex");
 
+require("./utils");
+require("./report");
+
 function connect() {
   console.log("connecting to db "+config.SQL_DATABASE);
   const dbconf = {
@@ -104,11 +107,19 @@ router.get('/', (req, res, next) => {
  * get ISINs 
  */
 router.get('/isin/list', (req, res, next) => {
-  db.select().from('isin').orderBy('name').then((result) => {
+  // select isin.isin, isin.name, isin.currency, year(max(dividend.date)) as latest_entry from `isin`
+  // left join `dividend` on isin.`isin` = dividend.`isin`
+  //group by isin
+  db.raw("select isin.isin, isin.name, isin.currency, "+
+         "(select year(max(dividend.date))  from `dividend` where isin.`isin` = dividend.`isin`) as latest_div, "+
+         "(select year(max(price.date))  from `price` where isin.`isin` = price.`isin`) as latest_price "+
+         "from `isin` "+
+         "group by isin")
+        .then((result) => {
     var isinList = [];
-    result.map((entry) => {
+    result[0].forEach((entry) => {
       isinList.push(entry);
-      console.log(util.inspect(entry, false, null, isDevMode /* enable colors */))
+      console.log("Entry: "+util.inspect(entry, false, null, isDevMode /* enable colors */))
     });
     console.log("sending isin list, count="+isinList.length);
     res.json(isinList);
@@ -131,13 +142,26 @@ router.get('/price/list/:isin', (req, res, next) => {
   handleGetList("price", req, res);
 });
 
+/**
+ * 
+ * @param {price|dividend} type 
+ * @param {*} req 
+ * @param {*} res 
+ */
 function handleGetList(type, req, res) {
   var isin = req.params.isin;
-  db.select().from(type).where({"isin": isin}).orderBy('date', 'desc').then((rows) => {
+  // select isin.isin, isin.name, isin.currency, year(max(date)) from `isin`
+  // left join `dividend` on isin.`isin` = dividend.`isin` group by isin
+  db.select('ref.isin as isin', 'ref.name as name', 'ref.currency as currency', 'year(max(date)) as latest_entry')
+             .from(type + " as ref").where({"isin": isin})
+             .leftJoin('dividend', function() {
+                this.on('dividend.isin', '=', 'isin.isin')
+             })
+             .groupBy('isin')
+             .orderBy('date', 'desc').then((rows) => {
     var resLst = [];
     rows.map((entry) => {
-      entry.inDB = true;
-      entry.date = convertDateToUTC(entry.date); 
+      entry.inDB = true;       
       resLst.push(entry);
     });
     console.log("sending "+type+" list, count="+resLst.length);
@@ -145,78 +169,6 @@ function handleGetList(type, req, res) {
   }).catch((error) => {
     console.error(error);
     res.status(500).send("Could not read "+type+" for isin "+isin);
-  });
-}
-
-function convertDateToUTC(d) {
-        var hoursDiff = d.getHours() - d.getTimezoneOffset() / 60;
-        var minutesDiff = (d.getHours() - d.getTimezoneOffset()) % 60;
-        d.setHours(hoursDiff);
-        d.setMinutes(minutesDiff);
-        return d;
-}
-
-function updateReportForISIN(isin) {
-  db.select().from("dividend").where({"isin": isin}).orderBy('date', 'desc').then((rows) => {
-    console.log("start updating report for isin "+isin);
-    var last10yPercentage = undefined;
-    var last20yPercentage = undefined;
-    var div_increases = 0;
-	  var div_equal = 0;
-	  var div_decreases = 0;
-    var resLst = [];
-    rows.map((entry) => {
-      entry.date = convertDateToUTC(entry.date); 
-      resLst.push(entry);
-    });
-    var maxYear = new Date(resLst[0].date).getFullYear();
-    // calculate last10y dividends
-    if (resLst.length >= 10) {
-      if (resLst[9].price != 0) {
-        console.log("last10yPerc: [9]="+resLst[9].price+" [0]="+resLst[0].price);
-        last10yPercentage = (resLst[0].price / resLst[9].price - 1) * 100; // Example 10€ / 5 € - 1 = 1 => 100%
-      }
-    }
-    // calculate last20y dividends
-    if (resLst.length >= 20) {
-      if (resLst[19].price != 0) {
-        last20yPercentage = (resLst[0].price /  - 1) * 100;
-      }
-    }
-    // count div increases/equal/decreases streak
-    for (let i = 1; i < resLst.length; i++) {
-      const prevY = resLst[i];
-      const thisY = resLst[i-1];
-      console.log("compare: "+prevY.price + " vs. "+ thisY.price);
-      if (prevY.price == thisY.price) {
-        div_equal++;
-      } else if (prevY.price < thisY.price) {
-        div_increases++;
-      } else {
-        div_decreases++;
-      }
-    }
-    // delete old report data
-    db.delete().from("report").where("isin", isin).then((r) => console.log("report deleted for "+isin))
-    .catch((err) => {console.error("Could not delete old report: "+error);return 2;});
-    // insert new data
-    db("report").insert({"isin":isin,
-                         "last10yPercentage": last10yPercentage,
-                         "last20yPercentage": last20yPercentage,
-                         "divIn30y":0,
-                         "divCum30y":0,
-                         "div_increases": div_increases,
-                         "div_equal": div_equal,
-                         "div_decreases": div_decreases
-                        })
-    .then((r) => {
-      console.log("report created for "+isin);
-                    return 0;
-                 })
-    .catch((err) => {console.error("Could not insert report: "+err);return 3;});
-  }).catch((error) => {
-    console.error("Could not update report for isin " + isin+": " + error);
-    return 1;
   });
 }
 
