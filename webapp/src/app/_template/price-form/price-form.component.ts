@@ -13,6 +13,7 @@ export class PriceFormComponent implements OnInit {
   prices: PriceDatePair[];
   public inArea: string;
   isin: string;
+  name: string;
   title: string;
   type: string;
 
@@ -87,7 +88,10 @@ export class PriceFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.params.subscribe(p => this.isin = p['isin']);
+    this.route.params.subscribe(p => {
+      this.isin = p['isin'];
+      this.name = p['name'];
+    });
     this.route.data.subscribe(d => {
       this.title = d['title'];
       this.type = d['type'];

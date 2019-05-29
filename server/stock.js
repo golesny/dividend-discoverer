@@ -150,15 +150,7 @@ router.get('/price/list/:isin', (req, res, next) => {
  */
 function handleGetList(type, req, res) {
   var isin = req.params.isin;
-  // select isin.isin, isin.name, isin.currency, year(max(date)) from `isin`
-  // left join `dividend` on isin.`isin` = dividend.`isin` group by isin
-  db.select('ref.isin as isin', 'ref.name as name', 'ref.currency as currency', 'year(max(date)) as latest_entry')
-             .from(type + " as ref").where({"isin": isin})
-             .leftJoin('dividend', function() {
-                this.on('dividend.isin', '=', 'isin.isin')
-             })
-             .groupBy('isin')
-             .orderBy('date', 'desc').then((rows) => {
+  db.select().from(type).where({"isin": isin}).orderBy('date', 'desc').then((rows) => {
     var resLst = [];
     rows.map((entry) => {
       entry.inDB = true;       

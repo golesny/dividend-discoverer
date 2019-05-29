@@ -2,33 +2,30 @@
 
 <div class="container" style="padding: 5px">
   <form (ngSubmit)="onSubmit()" #isinForm="ngForm">
-    <div class="form-group row">
-      <div class="col-2">
-        <label for="name">Name</label>
-      </div>
-      <div class="col">
-       <input type="text" class="form-control" id="name" name="name" [(ngModel)]="model.name" required>
-      </div>
+
+    <div class="input-group" style="margin: 5px;">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1" style="width:40px"><span class="oi oi-briefcase"></span></span>
+        </div>
+        <input type="text" class="form-control" id="name" name="name" [(ngModel)]="model.name"
+                placeholder="Name" aria-label="Name" aria-describedby="basic-addon1" required>
     </div>
 
-    <div class="form-group row">
-      <div class="col-2">
-        <label for="isin">ISIN</label>
-      </div>
-      <div class="col">
-        <input type="text" class="form-control" id="isin" name="isin" [(ngModel)]="model.isin" required>
-      </div>
+    <div class="input-group" style="margin: 5px;">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon2" style="width:40px;"><span class="oi oi-info" style="padding-left: 5px"></span></span>
+        </div>
+        <input type="text" class="form-control" name="isin" [(ngModel)]="model.isin"
+               placeholder="ISIN" aria-label="ISIN" aria-describedby="basic-addon2" required>
     </div>
 
-    <div class="form-group row">
-      <div class="col-2">
-        <label for="currency">Currency</label>
-      </div>
-      <div class="col">
+    <div class="input-group" style="margin: 5px;">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon2" style="width:40px"><span class="oi oi-dollar" style="padding-left: 5px"></span></span>
+        </div>
         <select class="form-control" id="currency" name="currency" [(ngModel)]="model.currency" style="width: 100px" required>
-          <option *ngFor="let currs of currencies" [value]="currs">{{currs}}</option>
+            <option *ngFor="let currs of currencies" [value]="currs">{{currs}}</option>
         </select>
-      </div>
     </div>
 
     <button type="submit" class="btn btn-success">Add</button>
@@ -37,26 +34,26 @@
 </div>
 
 <div class="container">
-<table id="dtDynamicVerticalScroll" class="table table-striped table-bordered  mb-0">
+<table id="dtDynamicVerticalScroll" class="table table-striped table-bordered table-sm">
   <thead class="thead-dark">
 <tr>
   <th scope="col"></th>
   <th scope="col">Name</th>
   <th scope="col">ISIN</th>
   <th scope="col">Currency</th>
-  <th scope="col">Latest Div|Price</th>
+  <th scope="col">Latest Price|Div</th>
 </tr>
 </thead>
 <tbody>
 <tr *ngFor="let isin of isinlist">
   <td>
-    <button [routerLink]="['/price/',isin.isin]"><span class="oi oi-dollar"></span></button>
-    <button [routerLink]="['/dividend/',isin.isin]"><span class="oi oi-bar-chart"></span></button>
+    <button [routerLink]="['/price/',isin.isin, isin.name]"><span class="oi oi-dollar"></span></button>
+    <button [routerLink]="['/dividend/',isin.isin, isin.name]"><span class="oi oi-bar-chart"></span></button>
   </td>
   <td>{{isin.name}}</td>
   <td>{{isin.isin}}</td>
   <td>{{isin.currency}}</td>
-  <td>{{isin.latest_div}} | {{isin.latest_price}}</td>
+  <td>{{isin.latest_price}} | {{isin.latest_div}}</td>
 </tr>
 </tbody>
 </table>
