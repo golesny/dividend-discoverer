@@ -24,4 +24,13 @@ import { Injectable } from '@angular/core';
         console.error(customMsg, errMsg);
         this.toastr.error(customMsg+ " " + errMsg);
     }
+
+      /**
+     * showError
+     *
+     */
+    public showSuccess(customMsg: string) {
+        console.log(customMsg);
+        this.toastr.success(customMsg);
+    }  
 }

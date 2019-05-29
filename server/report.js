@@ -1,8 +1,10 @@
+const utils = require("./utils");
+
 module.exports = {
 /*    foo: function () {
       // whatever
     },*/
-    updateReportForISIN: function(isin) {
+    updateReportForISIN: function(db, isin, res) {
         db.select().from("dividend").where({"isin": isin}).orderBy('date', 'desc').then((rows) => {
           console.log("start updating report for isin "+isin);
           var last10yPercentage = undefined;
@@ -12,7 +14,7 @@ module.exports = {
             var div_decreases = 0;
           var resLst = [];
           rows.map((entry) => {
-            entry.date = convertDateToUTC(entry.date); 
+            entry.date = utils.convertDateToUTC(entry.date); 
             resLst.push(entry);
           });
           var maxYear = new Date(resLst[0].date).getFullYear();
@@ -44,7 +46,9 @@ module.exports = {
           }
           // delete old report data
           db.delete().from("report").where("isin", isin).then((r) => console.log("report deleted for "+isin))
-          .catch((err) => {console.error("Could not delete old report: "+error);return 2;});
+          .catch((err) => {console.error("Could not delete old report: "+error);
+                           res.status(500).send("Could not delete old report for isin "+isin);
+                          });
           // insert new data
           db("report").insert({"isin":isin,
                                "last10yPercentage": last10yPercentage,
@@ -57,12 +61,14 @@ module.exports = {
                               })
           .then((r) => {
             console.log("report created for "+isin);
-                          return 0;
-                       })
-          .catch((err) => {console.error("Could not insert report: "+err);return 3;});
+            res.json({"msg":"Report created"});
+          })
+          .catch((err) => {console.error("Could not insert report: "+err);
+                           res.status(500).send("Could not insert the report for isin "+isin);
+                          });
         }).catch((error) => {
           console.error("Could not update report for isin " + isin+": " + error);
-          return 1;
+          res.status(500).send("Could not update the report for isin "+isin);
         });
       }
 }

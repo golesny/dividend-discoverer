@@ -49,6 +49,7 @@
   <td>
     <button [routerLink]="['/price/',isin.isin, isin.name]"><span class="oi oi-dollar"></span></button>
     <button [routerLink]="['/dividend/',isin.isin, isin.name]"><span class="oi oi-bar-chart"></span></button>
+    <button (click)="refreshReport(isin.isin)"><span class="oi oi-reload"></span></button>
   </td>
   <td>{{isin.name}}</td>
   <td>{{isin.isin}}</td>

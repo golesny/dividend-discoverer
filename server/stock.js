@@ -28,8 +28,7 @@ router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 // db
 const Knex = require("knex");
 
-require("./utils");
-require("./report");
+const report = require("./report");
 
 function connect() {
   console.log("connecting to db "+config.SQL_DATABASE);
@@ -187,7 +186,7 @@ function handleGetList(type, req, res) {
     db.insert(entity).into("price").then((result) => {      
       console.log("created price", result);
       res.json(entity);
-      updateReportForISIN(entity.isin);
+      report.updateReportForISIN(db, entity.isin);
     }
     ).catch((err) => {
       console.error("Could not create price", err.message);
@@ -201,13 +200,22 @@ function handleGetList(type, req, res) {
     db.insert(entity).into("dividend").then((result) => {      
       console.log("created dividend", result);
       res.json(entity);
-      updateReportForISIN(entity[0].isin);
+      report.updateReportForISIN(db, entity[0].isin);
     }
     ).catch((err) => {
       console.error("Could not create dividend", err.message);
        res.status(500).send("Could not insert dividend");
     });
   });
+
+  /**
+ * create new Report
+ */
+router.post('/report/recreate/:isin', (req, res, next) => {
+  var isin = req.params.isin;
+  console.log("creating "+ isin);
+  report.updateReportForISIN(db, isin, res);
+});
 
   /**
  * Errors on "/api/books/*" routes.

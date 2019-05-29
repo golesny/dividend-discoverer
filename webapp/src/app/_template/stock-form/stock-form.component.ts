@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ISIN } from 'src/app/_interface/isin';
 import { DataService } from 'src/app/_service/data.service';
-import { ToastrService } from 'ngx-toastr';
+import { NotifyService } from 'src/app/_service/notify.service';
 
 @Component({
   selector: 'stock-form',
@@ -11,10 +11,10 @@ import { ToastrService } from 'ngx-toastr';
 export class StockFormComponent {
   public isinlist:ISIN[];
   currencies = ['EUR', 'USD', 'SKR'];
-  public model;
+  public model:ISIN;
 
   constructor(private dataService:DataService,
-              private toastr: ToastrService) {
+              private notifyService: NotifyService) {
     this.resetISIN();
     this.loadISINList();
   }
@@ -32,7 +32,7 @@ export class StockFormComponent {
         console.log('isin loaded %s', this.isinlist);
       }, error => {
         console.error('ERROR: ${error.message}');
-        this.toastr.error("error "+error.message);
+        this.notifyService.showError("error ", error.message);
       }
       );
   }
@@ -43,16 +43,26 @@ export class StockFormComponent {
 
     return this.dataService.post(this.model, "isin").subscribe(
         data => {
-          console.log("ISIN created", JSON.stringify(data));
-          this.toastr.success("ISIN created: " + data.isin);
+          this.notifyService.showSuccess("ISIN created: " + data.isin);
           // the complete list is resend
           this.isinlist.push(data);
           this.resetISIN();
         },
-        err => {            
-            console.log("error on creating isin:", err);
-            this.toastr.error("error on creating isin: " + err);
+        err => {                        
+            this.notifyService.showError("error on creating isin", err);
         }
     );
-}
+  }
+
+  refreshReport(isin: string) {
+    this.dataService.refreshReport(isin).subscribe(
+      data => {
+        console.log("data="+JSON.stringify(data));
+        this.notifyService.showSuccess(data["msg"]);
+      },
+      err => {
+        console.log("err="+err);
+        this.notifyService.showError("Could not recreate the report:", err);}
+    ); 
+  }
 }
