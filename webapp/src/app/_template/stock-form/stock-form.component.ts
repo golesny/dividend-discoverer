@@ -59,6 +59,7 @@ export class StockFormComponent {
       data => {
         console.log("data="+JSON.stringify(data));
         this.notifyService.showSuccess(data["msg"]);
+        this.isinlist.filter((f) => (f.isin == isin)).forEach((e) => e.report_count = 1);
       },
       err => {
         console.log("err="+err);

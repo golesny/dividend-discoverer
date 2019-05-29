@@ -1,11 +1,11 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { StockFormComponent }      from 'src/app/_template/stock-form/stock-form.component';
-import { StockDataComponent }      from 'src/app/_template/stock-data/stock-data.component';
+import { ReportComponent }      from 'src/app/_template/report/report.component';
 import { PriceFormComponent } from './_template/price-form/price-form.component';
 
 const routes: Routes = [
-  { path: 'report', component: StockDataComponent },
+  { path: 'report', component: ReportComponent },
   { path: 'stock-form', component: StockFormComponent },
   { path: 'price/:isin/:name', component: PriceFormComponent,
       data: {

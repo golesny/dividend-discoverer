@@ -49,7 +49,10 @@
   <td>
     <button [routerLink]="['/price/',isin.isin, isin.name]"><span class="oi oi-dollar"></span></button>
     <button [routerLink]="['/dividend/',isin.isin, isin.name]"><span class="oi oi-bar-chart"></span></button>
-    <button (click)="refreshReport(isin.isin)"><span class="oi oi-reload"></span></button>
+    <button (click)="refreshReport(isin.isin)"><span class="oi" [ngClass]="{
+      'oi-reload':isin.report_count == 1,
+      'oi-spreadsheet':isin.report_count == 0
+    }"></span></button>
   </td>
   <td>{{isin.name}}</td>
   <td>{{isin.isin}}</td>

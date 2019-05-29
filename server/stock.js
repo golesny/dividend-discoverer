@@ -111,7 +111,8 @@ router.get('/isin/list', (req, res, next) => {
   //group by isin
   db.raw("select isin.isin, isin.name, isin.currency, "+
          "(select year(max(dividend.date))  from `dividend` where isin.`isin` = dividend.`isin`) as latest_div, "+
-         "(select year(max(price.date))  from `price` where isin.`isin` = price.`isin`) as latest_price "+
+         "(select year(max(price.date))  from `price` where isin.`isin` = price.`isin`) as latest_price, "+
+         "(select count(*) from `report` where isin.`isin` = report.`isin`) as report_count "+
          "from `isin` "+
          "group by isin")
         .then((result) => {

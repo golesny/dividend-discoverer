@@ -12,7 +12,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { AppComponent } from './app.component';
 import { StockFormComponent } from './_template/stock-form/stock-form.component';
 import { PriceFormComponent } from './_template/price-form/price-form.component';
-import { StockDataComponent } from './_template/stock-data/stock-data.component';
+import { ReportComponent } from './_template/report/report.component';
 import { DataService } from './_service/data.service';
 import { AppRoutingModule } from './app-routing.module';
 import { environment } from 'src/environments/environment';
@@ -33,7 +33,7 @@ export function provideConfig() {
     AppComponent,
     StockFormComponent,
     PriceFormComponent,
-    StockDataComponent
+    ReportComponent
   ],
   imports: [
     BrowserModule,

@@ -28,7 +28,7 @@ module.exports = {
           // calculate last20y dividends
           if (resLst.length >= 20) {
             if (resLst[19].price != 0) {
-              last20yPercentage = (resLst[0].price /  - 1) * 100;
+              last20yPercentage = (resLst[0].price / resLst[19].price  - 1) * 100;
             }
           }
           // count div increases/equal/decreases streak

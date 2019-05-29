@@ -4,11 +4,11 @@ import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from 'src/app/_service/notify.service';
 
 @Component({
-  selector: 'app-stock-data',
-  templateUrl: './stock-data.component.html',
-  styleUrls: ['./stock-data.component.sass']
+  selector: 'app-report',
+  templateUrl: './report.component.html',
+  styleUrls: ['./report.component.sass']
 })
-export class StockDataComponent implements OnInit {
+export class ReportComponent implements OnInit {
   public reports: Report[];
 
   constructor(private dataService: DataService,
