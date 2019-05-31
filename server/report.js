@@ -46,7 +46,7 @@ function internalReportUpdate(db, isin, res, lastPrice) {
         last20yPercentage = utils.roundDec10_2((resLst[0].price / resLst[19].price  - 1) * 100);
       }
     }
-    // count div increases/equal/decreases streak
+    // count div increases/equal/decreases streak    
     var percentages = [];
     for (let i = 1; i < resLst.length; i++) {
       const prevY = resLst[i];
@@ -58,20 +58,36 @@ function internalReportUpdate(db, isin, res, lastPrice) {
       } else {
         div_decreases++;
       }
-      // add percentage
+      // add percentage      
       if (prevY.price != 0) { 
-        var percentage = (thisY.price / prevY.price);            
+        var percentage = (thisY.price / prevY.price - 1) * 100; 
+        console.log(thisY.price+ " -> "+prevY.price+" = "+percentage+"%");           
         percentages.push(percentage);
       }
+    }    
+    var avgDiv = utils.avg(percentages);   
+    var avgDivForCalc = avgDiv;
+    avgDiv = utils.roundDec10_2(avgDiv);
+    var avg5Div = undefined;
+    if (percentages.length >= 5) {
+      avg5Div = utils.avg(percentages.slice(0,5));
+      avgDivForCalc = Math.min(avgDiv, avg5Div);
+      avg5Div = utils.roundDec10_2(avg5Div);
     }
-    var medianDiv = utils.median(percentages);    
-    console.log("median = " + medianDiv + " resLst[0]=" + resLst[0].price);
+    var avg10Div = undefined;
+    if (percentages.length >= 10) {
+      avg10Div = utils.avg(percentages.slice(0,10));
+      avgDivForCalc = Math.min(avgDivForCalc, avg10Div);
+      avg10Div = utils.roundDec10_2(avg10Div);
+    }
+    console.log("avg = " + avgDiv + " avg5Div="+avg5Div+" avg10Div" +avg10Div +" resLst[0]=" + resLst[0].price);
+    console.log("using "+avgDivForCalc+" for div calc");
     // div in 30y (=POW(1+E2;30)*D2*B2)
     var countStocks = Math.round(10000 / lastPrice);
-    var divIn30y = Math.round(Math.pow(medianDiv, 30) * resLst[0].price * countStocks);
+    var divIn30y = Math.round(Math.pow(1 + avgDivForCalc/100, 30) * resLst[0].price * countStocks);
     divIn30y = utils.roundDec10_2(divIn30y);
     // div Cum 30y cum =B2*D2*(POW(1+E2;30)-1)/(E2)
-    var divCum30y = Math.round(resLst[0].price * countStocks * (Math.pow(medianDiv, 30) - 1 ) / (medianDiv - 1));
+    var divCum30y = Math.round(resLst[0].price * countStocks * (Math.pow(1 + avgDivForCalc/100, 30) - 1 ) / (avgDivForCalc/100));
     divCum30y = utils.roundDec10_2(divCum30y);
     console.log("divCum30y="+divCum30y+" divIn30y="+divIn30y);
     // delete old report data
@@ -79,7 +95,6 @@ function internalReportUpdate(db, isin, res, lastPrice) {
       console.log("report deleted for "+isin);
 
         // insert new data
-        medianDiv = utils.roundDec10_2((medianDiv - 1) * 100);
         var reportEntry = { "isin":isin,
                             "last10yPercentage": last10yPercentage,
                             "last20yPercentage": last20yPercentage,
@@ -88,8 +103,14 @@ function internalReportUpdate(db, isin, res, lastPrice) {
                             "div_increases": div_increases,
                             "div_equal": div_equal,
                             "div_decreases": div_decreases,
-                            "div_median": medianDiv
+                            "div_avg": avgDiv
                           };
+        if (avg5Div != undefined) {
+          reportEntry["div_5_avg"] = avg5Div;
+        }
+        if (avg10Div != undefined) {
+          reportEntry["div_10_avg"] = avg10Div;
+        }
         db("report").insert(reportEntry)
         .then((r) => {
           console.log("report created for "+isin);

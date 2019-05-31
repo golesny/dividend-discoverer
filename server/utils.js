@@ -9,23 +9,14 @@ module.exports = {
             d.setMinutes(minutesDiff);
             return d;
         },
-        /**
-         * Calculates the median of all values
-         * @param {*} values 
-         */
-        median: function(values) {
-            if(values.length === 0) return 0;
-          
-            values.sort(function(a,b){
-              return a-b;
-            });
-          
-            var half = Math.floor(values.length / 2);
-          
-            if (values.length % 2)
-              return values[half];
-          
-            return (values[half - 1] + values[half]) / 2.0;
+        avg: function(values) {
+          var len = values.length;
+          var sum = 0;
+          for (let i = 0; i < values.length; i++) {
+            sum  += values[i];
+          }
+          var avg = sum / len;
+          return avg; 
         },
         /**
          * makes an Decimal(10,2)

@@ -29,6 +29,8 @@ CREATE TABLE `report` (
  `div_increases` decimal(10,2),
  `div_equal` decimal(10,2),
  `div_decreases` decimal(10,2),
- `div_median` decimal(10,2)
+ `div_avg` decimal(10,2),
+ `div_5_avg` decimal(10,2),
+ `div_10_avg` decimal(10,2),
  PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
