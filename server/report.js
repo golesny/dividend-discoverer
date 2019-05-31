@@ -66,12 +66,12 @@ function internalReportUpdate(db, isin, res, lastPrice) {
       }
     }    
     var avgDiv = utils.avg(percentages);   
-    var avgDivForCalc = avgDiv;
+    var avgDivForCalc = avgDiv; // only as default if we have less than 5 entries
     avgDiv = utils.roundDec10_2(avgDiv);
     var avg5Div = undefined;
     if (percentages.length >= 5) {
       avg5Div = utils.avg(percentages.slice(0,5));
-      avgDivForCalc = Math.min(avgDiv, avg5Div);
+      avgDivForCalc = avg5Div;
       avg5Div = utils.roundDec10_2(avg5Div);
     }
     var avg10Div = undefined;
@@ -80,7 +80,13 @@ function internalReportUpdate(db, isin, res, lastPrice) {
       avgDivForCalc = Math.min(avgDivForCalc, avg10Div);
       avg10Div = utils.roundDec10_2(avg10Div);
     }
-    console.log("avg = " + avgDiv + " avg5Div="+avg5Div+" avg10Div" +avg10Div +" resLst[0]=" + resLst[0].price);
+    var avg20Div = undefined;
+    if (percentages.length >= 20) {
+      avg20Div = utils.avg(percentages.slice(0,20));
+      avgDivForCalc = Math.min(avgDivForCalc, avg20Div);
+      avg20Div = utils.roundDec10_2(avg20Div);
+    }
+    console.log("avg = " + avgDiv + " 5="+avg5Div+" 10=" +avg10Div +"20="+avg20Div+" resLst[0]=" + resLst[0].price);
     console.log("using "+avgDivForCalc+" for div calc");
     // div in 30y (=POW(1+E2;30)*D2*B2)
     var countStocks = Math.round(10000 / lastPrice);
@@ -110,6 +116,9 @@ function internalReportUpdate(db, isin, res, lastPrice) {
         }
         if (avg10Div != undefined) {
           reportEntry["div_10_avg"] = avg10Div;
+        }
+        if (avg20Div != undefined) {
+          reportEntry["div_20_avg"] = avg20Div;
         }
         db("report").insert(reportEntry)
         .then((r) => {
