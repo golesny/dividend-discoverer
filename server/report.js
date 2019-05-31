@@ -33,19 +33,6 @@ function internalReportUpdate(db, isin, res, lastPrice) {
       resLst.push(entry);
     });
     var maxYear = new Date(resLst[0].date).getFullYear();
-    // calculate last10y dividends
-    if (resLst.length >= 10) {
-      if (resLst[9].price != 0) {
-        console.log("last10yPerc: [9]="+resLst[9].price+" [0]="+resLst[0].price);
-        last10yPercentage = utils.roundDec10_2((resLst[0].price / resLst[9].price - 1) * 100); // Example 10€ / 5 € - 1 = 1 => 100%
-      }
-    }
-    // calculate last20y dividends
-    if (resLst.length >= 20) {
-      if (resLst[19].price != 0) {
-        last20yPercentage = utils.roundDec10_2((resLst[0].price / resLst[19].price  - 1) * 100);
-      }
-    }
     // count div increases/equal/decreases streak    
     var percentages = [];
     for (let i = 1; i < resLst.length; i++) {
@@ -102,8 +89,6 @@ function internalReportUpdate(db, isin, res, lastPrice) {
 
         // insert new data
         var reportEntry = { "isin":isin,
-                            "last10yPercentage": last10yPercentage,
-                            "last20yPercentage": last20yPercentage,
                             "divIn30y": divIn30y,
                             "divCum30y":divCum30y,
                             "div_increases": div_increases,
