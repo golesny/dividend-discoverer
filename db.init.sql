@@ -26,5 +26,9 @@ CREATE TABLE `report` (
  `last20yPercentage` decimal(10,2),
  `divIn30y` decimal(10,2),
  `divCum30y` decimal(10,2),
+ `div_increases` decimal(10,2),
+ `div_equal` decimal(10,2),
+ `div_decreases` decimal(10,2),
+ `div_median` decimal(10,2)
  PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

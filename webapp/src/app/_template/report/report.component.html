@@ -5,6 +5,7 @@
     <th scope="col">Name</th>
     <th scope="col">Last 10 y</th>
     <th scope="col">Last 20 y</th>
+    <th scope="col">Div Inc% median</th>
     <th scope="col">Div in 30y p.a.</th>
     <th scope="col">Div cum. 30y</th>
     <th scope="col">Div inc</th>
@@ -17,12 +18,14 @@
     <td>
         <button [routerLink]="['/price/',stock.isin, stock.name]"><span class="oi oi-dollar"></span></button>
         <button [routerLink]="['/dividend/',stock.isin, stock.name]"><span class="oi oi-bar-chart"></span></button>
+        <button (click)="refreshReport(stock.isin)"><span class="oi oi-reload"></span></button>
     </td>
     <td>{{stock.name}}<span style="color: darkgray; font-size: 70%"><br>{{stock.isin}}</span></td>
     <td>{{stock.last10yPercentage}}%</td>
     <td>{{stock.last20yPercentage}}%</td>
+    <td>{{stock.div_median}}%</td>
     <td>{{stock.divIn30y}} {{stock.isin.currency}}</td>
-    <td>{{stock.divCum30y}} {{stock.isin.currency}}</td>
+    <td>{{stock.divCum30y}} {{stock.isin.currency}}</td>    
     <td>{{stock.div_increases}}</td>
     <td>{{stock.div_equal}}</td>
     <td>{{stock.div_decreases}}</td>

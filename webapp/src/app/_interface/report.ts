@@ -10,6 +10,7 @@ export interface Report {
     div_increases: number;
     div_equal: number;
     div_decreses: number;
+    div_median: number;
     latest_price:number,
     latest_div:number,
     report_count:number

@@ -35,5 +35,23 @@ export class ReportComponent implements OnInit {
       );
   }
 
+  refreshReport(isin: string) {
+    this.dataService.refreshReport(isin).subscribe(
+      data => {
+        console.log("data="+JSON.stringify(data));
+        this.notifyService.showSuccess(data["msg"]);
+        for (let i = 0; i < this.reports.length; i++) {
+          const r = this.reports[i];
+          if (r.isin == isin) {
+            this.reports[i] = Object.assign(this.reports[i], data["report"]);
+            continue;
+          }
+        }        
+      },
+      err => {
+        console.log("err="+err);
+        this.notifyService.showError("Could not recreate the report:", err);}
+    ); 
+  }
   
 }
