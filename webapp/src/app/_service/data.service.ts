@@ -110,7 +110,7 @@ export class DataService {
       console.info("developer auto-login");
       var devUser = new SocialUser();
       devUser.email = "d@veloper.de";
-      devUser.name = "Dev";
+      devUser.name = "Dev Op";
       devUser.idToken = "none";
       this.user = devUser;
     }

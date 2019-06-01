@@ -7,13 +7,17 @@
   <div *ngIf="user" class="collapse navbar-collapse" id="navbarSupportedContent">    
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" routerLink="/report"><span class="oi oi-bar-chart"></span> Report</a>
+        <button class="btn nav-link" routerLink="/report"><span class="oi oi-bar-chart"></span> Report</button>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/stock-form"><span class="oi oi-briefcase"></span> Stocks</a>
+          <button class="btn nav-link" routerLink="/stock-form"><span class="oi oi-briefcase"></span> Stocks</button>
+        </li>
+      <li class="nav-item">
+        <span class="btn nav-link"><img class="img-responsive photo" src="{{ user.photoUrl }}" height="22" *ngIf="user.photoUrl != undefined"><span class="oi oi-person" *ngIf="user.photoUrl == undefined"></span> {{ user.name }}</span>
       </li>
-      <li class="nav-item"><img class="img-responsive photo" src="{{ user.photoUrl }}" alt="X" height="20"> {{ user.name }}</li>
-      <li class="nav-item"><button class="btn" (click)="signOut()"><span class="oi oi-account-logout"></span> Logout</button></li>
+      <li class="nav-item">
+        <button class="btn nav-link" (click)="signOut()"><span class="oi oi-account-logout"></span> Logout</button>
+      </li>
     </ul>
   </div>
 </nav>
