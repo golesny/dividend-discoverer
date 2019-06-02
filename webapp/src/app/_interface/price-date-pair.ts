@@ -4,5 +4,6 @@ export class PriceDatePair {
         public date: Date,
         public price: number,
         public inDB?: boolean,
+        public deltaPercentage?: number
     ) {}
 };

@@ -20,7 +20,8 @@
                 <tr>
                   <th scope="col-lg-2">Date</th>
                   <th scope="col-lg-2">{{title}}</th>
-                  <th scope="col-sm">Status</th>                
+                  <th scope="col-sm">Status</th>
+                  <th scope="col-sm">Delta %</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -28,6 +29,7 @@
                   <td>{{price.date | date: 'y-MM-dd'}}</td>
                   <td>{{price.price}}</td>
                   <td><span class="oi oi-circle-check" *ngIf="price.inDB"></span></td>
+                  <td>{{price.deltaPercentage}} %</td>
                 </tr>
                 </tbody>
                 </table>

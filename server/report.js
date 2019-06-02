@@ -22,8 +22,6 @@ module.exports = {
 function internalReportUpdate(db, isin, res, lastPrice) {
   db.select().from("dividend").where({"isin": isin}).orderBy('date', 'desc').then((rows) => {
     console.log("start updating report for isin "+isin);
-    var last10yPercentage = undefined;
-    var last20yPercentage = undefined;
     var div_increases = 0;
       var div_equal = 0;
       var div_decreases = 0;
@@ -32,7 +30,6 @@ function internalReportUpdate(db, isin, res, lastPrice) {
       entry.date = utils.convertDateToUTC(entry.date); 
       resLst.push(entry);
     });
-    var maxYear = new Date(resLst[0].date).getFullYear();
     // count div increases/equal/decreases streak    
     var percentages = [];
     for (let i = 1; i < resLst.length; i++) {
@@ -67,13 +64,13 @@ function internalReportUpdate(db, isin, res, lastPrice) {
       avgDivForCalc = Math.min(avgDivForCalc, avg10Div);
       avg10Div = utils.roundDec10_2(avg10Div);
     }
-    var avg20Div = undefined;
-    if (percentages.length >= 20) {
-      avg20Div = utils.avg(percentages.slice(0,20));
-      avgDivForCalc = Math.min(avgDivForCalc, avg20Div);
-      avg20Div = utils.roundDec10_2(avg20Div);
+    var avg15Div = undefined;
+    if (percentages.length >= 15) {
+      avg15Div = utils.avg(percentages.slice(0,15));
+      avgDivForCalc = Math.min(avgDivForCalc, avg15Div);
+      avg15Div = utils.roundDec10_2(avg15Div);
     }
-    console.log("avg = " + avgDiv + " 5="+avg5Div+" 10=" +avg10Div +"20="+avg20Div+" resLst[0]=" + resLst[0].price);
+    console.log("avg = " + avgDiv + " 5="+avg5Div+" 10=" +avg10Div +"15="+avg15Div+" resLst[0]=" + resLst[0].price);
     console.log("using "+avgDivForCalc+" for div calc");
     // div in 30y (=POW(1+E2;30)*D2*B2)
     var countStocks = Math.round(10000 / lastPrice);
@@ -102,8 +99,8 @@ function internalReportUpdate(db, isin, res, lastPrice) {
         if (avg10Div != undefined) {
           reportEntry["div_10_avg"] = avg10Div;
         }
-        if (avg20Div != undefined) {
-          reportEntry["div_20_avg"] = avg20Div;
+        if (avg15Div != undefined) {
+          reportEntry["div_15_avg"] = avg15Div;
         }
         db("report").insert(reportEntry)
         .then((r) => {

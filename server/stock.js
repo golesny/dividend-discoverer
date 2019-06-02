@@ -153,11 +153,14 @@ function handleGetList(type, req, res) {
   db.select().from(type).where({"isin": isin}).orderBy('date', 'desc').then((rows) => {
     var resLst = [];
     rows.map((entry) => {
-      entry.inDB = true;       
+      entry.inDB = true;
+      if (resLst.length > 0) {
+        resLst[resLst.length-1].deltaPercentage = Math.round((resLst[resLst.length-1].price / entry.price - 1) * 10000) / 100;
+      }
       resLst.push(entry);
     });
     console.log("sending "+type+" list, count="+resLst.length);
-    res.json(resLst);
+    res.json(resLst); 
   }).catch((error) => {
     console.error(error);
     res.status(500).send("Could not read "+type+" for isin "+isin);
