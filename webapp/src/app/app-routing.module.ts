@@ -7,13 +7,13 @@ import { PriceFormComponent } from './_template/price-form/price-form.component'
 const routes: Routes = [
   { path: 'report', component: ReportComponent },
   { path: 'stock-form', component: StockFormComponent },
-  { path: 'price/:isin/:name', component: PriceFormComponent,
+  { path: 'price/:isin/:name/:currency', component: PriceFormComponent,
       data: {
         title: 'Price',
         type: 'price'
       }
   },
-  { path: 'dividend/:isin/:name', component: PriceFormComponent,
+  { path: 'dividend/:isin/:name/:currency', component: PriceFormComponent,
       data: {
         title: 'Dividend',
         type: 'dividend'

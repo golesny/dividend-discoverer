@@ -3,6 +3,8 @@ import { PriceDatePair } from 'src/app/_interface/price-date-pair';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from '../../_service/notify.service';
+import { NgbDateStruct, NgbDate, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+
 
 @Component({
   selector: 'app-price-form',
@@ -14,8 +16,11 @@ export class PriceFormComponent implements OnInit {
   public inArea: string;
   isin: string;
   name: string;
+  currency: string;
   title: string;
   type: string;
+  singleDat: Date;
+  price: number;
 
   constructor(private route:  ActivatedRoute,
               private dataService: DataService,
@@ -88,9 +93,12 @@ export class PriceFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.singleDat = new Date();
+
     this.route.params.subscribe(p => {
       this.isin = p['isin'];
       this.name = p['name'];
+      this.currency = p['currency'];
     });
     this.route.data.subscribe(d => {
       this.title = d['title'];
@@ -126,9 +134,19 @@ export class PriceFormComponent implements OnInit {
         );
       },
       err => {
-          this.notifyService.showError("error on saaving "+this.type, err);
+          this.notifyService.showError("error on saving "+this.type, err);
       }
-  )
+    )
+  }
+
+  transferSinglePrice() {
+    var priceToSave = new PriceDatePair(this.isin, this.singleDat, this.price);
+    var sameDateEntries: PriceDatePair[] = this.prices.filter(e => this.compareDate(e.date, priceToSave.date));
+    if (sameDateEntries.length == 0) {
+      this.prices.unshift(priceToSave);
+    } else {
+      // update entries? not yet implemented
+    }
   }
 
   compareDate(d1:Date, d2:Date):boolean {

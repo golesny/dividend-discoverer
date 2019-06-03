@@ -17,8 +17,8 @@
   <tbody>
   <tr *ngFor="let stock of reports">
     <td>
-        <button [routerLink]="['/price/',stock.isin, stock.name]"><span class="oi oi-dollar"></span></button>
-        <button [routerLink]="['/dividend/',stock.isin, stock.name]"><span class="oi oi-bar-chart"></span></button>
+        <button [routerLink]="['/price/',stock.isin, stock.name, stock.currency]"><span class="oi oi-dollar"></span></button>
+        <button [routerLink]="['/dividend/',stock.isin, stock.name, stock.currency]"><span class="oi oi-bar-chart"></span></button>
         <button (click)="refreshReport(stock.isin)"><span class="oi oi-reload"></span></button>
     </td>
     <td>{{stock.name}}<span class="small"><br>{{stock.isin}} / {{stock.currency}}</span></td>

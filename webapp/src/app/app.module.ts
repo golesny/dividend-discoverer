@@ -9,6 +9,8 @@ import { GoogleLoginProvider} from "angularx-social-login";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';  
 import { ToastrModule } from 'ngx-toastr';
 
+import { NgbModule, NgbDateAdapter, NgbDateNativeAdapter } from '@ng-bootstrap/ng-bootstrap';
+
 import { AppComponent } from './app.component';
 import { StockFormComponent } from './_template/stock-form/stock-form.component';
 import { PriceFormComponent } from './_template/price-form/price-form.component';
@@ -42,13 +44,13 @@ export function provideConfig() {
     SocialLoginModule,
     FormsModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    NgbModule
   ],
-  providers: [DataService,
-    {
-      provide: AuthServiceConfig,
-      useFactory: provideConfig
-    }
+  providers: [
+    DataService,
+    { provide: AuthServiceConfig, useFactory: provideConfig },
+    { provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }
   ],
   bootstrap: [AppComponent]
 })
