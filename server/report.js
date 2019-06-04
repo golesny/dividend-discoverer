@@ -48,8 +48,9 @@ function internalReportUpdate(db, isin, res, lastPrice) {
         console.log(thisY.price+ " -> "+prevY.price+" = "+percentage+"%");           
         percentages.push(percentage);
       }
-    }    
-    var avgDiv = utils.avg(percentages);   
+    }
+    var pessimisticDivAvg = calculatePessimistic(percentages);
+    var avgDiv = utils.avg(percentages);
     var avgDivForCalc = avgDiv; // only as default if we have less than 5 entries
     avgDiv = utils.roundDec10_2(avgDiv);
     var avg5Div = undefined;
@@ -70,6 +71,7 @@ function internalReportUpdate(db, isin, res, lastPrice) {
       avgDivForCalc = Math.min(avgDivForCalc, avg15Div);
       avg15Div = utils.roundDec10_2(avg15Div);
     }
+    avgDivForCalc = Math.min(pessimisticDivAvg, avgDivForCalc);
     console.log("avg = " + avgDiv + " 5="+avg5Div+" 10=" +avg10Div +"15="+avg15Div+" resLst[0]=" + resLst[0].price);
     console.log("using "+avgDivForCalc+" for div calc");
     // div in 30y (=POW(1+E2;30)*D2*B2)
@@ -91,7 +93,8 @@ function internalReportUpdate(db, isin, res, lastPrice) {
                             "div_increases": div_increases,
                             "div_equal": div_equal,
                             "div_decreases": div_decreases,
-                            "div_avg": avgDiv
+                            "div_avg": avgDiv,
+                            "div_pessimistic": pessimisticDivAvg
                           };
         if (avg5Div != undefined) {
           reportEntry["div_5_avg"] = avg5Div;
@@ -119,4 +122,54 @@ function internalReportUpdate(db, isin, res, lastPrice) {
     console.error("Could not update report for isin " + isin+": " + error);
     res.status(500).send("Could not update the report for isin "+isin+". "+error);
   });
+}
+
+function calculatePessimistic(percentages) {
+  console.log("calculatePessimistic");
+  var edges    = [-99999999, -100, -80, -60, -40, -20, -2, 2, 20, 40, 60, 80, 100, 99999999];
+  var countArr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  var valArr   = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  for (let i = 0; i < percentages.length; i++) {
+    const p = percentages[i];
+    let j = 0;
+    while (j < edges.length && edges[j] < p) {
+      j++;
+    }
+    countArr[j]++;
+    valArr[j] += p;
+  }
+  // find max
+  var maxI = -1;
+  var maxVal = 0;
+  for (let i = 0; i < countArr.length; i++) {
+    if (countArr[i] > maxVal) {
+      maxVal = countArr[i];
+      maxI = i;
+    }
+  }
+  // find max edge
+  let maxEdge = maxI;
+  while (maxEdge < countArr.length && countArr[maxEdge] > 1) {
+    maxEdge++;
+  }
+  // find min edge
+  let minEdge = maxI;
+  while (minEdge > 0 && countArr[minEdge] > 1) {
+    minEdge--;
+  }
+  console.log("max="+maxI+" minEdge="+minEdge+" maxEdge="+maxEdge);
+  // calculate pessimistic avg
+  var sum = 0;
+  var count = 0;
+  for (let i = minEdge; i < maxEdge; i++) {
+    sum += valArr[i];
+    count += countArr[i];
+  }
+  var pessAvg = sum / count;
+  // debug output
+  for (let i = 0; i < countArr.length; i++) {
+    console.log(""+i+": "+edges[i]+" => "+countArr[i]);
+  }
+  console.log("pessimistic avg = "+pessAvg);
+  return utils.roundDec10_2(pessAvg);
 }
