@@ -10,7 +10,7 @@ import { NotifyService } from 'src/app/_service/notify.service';
 })
 export class StockFormComponent {
   public isinlist:ISIN[];
-  currencies = ['EUR', 'USD', 'SKR'];
+  currencies = ['EUR', 'USD', 'SKR', 'CHF', 'GBP', 'CAD'];
   public model:ISIN;
 
   constructor(private dataService:DataService,
