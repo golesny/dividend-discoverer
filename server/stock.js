@@ -175,6 +175,8 @@ function handleGetList(type, req, res) {
  */
   router.post('/isin/create', (req, res, next) => {
     var entity = req.body;
+    // trim isin
+    entity.isin = entity.isin.trim();
     console.log("creating ", util.inspect(entity, false, null, isDevMode /* enable colors */));
     db.insert(entity).into("isin").then((result) => {      
       console.log("created isin", entity.isin);
