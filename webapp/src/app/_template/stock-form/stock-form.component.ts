@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ISIN } from 'src/app/_interface/isin';
 import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from 'src/app/_service/notify.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'stock-form',
@@ -14,7 +15,8 @@ export class StockFormComponent {
   public model:ISIN;
 
   constructor(private dataService:DataService,
-              private notifyService: NotifyService) {
+              private notifyService: NotifyService,
+              private router: Router) {
     this.resetISIN();
     this.loadISINList();
   }
@@ -38,7 +40,6 @@ export class StockFormComponent {
   }
 
   onSubmit() {
-    // TODO trim fields
     console.log("creating new isin");
 
     return this.dataService.post(this.model, "isin").subscribe(
@@ -47,6 +48,7 @@ export class StockFormComponent {
           // the complete list is resend
           this.isinlist.push(data);
           this.resetISIN();
+          this.router.navigate(['/price/',data.isin, data.name, data.currency]);
         },
         err => {                        
             this.notifyService.showError("error on creating isin", err);
