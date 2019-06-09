@@ -5,6 +5,8 @@ export interface Report {
     currency: string;
     divIn30y: number;
     divCum30y: number;
+    divIn30yEUR: number;
+    divCum30yEUR: number;
     div_increases: number;
     div_equal: number;
     div_decreses: number;

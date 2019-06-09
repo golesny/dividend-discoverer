@@ -15,7 +15,8 @@
 
 const isDevMode = (process.argv.length >= 3 && process.argv[2] == "dev");
 const config = require("../config"+(isDevMode?"":".prod")+".json");
-const util = require('util')
+const util = require('util');
+const utils = require("./utils");
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -80,12 +81,19 @@ router.get('/', (req, res, next) => {
           if (rep != undefined) {
             rep["name"] = row.name;
             rep["currency"] = row.currency;
+            // calc exchange rate
+            var rate = global.rates[row.currency];
+            if (row.currency == 'EUR') {
+              rate = 1;
+            }
+            rep["divCum30yEUR"] = utils.roundDec10_2(rep.divCum30y / rate);
+            rep["divIn30yEUR"] = utils.roundDec10_2(rep.divIn30y / rate);
             resLst.push(rep);
             console.log("Merged: "+util.inspect(rep, false, null, isDevMode /* enable colors */))
           }
       });
       // sort by cum 30y
-      resLst.sort((a, b) => (a.divCum30y > b.divCum30y) ? -1 : 1);
+      resLst.sort((a, b) => (a.divCum30yEUR > b.divCum30yEUR) ? -1 : 1);
       //
       console.log("sending report list, count="+resLst.length);
       res.json(resLst);

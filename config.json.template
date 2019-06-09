@@ -6,4 +6,5 @@
     "SQL_PASSWORD": "<your pw>",
     "SQL_DATABASE": "stock",
     "SQL_USE_UNIXSOCKET": true // false for tcp connection, true for GCP connection
+    "FIXER_IO_ACCESS_TOKEN": "a1b2...."
 }

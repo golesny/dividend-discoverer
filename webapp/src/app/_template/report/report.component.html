@@ -3,16 +3,16 @@
   <tr>
     <th scope="col"></th>
     <th scope="col">Name</th>
-    <th scope="col">Div Inc%<br>avg</th>
-    <th scope="col">Div Inc%<br>5y avg</th>
-    <th scope="col">Div Inc%<br>10y avg</th>
-    <th scope="col">Div Inc%<br>15y avg</th>
-    <th scope="col">Div<br>pessimistic</th>
     <th scope="col">Div p.a.<br>in 30y</th>
     <th scope="col">Total Div<br>over 30y</th>
     <th scope="col">Div<br>inc</th>
     <th scope="col">Div<br>eq</th>
     <th scope="col">Div<br>dec</th>
+    <th scope="col">Div Inc%<br>avg</th>
+    <th scope="col">Div Inc%<br>5y avg</th>
+    <th scope="col">Div Inc%<br>10y avg</th>
+    <th scope="col">Div Inc%<br>15y avg</th>
+    <th scope="col">Div<br>pessimistic</th>
   </tr>
   </thead>
   <tbody>
@@ -23,17 +23,20 @@
         <button (click)="refreshReport(stock.isin)"><span class="oi oi-reload"></span></button>
     </td>
     <td>{{stock.name}}<span class="small"><br>{{stock.isin}} / {{stock.currency}}</span></td>
+    <td>{{stock.divIn30yEUR | number:'.2'}} <span class="small">EUR</span>
+        <div *ngIf="stock.currency != 'EUR'" class="small">{{stock.divIn30y | number:'.2'}} {{stock.currency}}</div>
+    </td>
+    <td>{{stock.divCum30yEUR | number:'.2'}} <span class="small">EUR</span>
+        <div *ngIf="stock.currency != 'EUR'" class="small">{{stock.divCum30y | number:'.2'}} {{stock.currency}}</div>
+    </td>
+    <td>{{stock.div_increases}}</td>
+    <td>{{stock.div_equal}}</td>
+    <td>{{stock.div_decreases}}</td>
     <td>{{stock.div_avg}}%</td>
     <td>{{stock.div_5_avg}}%</td>
     <td>{{stock.div_10_avg}}%</td>
     <td>{{stock.div_15_avg}}%</td>
     <td>{{stock.div_pessimistic}}%</td>
-    <td>{{stock.divIn30y | number:'.2'}} <span class="small">{{stock.currency}}</span></td>
-    <td>{{stock.divCum30y | number:'.2'}} <span class="small">{{stock.currency}}</span></td>
-    <td>{{stock.div_increases}}</td>
-    <td>{{stock.div_equal}}</td>
-    <td>{{stock.div_decreases}}</td>
-    
   </tr>
 </tbody>
 </table>

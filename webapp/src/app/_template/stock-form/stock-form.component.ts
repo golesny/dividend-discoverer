@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class StockFormComponent {
   public isinlist:ISIN[];
-  currencies = ['EUR', 'USD', 'SKR', 'CHF', 'GBP', 'CAD'];
+  currencies = ['EUR', 'USD', 'SKR', 'CHF', 'GBP', 'CAD', 'DDK'];
   public model:ISIN;
 
   constructor(private dataService:DataService,

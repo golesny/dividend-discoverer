@@ -18,6 +18,9 @@ console.log("isDevMode="+isDevMode);
 
 const path = require('path');
 const express = require('express');
+const fixerIO = require('./server/fixer_io.js');
+global.rates;
+fixerIO.loadCurrencies();
 
 const app = express();
 
