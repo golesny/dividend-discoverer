@@ -24,7 +24,7 @@
           <span class="input-group-text" id="basic-addon2" style="width:40px"><span class="oi oi-dollar" style="padding-left: 5px"></span></span>
         </div>
         <select class="form-control" id="currency" name="currency" [(ngModel)]="model.currency" style="width: 100px" required>
-            <option *ngFor="let currs of currencies" [value]="currs">{{currs}}</option>
+            <option *ngFor="let currs of currencies | keyvalue" [value]="currs.key">{{currs.key}}</option>
         </select>
     </div>
 

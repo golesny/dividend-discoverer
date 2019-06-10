@@ -11,18 +11,21 @@ import { Router } from '@angular/router';
 })
 export class StockFormComponent {
   public isinlist:ISIN[];
-  currencies = ['EUR', 'USD', 'SKR', 'CHF', 'GBP', 'CAD', 'DDK'];
+  currencies:Map<string, number>;
   public model:ISIN;
 
   constructor(private dataService:DataService,
               private notifyService: NotifyService,
               private router: Router) {
+    this.currencies = new Map();
+    this.currencies.set("EUR", 1);
     this.resetISIN();
     this.loadISINList();
+    this.loadRates();
   }
 
   resetISIN() {
-    this.model = new ISIN('', '', this.currencies[0]);
+    this.model = new ISIN('', '', "EUR");
   }
 
   loadISINList() : void {
@@ -37,6 +40,18 @@ export class StockFormComponent {
         this.notifyService.showError("error ", error.message);
       }
       );
+  }
+
+  loadRates(): void {
+    this.dataService.getExchangeRates()
+    .subscribe((data: Map<string, number>) => {
+      this.currencies = data;        
+      console.log('currencies loaded %s', this.currencies);
+    }, error => {
+      console.error('ERROR: ${error.message}');
+      this.notifyService.showError("error ", error.message);
+    }
+    );
   }
 
   onSubmit() {

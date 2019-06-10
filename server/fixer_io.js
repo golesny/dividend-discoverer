@@ -22,8 +22,9 @@ const https = require('https');
 /*
  * get exchange rates 
  */
-module.exports.loadCurrencies = () => {
-    const path = "/api/latest?access_key=" + config.FIXER_IO_ACCESS_TOKEN + "&symbols=USD,AUD,CAD,SKR,CHF,DKK,GBP&format=1";
+module.exports.loadCurrencies = (res) => {
+    const path = "/api/latest?access_key=" + config.FIXER_IO_ACCESS_TOKEN + "&symbols=" + config.EXCHANGE_LIST + "&format=1";
+    console.log("fixer.io GET "+path);
     const options = {
         host: 'data.fixer.io',
         port: 80,
@@ -36,7 +37,8 @@ module.exports.loadCurrencies = () => {
 
       this.getJSON(options, (statusCode, result) => {
         console.log(`loaded currencies: (${statusCode})\n\n${JSON.stringify(result)}`);
-        global.rates = result.rates;
+        global.ratesObj = result;
+        res.json(global.ratesObj.rates);
       });
 
   };
@@ -71,3 +73,4 @@ module.exports.loadCurrencies = () => {
   
     req.end();
   };
+

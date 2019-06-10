@@ -82,10 +82,7 @@ router.get('/', (req, res, next) => {
             rep["name"] = row.name;
             rep["currency"] = row.currency;
             // calc exchange rate
-            var rate = global.rates[row.currency];
-            if (row.currency == 'EUR') {
-              rate = 1;
-            }
+            var rate = global.ratesObj.rates[row.currency];
             rep["divCum30yEUR"] = utils.roundDec10_2(rep.divCum30y / rate);
             rep["divIn30yEUR"] = utils.roundDec10_2(rep.divIn30y / rate);
             resLst.push(rep);
