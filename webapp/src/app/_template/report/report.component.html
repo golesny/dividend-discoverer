@@ -8,11 +8,8 @@
     <th scope="col">Div<br>inc</th>
     <th scope="col">Div<br>eq</th>
     <th scope="col">Div<br>dec</th>
-    <th scope="col">Div Inc%<br>avg</th>
-    <th scope="col">Div Inc%<br>5y avg</th>
-    <th scope="col">Div Inc%<br>10y avg</th>
-    <th scope="col">Div Inc%<br>15y avg</th>
-    <th scope="col">Div<br>pessimistic</th>
+    <th scope="col">Div Inc%</th>
+    <th scope="col">Div<br>estimated</th>
   </tr>
   </thead>
   <tbody>
@@ -22,7 +19,7 @@
         <button [routerLink]="['/dividend/',stock.isin, stock.name, stock.currency]"><span class="oi oi-bar-chart"></span></button>
         <button (click)="refreshReport(stock.isin)"><span class="oi oi-reload"></span></button>
     </td>
-    <td>{{stock.name}}<span class="small"><br>{{stock.isin}} / {{stock.currency}}</span></td>
+    <td>{{stock.name}}<span class="small"><br>{{stock.isin}}</span></td>
     <td>{{stock.divIn30yEUR | number:'.2'}} <span class="small">EUR</span>
         <div *ngIf="stock.currency != 'EUR'" class="small">{{stock.divIn30y | number:'.2'}} {{stock.currency}}</div>
     </td>
@@ -32,11 +29,14 @@
     <td>{{stock.div_increases}}</td>
     <td>{{stock.div_equal}}</td>
     <td>{{stock.div_decreases}}</td>
-    <td>{{stock.div_avg}}%</td>
-    <td>{{stock.div_5_avg}}%</td>
-    <td>{{stock.div_10_avg}}%</td>
-    <td>{{stock.div_15_avg}}%</td>
-    <td>{{stock.div_pessimistic}}%</td>
+    <td>
+      <span class="dividendlbl">All: </span> <span class="dividendval">{{stock.div_avg}}%</span><br>
+      <span class="dividendlbl">5y: </span> <span class="dividendval">{{stock.div_5_avg}}%</span><br>
+      <span class="dividendlbl">10y: </span> <span class="dividendval">{{stock.div_10_avg}}%</span><br>
+      <span class="dividendlbl">15y: </span> <span class="dividendval">{{stock.div_15_avg}}%</span></td>
+    <td>
+      <span class="dividendlbl">Pessimistic: </span> <span class="dividendval">{{stock.div_pessimistic}}%</span>
+    </td>
   </tr>
 </tbody>
 </table>
