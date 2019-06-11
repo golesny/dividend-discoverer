@@ -20,6 +20,7 @@ const path = require('path');
 const express = require('express');
 const fixerIO = require('./server/fixer_io.js');
 global.ratesObj;
+fixerIO.getExchangeRates(); // first pre-load
 
 const app = express();
 
@@ -32,27 +33,13 @@ app.set('trust proxy', true);
 app.use(express.static("webapp/dist/webapp"));
 
 // authentification of api requests
-app.use("/api", require('./server/auth.js')); 
+app.use("/api", require('./server/auth.js'));
 // business logic modules
 app.use('/api/stock', require('./server/stock.js'));
-
-/**
- * Returns the exchange rates
- */
+// Returns the exchange rates
 app.get('/api/rates', (req, res, next) => {
-  var timeInDay = Math.ceil(Date.now() / (1000 * 60 * 60 * 24));
-  var lastLoaded = 0;
-  if (global.ratesObj != undefined) {
-    lastLoaded = Math.ceil(global.ratesObj.timestamp / (60 * 60 * 24));
-  }
-  console.log("exchange rates: now="+timeInDay+ " lastLoaded="+lastLoaded);
-  if (global.ratesObj == undefined || timeInDay != lastLoaded) {
-    // load the first time or after a day make a refresh
-    fixerIO.loadCurrencies(res);
-  } else {
-    // return cached rates
-    res.json(global.ratesObj.rates);
-  }
+  var rates = fixerIO.getExchangeRates();
+  res.json(rates);
 });
 
 // Redirect the rest to /index.html (that the sub-pathes are supported)

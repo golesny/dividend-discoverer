@@ -15,43 +15,37 @@
 
 const isDevMode = (process.argv.length >= 3 && process.argv[2] == "dev");
 const config = require("../config"+(isDevMode?"":".prod")+".json");
-const util = require('util');
 const http = require('http');
 const https = require('https');
 
 /*
  * get exchange rates 
  */
-module.exports.loadCurrencies = (res) => {
-    const path = "/api/latest?access_key=" + config.FIXER_IO_ACCESS_TOKEN + "&symbols=" + config.EXCHANGE_LIST + "&format=1";
-    console.log("fixer.io GET "+path);
-    const options = {
-        host: 'data.fixer.io',
-        port: 80,
-        path: path,
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      };
+module.exports = {
+  getExchangeRates: function () {
+    if (this.updateNeeded()) {
+      const path = "/api/latest?access_key=" + config.FIXER_IO_ACCESS_TOKEN + "&symbols=" + config.EXCHANGE_LIST + "&format=1";
+      console.log("loading exchange rates");
+      const options = {
+          host: 'data.fixer.io',
+          port: 80,
+          path: path,
+          method: 'GET',
+          headers: {'Content-Type': 'application/json'}
+        };
 
-      this.getJSON(options, (statusCode, result) => {
-        console.log(`loaded currencies: (${statusCode})\n\n${JSON.stringify(result)}`);
-        global.ratesObj = result;
-        res.json(global.ratesObj.rates);
-      });
-
-  };
-
-/**
- * 
- */
-  module.exports.getJSON = (options, onResult) => {
-    console.log('rest::getJSON');
+        this.getJSON(options, (statusCode, result) => {
+          console.log(`loaded exchange rates: (${statusCode})\n${JSON.stringify(result)}`);
+          global.ratesObj = result;          
+        });
+      }
+      if (global.ratesObj != undefined) {
+        return global.ratesObj.rates;
+      }
+    },
+  getJSON: function (options, onResult) {
     const port = options.port == 443 ? https : http;
-  
     let output = '';
-  
     const req = port.request(options, (res) => {
       console.log(`${options.host} : ${res.statusCode}`);
       res.setEncoding('utf8');
@@ -69,8 +63,24 @@ module.exports.loadCurrencies = (res) => {
   
     req.on('error', (err) => {
       // res.send('error: ' + err.message);
+      console.error("Could not load: "+err.message);
     });
   
     req.end();
-  };
-
+  },
+  updateNeeded: function() {
+    // update exchange rates
+    var timeInDay = Math.ceil(Date.now() / (1000 * 60 * 60 * 24));
+    var lastLoaded = 0;
+    if (global.ratesObj != undefined) {
+      lastLoaded = Math.ceil(global.ratesObj.timestamp / (60 * 60 * 24));
+    }
+    if (global.ratesObj == undefined || timeInDay != lastLoaded) {
+      console.log("exchange rates: update needed. now="+timeInDay+ " lastLoaded="+lastLoaded);
+      // load the first time or after a day make a refresh
+      return true;
+    }
+    console.debug("exchange rates: using cached. now="+timeInDay+ " lastLoaded="+lastLoaded);
+    return false;
+  }
+}

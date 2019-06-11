@@ -7,5 +7,5 @@
     "SQL_DATABASE": "stock",
     "SQL_USE_UNIXSOCKET": true // false for tcp connection, true for GCP connection
     "FIXER_IO_ACCESS_TOKEN": "a1b2....",
-    "EXCHANGE_LIST": "EUR,USD,AUD,CAD,SKR,CHF,DKK,GBP"
+    "EXCHANGE_LIST": "EUR,USD,AUD,CAD,SKR,CHF,DKK,GBP,SEK"
 }

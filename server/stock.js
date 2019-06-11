@@ -17,6 +17,7 @@ const isDevMode = (process.argv.length >= 3 && process.argv[2] == "dev");
 const config = require("../config"+(isDevMode?"":".prod")+".json");
 const util = require('util');
 const utils = require("./utils");
+const fixer_io = require("./fixer_io");
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -61,6 +62,7 @@ const db = connect();
 router.get('/', (req, res, next) => {
     // prepare report
     console.log("preparing reports");
+    var rates = fixer_io.getExchangeRates();
     var reports = {};
     db.select().from('report').then((repRow) => {      
       repRow.forEach((rep) => {
@@ -82,7 +84,7 @@ router.get('/', (req, res, next) => {
             rep["name"] = row.name;
             rep["currency"] = row.currency;
             // calc exchange rate
-            var rate = global.ratesObj.rates[row.currency];
+            var rate = rates[row.currency];
             rep["divCum30yEUR"] = utils.roundDec10_2(rep.divCum30y / rate);
             rep["divIn30yEUR"] = utils.roundDec10_2(rep.divIn30y / rate);
             resLst.push(rep);
