@@ -25,9 +25,9 @@ export class DataService {
 
   // api calls
 
-  refreshReport(isin: string): Observable<string> {
+  refreshReport(isin: string): Observable<any> {
     if (this.isUserLoggedIn()) {
-      return this.http.post<string>(environment.apiUrl + "/stock/report/recreate/"+isin, this.createHttpHeader());
+      return this.http.post<any>(environment.apiUrl + "/stock/report/recreate/"+isin, this.createHttpHeader());
     }
   }
 

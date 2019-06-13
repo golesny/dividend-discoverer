@@ -42,21 +42,30 @@ export class PriceFormComponent implements OnInit {
   }
   transferDividendsFromFinanzenDotNet() {
     console.log("start analysis of prices with format from finanzen.net");
+    var ignoreCount = 0;
+    var successCount = 0;
     this.inArea.split('\n').forEach(line => {
-      if (line != null && line.length > 10 && line.indexOf("**") == -1) {
+      if (line != null && line.length > 10) {
         var lineTok = line.split('\t');
-        var p:number = Number.parseFloat(lineTok[2].replace(",","."));
-        var d:Date = this.convertDateToUTC(new Date(Number.parseInt(lineTok[4]), 0));
-        var pd = new PriceDatePair(this.isin, d,  p);
+        var p:number = Number.parseFloat(lineTok[2].replace(",",".").replace("** ", ""));
+        var estimated = lineTok[2].startsWith("**");
+        console.log("estimated="+estimated+" div="+p+ " tok="+lineTok[2]);
+        // new Date(Date.UTC(myDate.getFullYear(),myDate.getMonth(), myDate.getDate()));
+        // var midnightUTCDate = new Date( dateString + 'T00:00:00Z');
+        var d = lineTok[4]+"-01-01";
+        var pd = new PriceDatePair(this.isin, d,  p, estimated);
         // search for entry
-        var sameDateEntries: PriceDatePair[] = this.prices.filter(e => this.compareDate(e.date, pd.date));
+        var sameDateEntries: PriceDatePair[] = this.prices.filter(e => e.date == pd.date && e.estimated == pd.estimated);
         if (sameDateEntries.length == 0) {
           this.prices.unshift(pd);
+          successCount++;
         } else {
           // update entries? not yet implemented
+          ignoreCount++;
         }
       }
     });
+    this.notifyService.showSuccess("Add "+successCount+" | Ignored "+ignoreCount);
     this.sortPrices();
   }
 
@@ -66,9 +75,9 @@ export class PriceFormComponent implements OnInit {
       if (line != null && line.length > 10) {
         var lineTok = line.split('\t');
         var p:number = Number.parseFloat(lineTok[2].replace(".","").replace(",","."));
-        var pd = new PriceDatePair(this.isin, this.dateString2Date(lineTok[0]),  p);
+        var pd = new PriceDatePair(this.isin, this.dateString2Date(lineTok[0]),  p, false);
         // search for entry
-        var sameDateEntries: PriceDatePair[] = this.prices.filter(e => this.compareDate(e.date, pd.date));
+        var sameDateEntries: PriceDatePair[] = this.prices.filter(e => e.date == pd.date);
         if (sameDateEntries.length == 0) {
           this.prices.unshift(pd);
         } else {
@@ -80,7 +89,7 @@ export class PriceFormComponent implements OnInit {
   }
 
   // convert german format 30.05.16 --> iso 2016-05-30
-  dateString2Date(dateString:string):Date {
+  dateString2Date(dateString:string):string {
     var dt  = dateString.split(/\.|\s/);
     var y:number = Number.parseInt(dt[2]);
     var nowY:number = Math.floor(new Date().getFullYear()/100);
@@ -89,7 +98,7 @@ export class PriceFormComponent implements OnInit {
     } else {
       y += 1900;
     }
-    return this.convertDateToUTC(new Date(y+"-"+dt[1]+"-"+dt[0]));
+    return y+"-"+dt[1]+"-"+dt[0];
   }
 
   ngOnInit() {
@@ -104,10 +113,7 @@ export class PriceFormComponent implements OnInit {
       this.title = d['title'];
       this.type = d['type'];
     });
-    this.dataService.getPricePairList(this.type, this.isin).subscribe(data =>{
-      data.forEach(r => {
-        r.date = new Date(r.date);
-      });
+    this.dataService.getPricePairList(this.type, this.isin).subscribe(data =>{      
       this.prices = data;
     },
     err => {
@@ -120,11 +126,10 @@ export class PriceFormComponent implements OnInit {
     var pricesToStore = this.prices.filter(p => !p.inDB );
     this.dataService.post(pricesToStore, this.type).subscribe(
       res => {
-        res.forEach(r => {
-          r.date = new Date(r.date);
+        res["pricepairs"].forEach(r => {
           console.log("searching for " + r.isin + " " + r.date);
           this.prices.forEach((pr) => {
-            if (this.compareDate(pr.date,r.date)) {
+            if (pr.date == r.date) {
               console.log("updating: "+pr.isin);
                pr.inDB = true;
             }
@@ -140,26 +145,14 @@ export class PriceFormComponent implements OnInit {
   }
 
   transferSinglePrice() {
-    var priceToSave = new PriceDatePair(this.isin, this.singleDat, this.price);
-    var sameDateEntries: PriceDatePair[] = this.prices.filter(e => this.compareDate(e.date, priceToSave.date));
+    var d = this.singleDat.toISOString().substr(0, 10);
+    var priceToSave = new PriceDatePair(this.isin, d, this.price, false);
+    var sameDateEntries: PriceDatePair[] = this.prices.filter(e => e.date == priceToSave.date);
     if (sameDateEntries.length == 0) {
       this.prices.unshift(priceToSave);
     } else {
       // update entries? not yet implemented
     }
-  }
-
-  compareDate(d1:Date, d2:Date):boolean {
-    if (d1.getUTCFullYear() != d2.getUTCFullYear()) {
-      return false;
-    }
-    if (d1.getUTCMonth() != d2.getUTCMonth()) {
-      return false;
-    }
-    if (d1.getUTCDay() != d2.getUTCDay()) {
-      return false;
-    }
-    return true;
   }
 
   sortPrices(): void {

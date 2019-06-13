@@ -52,9 +52,13 @@
             </thead>
             <tbody>
             <tr *ngFor="let price of prices">
-              <td>{{price.date | date: 'y-MM-dd'}}</td>
+              <td>{{price.date}}</td>
               <td>{{price.price}}</td>
-              <td><span class="oi oi-circle-check" *ngIf="price.inDB"></span></td>
+              <td>
+                <div class="oi oi-cloud" *ngIf="price.inDB"></div>&nbsp;
+                <div class="oi oi-eye" *ngIf="price.estimated == true && type == 'dividend'"></div>
+                <div class="oi oi-pulse" *ngIf="price.estimated == false && type == 'dividend'"></div>
+              </td>
               <td>{{price.deltaPercentage}} %</td>
             </tr>
             </tbody>

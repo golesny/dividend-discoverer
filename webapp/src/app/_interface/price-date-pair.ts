@@ -4,8 +4,9 @@ export class PriceDatePair {
          * isin
          */
         public isin: string,
-        public date: Date,
+        public date: string,
         public price: number,
+        public estimated: boolean,
         public inDB?: boolean,
         public deltaPercentage?: number
     ) {}

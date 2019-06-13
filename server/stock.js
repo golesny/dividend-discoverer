@@ -37,7 +37,14 @@ function connect() {
   const dbconf = {
     user: config.SQL_USER,
     password: config.SQL_PASSWORD,
-    database: config.SQL_DATABASE
+    database: config.SQL_DATABASE,
+    timezone: 'UTC',
+    typeCast: function (field, next) {
+      if (field.type == 'DATE') {
+        return field.string().substr(0,10);
+      }
+      return next();
+    }
   }
   if (config.SQL_USE_UNIXSOCKET) {
     dbconf.socketPath = `/cloudsql/${config.INSTANCE_CONNECTION_NAME}`;
@@ -45,7 +52,7 @@ function connect() {
     dbconf.host = config.INSTANCE_CONNECTION_NAME
     //dbconf.port = 3307
   }
-  const knex = Knex({
+  const knex = Knex({    
     client: 'mysql',
     connection: dbconf
   });
@@ -143,7 +150,29 @@ router.get('/isin/list', (req, res, next) => {
  * get Dividends 
  */
 router.get('/dividend/list/:isin', (req, res, next) => {
-  handleGetList("dividend", req, res);
+  var isin = req.params.isin;
+  db.raw("SELECT div1.*, div2.estimated as estimated2 FROM `dividend` div1 "+
+         "left join `dividend` div2 on div2.isin ='"+isin+"' and div1.date  = div2.date and div2.estimated = 0 " +
+         "WHERE div1.isin ='"+isin+"' " +
+         "group by div1.isin, div1.date, div1.estimated " +
+         "having div1.estimated = 0 OR estimated2 IS NULL " +
+         "order by div1.date desc")
+         .then((result) => {
+          var resLst = [];
+          result[0].forEach((entry) => {
+            entry.inDB = true;
+            if (resLst.length > 0) {
+              resLst[resLst.length-1].deltaPercentage = Math.round((resLst[resLst.length-1].price / entry.price - 1) * 10000) / 100;
+            }
+            resLst.push(entry);
+          });
+          console.log("sending dividend list, count="+resLst.length);
+          res.json(resLst); 
+        }).catch((error) => {
+          console.error(error);
+          res.status(500).send("Could not read dividend for isin "+isin);
+        });
+
 });
 /*
  * get Prices 
@@ -154,7 +183,7 @@ router.get('/price/list/:isin', (req, res, next) => {
 
 /**
  * 
- * @param {price|dividend} type 
+ * @param {price} type 
  * @param {*} req 
  * @param {*} res 
  */
@@ -197,12 +226,19 @@ function handleGetList(type, req, res) {
   });
 
   router.post('/price/create', (req, res, next) => {
-    var entity = req.body; // array of PriceDatePairs
-    console.log("creating ", util.inspect(entity, false, null, isDevMode /* enable colors */));
-    db.insert(entity).into("price").then((result) => {      
+    var priceentity = req.body; // array of PriceDatePairs
+    console.log("creating ", util.inspect(priceentity, false, null, isDevMode /* enable colors */));
+    db.insert(priceentity).into("price").then((result) => {      
       console.log("created price", result);
-      res.json(entity);
-      report.updateReportForISIN(db, entity.isin);
+      report.updateReportForISIN(db, priceentity.isin, (errormsg) => {
+        console.error(errormsg);
+        res.status(500).send(errormsg);
+      },
+      (msg, reportEntity) => {
+        console.log("report created");
+        res.json({msg: msg, report: reportEntity, pricepairs: priceentity});
+      }
+      );
     }
     ).catch((err) => {
       console.error("Could not create price", err.message);
@@ -211,12 +247,18 @@ function handleGetList(type, req, res) {
   });
 
   router.post('/dividend/create', (req, res, next) => {
-    var entity = req.body; // array of PriceDatePairs
-    console.log("creating ", util.inspect(entity, false, null, isDevMode /* enable colors */));
-    db.insert(entity).into("dividend").then((result) => {      
+    var diventities = req.body; // array of PriceDatePairs    
+    console.log("creating ", util.inspect(diventities, false, null, isDevMode /* enable colors */));
+    db.insert(diventities).into("dividend").then((result) => {      
       console.log("created dividend", result);
-      res.json(entity);
-      report.updateReportForISIN(db, entity[0].isin);
+      report.updateReportForISIN(db, diventities[0].isin, (errormsg) => {
+        console.error(errormsg);
+        res.status(500).send(errormsg);
+      },
+      (msg, reportEntity) => {
+        console.log("report created");
+        res.json({msg: msg, report:reportEntity, pricepairs: diventities});
+      });
     }
     ).catch((err) => {
       console.error("Could not create dividend", err.message);
@@ -230,7 +272,14 @@ function handleGetList(type, req, res) {
 router.post('/report/recreate/:isin', (req, res, next) => {
   var isin = req.params.isin;
   console.log("creating "+ isin);
-  report.updateReportForISIN(db, isin, res);
+  report.updateReportForISIN(db, isin, (errormsg) => {
+        console.error(errormsg);
+        res.status(500).send(errormsg);
+      },
+      (msg, reportEntity) => {
+        console.log("report created");
+        res.json({msg: msg, report: reportEntity});
+      });
 });
 
   /**

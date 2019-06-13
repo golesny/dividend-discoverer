@@ -1,7 +1,7 @@
 CREATE TABLE `isin` (
  `isin` varchar(20) NOT NULL,
  `name` varchar(50) NOT NULL,
- `currency` varchar(3) NOT NULL
+ `currency` varchar(3) NOT NULL,
  PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -9,7 +9,8 @@ CREATE TABLE `dividend` (
  `isin` varchar(20) NOT NULL,
  `date` date NOT NULL,
  `price` decimal(10,2) NOT NULL,
- PRIMARY KEY (`isin`,`date`)
+ `estimated` tinyint(1) NOT NULL,
+ PRIMARY KEY (`isin`,`date`,`estimated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `price` (
@@ -34,5 +35,6 @@ CREATE TABLE `report` (
  `div_10_avg` decimal(10,2),
  `div_15_avg` decimal(10,2),
  `div_pessimistic` decimal(10,2),
+ `div_estimated` decimal(10,2),
  PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
