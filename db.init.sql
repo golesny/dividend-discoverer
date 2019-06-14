@@ -35,7 +35,7 @@ CREATE TABLE `report` (
  `div_8_avg` decimal(10,2),
  `div_12_avg` decimal(10,2),
  `div_16_avg` decimal(10,2),
- `div_pessimistic` decimal(10,2),
+ `calcbase` float,
  `div_estimated` decimal(10,2),
  PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

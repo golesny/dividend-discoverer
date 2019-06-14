@@ -64,7 +64,7 @@ const db = connect();
 /**
  * GET /api/stock/
  *
- * Retrieve reports
+ * Returns reports
  */
 router.get('/', (req, res, next) => {
     // prepare report

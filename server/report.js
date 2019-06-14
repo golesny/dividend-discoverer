@@ -66,33 +66,29 @@ function internalCreateReportEntity(isin, rawResLst, lastPrice) {
   console.log("avg4Y="+JSON.stringify(avg4Y));
   var percentages = extractPercentages(avg4Y, diff);
   console.log("avg4Y%="+JSON.stringify(percentages));
-  //
-  //var percentages = extractPercentages(resLst);
-  var pessimisticDivAvg = calculatePessimisticMedian(percentages);
-  var avgDiv = utils.avg(percentages);
-  var avgDivForCalc = avgDiv; // only as default if we have less than 5 entries
-  avgDivForCalc = Math.min(pessimisticDivAvg, avgDivForCalc);
   // 1-4y avg
-  var avgDifs = [];
+  var avgDivs = [];
   for (let i = 0; i < percentages.length;i+=diff) {
-    avgDifs.push( percentages[i] );
-    avgDivForCalc = Math.min(percentages[i], avgDivForCalc);
+    avgDivs.push( percentages[i] );
+  }
+  var avgDiv = calculateWeightedAvg(avgDivs);
+  // 4,8,12,16
+  for (let i = 0; i < avgDivs.length && i < 4; i++) {
+    reportEntry["div_"+(i*diff+diff)+"_avg"] = utils.roundDec10_2(avgDivs[i] * 100);
+  }
+  // estimated
+  var estimatedDiv = calculateEstimatedDiv( rawResLst.filter(e => e.estimated) );
+  if ( typeof estimatedDiv != "number" ) {
+    estimatedDiv = 0.0;
+  }
+  if (estimatedDiv < avgDiv) {
+    avgDivForCalc =  (estimatedDiv * 4 + avgDiv) / 5;
+  } else {
+    avgDivForCalc = (avgDiv * 4 + estimatedDiv) / 5;
   }
   // 
   if (avgDivForCalc < 0) {
     avgDivForCalc = 0;
-  }
-  // estimated
-  var estimatedDiv = calculateEstimatedDiv( rawResLst.filter(e => e.estimated) );
-  if ( typeof estimatedDiv == "number" ) {
-    console.log("estimatedDiv="+estimatedDiv);
-    if (estimatedDiv < avgDivForCalc) {
-      avgDivForCalc = (estimatedDiv * 3 + avgDivForCalc) / 4;
-    }
-  } else {
-    estimatedDiv = 0.0;
-    // without estimation reduce calc by 25%
-    avgDivForCalc = avgDivForCalc * 0.75;
   }
   console.log("using " + avgDivForCalc + " for div calc");
   // div in 30y (=POW(1+E2;30)*D2*B2)
@@ -114,14 +110,30 @@ function internalCreateReportEntity(isin, rawResLst, lastPrice) {
   reportEntry["div_equal"] = div_equal;
   reportEntry["div_decreases"] = div_decreases;
   reportEntry["div_avg"] = utils.roundDec10_2(avgDiv * 100);
-  reportEntry["div_pessimistic"] = utils.roundDec10_2(pessimisticDivAvg * 100);
   reportEntry["div_estimated"] = utils.roundDec10_2(estimatedDiv * 100);
-  // 4,8,12,16
-  for (let i = 0; i < avgDifs.length; i++) {
-    reportEntry["div_"+(i*diff+diff)+"_avg"] = utils.roundDec10_2(avgDifs[i] * 100);
-  }
+  reportEntry["calcbase"] = avgDivForCalc;
   console.log("created report: "+JSON.stringify(reportEntry));
   return reportEntry;
+}
+
+/**
+ * First entry is higher weighted than the next one.
+ * @param {*} percentageList 
+ */
+function calculateWeightedAvg(percentageList) {
+  console.log("calculateWeightedAvg: "+JSON.stringify(percentageList));
+  if (percentageList == undefined || percentageList.length == 0) {
+    return 0.0;
+  }
+  var weightFactor = percentageList.length + 1;
+  var weightedResult = 0;
+  var count = 0;
+  for (let i = 0; i < percentageList.length; i++) {
+    weightedResult += (weightFactor * percentageList[i]);
+    count += weightFactor--;
+  }
+  console.log("calculateWeightedAvg: "+weightedResult+" / "+count);
+  return weightedResult / count;
 }
 
 function countIncDecEq(resLst, div_equal, div_increases, div_decreases) {
@@ -230,6 +242,10 @@ function calculatePessimisticMedian(percentages) {
   for (let i = minEdge; i < maxEdge; i++) {
     sum += valArr[i];
     count += countArr[i];
+  }
+  if ( count == 0 && minEdge >= 0) {
+    sum = valArr[minEdge];
+    count = 1;
   }
   var pessAvg = sum / count;
   // debug output
