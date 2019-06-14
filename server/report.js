@@ -84,12 +84,13 @@ function internalCreateReportEntity(isin, rawResLst, lastPrice) {
   }
   // estimated
   var estimatedDiv = calculateEstimatedDiv( rawResLst.filter(e => e.estimated) );
-  if (estimatedDiv != undefined) {
+  if ( typeof estimatedDiv == "number" ) {
+    console.log("estimatedDiv="+estimatedDiv);
     if (estimatedDiv < avgDivForCalc) {
       avgDivForCalc = (estimatedDiv * 3 + avgDivForCalc) / 4;
     }
   } else {
-    estimatedDiv = 0;
+    estimatedDiv = 0.0;
     // without estimation reduce calc by 25%
     avgDivForCalc = avgDivForCalc * 0.75;
   }
@@ -146,7 +147,7 @@ function extractPercentages(resLst, diff) {
     const thisY = resLst[i];
     const prevY = resLst[i + diff];
     // add percentage      
-    if (prevY.price != 0) {
+    if (prevY != 0) {
       var percentage = Math.pow(thisY / prevY, 1 / diff) - 1;
       percentages.push(percentage);
     } else {
@@ -188,6 +189,9 @@ function calculateAvgDividends(list, size) {
 
 function calculatePessimisticMedian(percentages) {
   console.log("calculatePessimisticMedian");
+  if (percentages == undefined || percentages.length == 0) {
+    return 0.0;
+  }
   var edges    = [-99999999, -1.00, -0.60, -0.45, -0.30, -0.15, -0.02, 0.02, 0.15, 0.30, 0.45, 0.60, 1.0, 99999999];
   var countArr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
   var valArr   = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
