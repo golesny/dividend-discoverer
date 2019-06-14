@@ -104,13 +104,13 @@ router.get('/', (req, res, next) => {
       console.log("sending report list, count="+resLst.length);
       res.json(resLst);
     }).catch((error) => {
-      console.error(error);
+      console.trace(error);
       res.status(500).send("Could not read isin");
     });
 
 
     }).catch((err) => {
-      console.error(err);
+      console.trace(err);
       res.status(500).send("Could not read reports");
     });
     
@@ -141,7 +141,7 @@ router.get('/isin/list', (req, res, next) => {
     console.log("sending isin list, count="+isinList.length);
     res.json(isinList);
   }).catch((error) => {
-    console.error(error);
+    console.trace(error);
     res.status(500).send("Could not read isin");
   });
 });
@@ -169,7 +169,7 @@ router.get('/dividend/list/:isin', (req, res, next) => {
           console.log("sending dividend list, count="+resLst.length);
           res.json(resLst); 
         }).catch((error) => {
-          console.error(error);
+          console.trace(error);
           res.status(500).send("Could not read dividend for isin "+isin);
         });
 
@@ -230,9 +230,12 @@ function handleGetList(type, req, res) {
     var priceentity = req.body; // array of PriceDatePairs
     var currency = req.params.currency;
     console.log("creating ", util.inspect(priceentity, false, null, isDevMode /* enable colors */));
+    for (let i = 0; i < priceentity.length; i++) {
+      delete priceentity[i]["estimated"];
+    }
     db.insert(priceentity).into("price").then((result) => {      
       console.log("created price", result);
-      report.updateReportForISIN(db, priceentity.isin, currency, (errormsg) => {
+      report.updateReportForISIN(db, priceentity[0].isin, currency, (errormsg) => {
         console.error(errormsg);
         res.status(500).send(errormsg);
       },

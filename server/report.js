@@ -42,8 +42,12 @@ function internalReportUpdate(db, isin, currency, lastPrice, callbackError, call
             callbackSuccess("report created for "+isin, reportEntry);            
           }).catch((err2) => { callbackError("Could not insert the report for isin "+isin+". "+err2.message) });
       })
-      .catch((err) => { callbackError("Could not delete old report for isin "+isin+". "+err.message) });    
-  }).catch((error) => { callbackError("Could not update the report for isin "+isin+". "+error.message) });
+      .catch((err) => { 
+        console.trace(err.message);
+        callbackError("Could not delete old report for isin "+isin+". "+err.message) });    
+  }).catch((error) => {
+    console.trace(error.message);
+    callbackError("Could not update the report for isin "+isin+". "+error.message) });
 }
 
 function internalCreateReportEntity(isin, rawResLst, lastPrice) { 
