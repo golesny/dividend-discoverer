@@ -175,7 +175,7 @@ function calculateEstimatedDiv(resLstEstimated) {
 
 function calculateAvgDividends(list, size) {
   var avgDivs = [];
-  for (let i = 0; i < list.length - size; i++) {
+  for (let i = 0; i < list.length - size + 1; i++) {
     var val = 0;
     //console.log("avgDiv: i="+i);
     for (let j = i; j < i + size; j++) {
