@@ -35,8 +35,8 @@ export class ReportComponent implements OnInit {
       );
   }
 
-  refreshReport(isin: string) {
-    this.dataService.refreshReport(isin).subscribe(
+  refreshReport(isin: string, currency: string) {
+    this.dataService.refreshReport(isin, currency).subscribe(
       data => {
         console.log("data="+JSON.stringify(data));
         this.notifyService.showSuccess(data["msg"]);

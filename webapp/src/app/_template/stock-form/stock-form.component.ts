@@ -57,7 +57,7 @@ export class StockFormComponent {
   onSubmit() {
     console.log("creating new isin");
 
-    return this.dataService.post(this.model, "isin").subscribe(
+    return this.dataService.post(this.model, "isin", this.model.currency).subscribe(
         data => {
           this.notifyService.showSuccess("ISIN created: " + data.isin);
           // the complete list is resend
@@ -71,8 +71,8 @@ export class StockFormComponent {
     );
   }
 
-  refreshReport(isin: string) {
-    this.dataService.refreshReport(isin).subscribe(
+  refreshReport(isin: string, currency: string) {
+    this.dataService.refreshReport(isin, currency).subscribe(
       data => {
         console.log("data="+JSON.stringify(data));
         this.notifyService.showSuccess(data["msg"]);

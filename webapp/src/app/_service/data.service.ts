@@ -25,9 +25,9 @@ export class DataService {
 
   // api calls
 
-  refreshReport(isin: string): Observable<any> {
+  refreshReport(isin: string, currency: string): Observable<any> {
     if (this.isUserLoggedIn()) {
-      return this.http.post<any>(environment.apiUrl + "/stock/report/recreate/"+isin, this.createHttpHeader());
+      return this.http.post<any>(environment.apiUrl + "/stock/report/recreate/"+isin+"/"+currency, this.createHttpHeader());
     }
   }
 
@@ -61,10 +61,10 @@ export class DataService {
   }
 
   // create
-  post<T>(entity: T, entityName: string): Observable<T> {
+  post<T>(entity: T, entityName: string, currency: string): Observable<T> {
       if (this.isUserLoggedIn()) {
         console.log("posting", entityName, JSON.stringify(entity));
-        return this.http.post<T>(environment.apiUrl + "/stock/"+entityName+"/create", JSON.stringify(entity), this.createHttpHeader());
+        return this.http.post<T>(environment.apiUrl + "/stock/"+entityName+"/create/"+currency, JSON.stringify(entity), this.createHttpHeader());
       }
   }
 

@@ -31,9 +31,10 @@ CREATE TABLE `report` (
  `div_equal` decimal(10,2),
  `div_decreases` decimal(10,2),
  `div_avg` decimal(10,2),
- `div_5_avg` decimal(10,2),
- `div_10_avg` decimal(10,2),
- `div_15_avg` decimal(10,2),
+ `div_4_avg` decimal(10,2),
+ `div_8_avg` decimal(10,2),
+ `div_12_avg` decimal(10,2),
+ `div_16_avg` decimal(10,2),
  `div_pessimistic` decimal(10,2),
  `div_estimated` decimal(10,2),
  PRIMARY KEY (`isin`)

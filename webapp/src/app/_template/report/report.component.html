@@ -8,8 +8,8 @@
     <th scope="col">Div<br>inc</th>
     <th scope="col">Div<br>eq</th>
     <th scope="col">Div<br>dec</th>
-    <th scope="col">Div Inc%</th>
-    <th scope="col">Div<br>estimated</th>
+    <th scope="col">Div<br>periods</th>
+    <th scope="col">Div</th>
   </tr>
   </thead>
   <tbody>
@@ -17,7 +17,7 @@
     <td>
         <button [routerLink]="['/price/',stock.isin, stock.name, stock.currency]"><span class="oi oi-dollar"></span></button>
         <button [routerLink]="['/dividend/',stock.isin, stock.name, stock.currency]"><span class="oi oi-bar-chart"></span></button>
-        <button (click)="refreshReport(stock.isin)"><span class="oi oi-reload"></span></button>
+        <button (click)="refreshReport(stock.isin, stock.currency)"><span class="oi oi-reload"></span></button>
     </td>
     <td>{{stock.name}}<span class="small"><br>{{stock.isin}}</span></td>
     <td>{{stock.divIn30yEUR | number:'.2'}} <span class="small">EUR</span>
@@ -29,12 +29,14 @@
     <td>{{stock.div_increases}}</td>
     <td>{{stock.div_equal}}</td>
     <td>{{stock.div_decreases}}</td>
+    <td>      
+      <span class="dividendlbl">1-4: </span> <span class="dividendval">{{stock.div_4_avg}}%</span><br>
+      <span class="dividendlbl">5-8: </span> <span class="dividendval">{{stock.div_8_avg}}%</span><br>
+      <span class="dividendlbl">9-12: </span> <span class="dividendval">{{stock.div_12_avg}}%</span><br>
+      <span class="dividendlbl">13-16: </span> <span class="dividendval">{{stock.div_16_avg}}%</span>
+    </td>
     <td>
-      <span class="dividendlbl">All: </span> <span class="dividendval">{{stock.div_avg}}%</span><br>
-      <span class="dividendlbl">5y: </span> <span class="dividendval">{{stock.div_5_avg}}%</span><br>
-      <span class="dividendlbl">10y: </span> <span class="dividendval">{{stock.div_10_avg}}%</span><br>
-      <span class="dividendlbl">15y: </span> <span class="dividendval">{{stock.div_15_avg}}%</span></td>
-    <td>
+      <span class="dividendlbl">Total: </span> <span class="dividendval">{{stock.div_avg}}%</span><br>
       <span class="dividendlbl">Pessimistic: </span> <span class="dividendval">{{stock.div_pessimistic}}%</span><br>
       <span class="dividendlbl">Estimated: </span> <span class="dividendval">{{stock.div_estimated}}%</span><br>
     </td>

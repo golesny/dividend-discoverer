@@ -207,9 +207,10 @@ function handleGetList(type, req, res) {
 }
 
 /**
- * create new ISIN
+ * create new ISIN.
+ * currency is not used, it's just for same api to other create urls 
  */
-  router.post('/isin/create', (req, res, next) => {
+  router.post('/isin/create/:currency', (req, res, next) => {
     var entity = req.body;
     // trim isin
     entity.isin = entity.isin.trim();
@@ -225,12 +226,13 @@ function handleGetList(type, req, res) {
     });
   });
 
-  router.post('/price/create', (req, res, next) => {
+  router.post('/price/create/:currency', (req, res, next) => {
     var priceentity = req.body; // array of PriceDatePairs
+    var currency = req.params.currency;
     console.log("creating ", util.inspect(priceentity, false, null, isDevMode /* enable colors */));
     db.insert(priceentity).into("price").then((result) => {      
       console.log("created price", result);
-      report.updateReportForISIN(db, priceentity.isin, (errormsg) => {
+      report.updateReportForISIN(db, priceentity.isin, currency, (errormsg) => {
         console.error(errormsg);
         res.status(500).send(errormsg);
       },
@@ -246,12 +248,13 @@ function handleGetList(type, req, res) {
     });
   });
 
-  router.post('/dividend/create', (req, res, next) => {
-    var diventities = req.body; // array of PriceDatePairs    
+  router.post('/dividend/create/:currency', (req, res, next) => {
+    var diventities = req.body; // array of PriceDatePairs
+    var currency = req.params.currency;
     console.log("creating ", util.inspect(diventities, false, null, isDevMode /* enable colors */));
     db.insert(diventities).into("dividend").then((result) => {      
       console.log("created dividend", result);
-      report.updateReportForISIN(db, diventities[0].isin, (errormsg) => {
+      report.updateReportForISIN(db, diventities[0].isin, currency, (errormsg) => {
         console.error(errormsg);
         res.status(500).send(errormsg);
       },
@@ -269,10 +272,11 @@ function handleGetList(type, req, res) {
   /**
  * create new Report
  */
-router.post('/report/recreate/:isin', (req, res, next) => {
+router.post('/report/recreate/:isin/:currency', (req, res, next) => {
   var isin = req.params.isin;
+  var currency = req.params.currency;
   console.log("creating "+ isin);
-  report.updateReportForISIN(db, isin, (errormsg) => {
+  report.updateReportForISIN(db, isin, currency, (errormsg) => {
         console.error(errormsg);
         res.status(500).send(errormsg);
       },
