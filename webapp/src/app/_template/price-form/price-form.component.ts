@@ -21,6 +21,7 @@ export class PriceFormComponent implements OnInit {
   type: string;
   singleDat: Date;
   price: number;
+  estimated: string;
 
   constructor(private route:  ActivatedRoute,
               private dataService: DataService,
@@ -147,7 +148,7 @@ export class PriceFormComponent implements OnInit {
   transferSinglePrice() {
     var d = this.singleDat.toISOString().substr(0, 10);
     var p:number = Number.parseFloat(this.price.toString().replace(",","."));
-    var priceToSave = new PriceDatePair(this.isin, d, p, false);
+    var priceToSave = new PriceDatePair(this.isin, d, p, "estimated" === this.estimated);
     var sameDateEntries: PriceDatePair[] = this.prices.filter(e => e.date == priceToSave.date);
     if (sameDateEntries.length == 0) {
       this.prices.unshift(priceToSave);

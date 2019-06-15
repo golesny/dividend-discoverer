@@ -24,11 +24,11 @@
             <div class="input-group-append">
               <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"><span class="oi oi-calendar"></span></button>
             </div>
-            
         </div>
+
         <div class="input-group" style="margin: 5px;">            
             <input type="number" class="form-control" id="price" name="price" [(ngModel)]="price"
-                    placeholder="price" aria-label="price" aria-describedby="pricelabel" required>
+                    placeholder="{{type}}" aria-label="price" aria-describedby="pricelabel" required>
             <div class="input-group-append">
               <span class="input-group-text" id="pricelabel" style="font-size: 80%;">
                 <span *ngIf="type=='dividend'">{{currency}}</span>
@@ -36,6 +36,19 @@
               </span>
             </div>
         </div>
+
+        <div class="input-group" style="margin: 5px;" *ngIf="type == 'dividend'">
+          <select class="form-control" id="estimated" name="estimated" [(ngModel)]="estimated" required>
+            <option value=""></option>
+            <option value="estimated">Estimated</option>
+          </select>
+          <div class="input-group-append">
+            <span class="input-group-text" id="estimatedlabel" style="width: 40px;">
+              <span class="oi oi-eye"></span>
+            </span>
+          </div>
+      </div>
+        
         <button (click)="transferSinglePrice()"><span class="oi oi-share"></span></button>
       </div>
       <div class="col-md-8">

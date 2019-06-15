@@ -21,11 +21,19 @@
 
     <div class="input-group" style="margin: 5px;">
         <div class="input-group-prepend">
-          <span class="input-group-text" id="basic-addon2" style="width:40px"><span class="oi oi-dollar" style="padding-left: 5px"></span></span>
+          <span class="input-group-text" id="basic-addon2" style="width:40px; text-align: center"><span class="oi oi-dollar"></span></span>
         </div>
         <select class="form-control" id="currency" name="currency" [(ngModel)]="model.currency" style="width: 100px" required>
             <option *ngFor="let currs of currencies | keyvalue" [value]="currs.key">{{currs.key}}</option>
         </select>
+    </div>
+
+    <div class="input-group" style="margin: 5px;">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon3" style="width:40px; text-align: center"><span class="oi oi-beaker"></span></span>
+      </div>
+      <input type="text" class="form-control" name="sector" [(ngModel)]="model.sector"
+             placeholder="Sector" aria-label="Sector" aria-describedby="basic-addon3" required>
     </div>
 
     <button type="submit" class="btn btn-success">Add</button>
@@ -40,6 +48,7 @@
   <th scope="col"></th>
   <th scope="col">Name</th>
   <th scope="col">ISIN</th>
+  <th scope="col">Sector</th>
   <th scope="col">Currency</th>
   <th scope="col">Latest Price|Div</th>
 </tr>
@@ -56,6 +65,7 @@
   </td>
   <td>{{isin.name}}</td>
   <td>{{isin.isin}}</td>
+  <td>{{isin.sector}}</td>
   <td>{{isin.currency}}</td>
   <td>{{isin.latest_price}} | {{isin.latest_div}}</td>
 </tr>

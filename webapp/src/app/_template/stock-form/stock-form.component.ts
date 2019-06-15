@@ -25,7 +25,7 @@ export class StockFormComponent {
   }
 
   resetISIN() {
-    this.model = new ISIN('', '', "EUR");
+    this.model = new ISIN('', '', "EUR", "");
   }
 
   loadISINList() : void {

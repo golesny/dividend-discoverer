@@ -5,6 +5,7 @@ export class ISIN {
       public isin: string,
       public name: string,
       public currency: string,
+      public sector: string,
       public updated_ts?: Date,
       public report_count?: number
       ) {
