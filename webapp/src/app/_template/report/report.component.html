@@ -19,7 +19,7 @@
         <button [routerLink]="['/dividend/',stock.isin, stock.name, stock.currency]"><span class="oi oi-bar-chart"></span></button>
         <button (click)="refreshReport(stock.isin, stock.currency)"><span class="oi oi-reload"></span></button>
     </td>
-    <td>{{stock.name}}<span class="small"><br>{{stock.isin}}</span></td>
+    <td>{{stock.name}}<span class="small"><br>{{stock.isin}} | {{stock.sector}}</span></td>
     <td>{{stock.divIn30yEUR | number:'.2'}} <span class="small">EUR</span>
         <div *ngIf="stock.currency != 'EUR'" class="small">{{stock.divIn30y | number:'.2'}} {{stock.currency}}</div>
     </td>

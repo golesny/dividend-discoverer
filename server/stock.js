@@ -90,6 +90,7 @@ router.get('/', (req, res, next) => {
           if (rep != undefined) {
             rep["name"] = row.name;
             rep["currency"] = row.currency;
+            rep["sector"] = row.sector;
             // calc exchange rate
             var rate = rates[row.currency];
             rep["divCum30yEUR"] = utils.roundDec10_2(rep.divCum30y / rate);

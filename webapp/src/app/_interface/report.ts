@@ -1,8 +1,6 @@
+import { ISIN } from './isin';
 
-export interface Report {
-    isin: string;
-    name: string;
-    currency: string;
+export interface Report extends ISIN {
     divIn30y: number;
     divCum30y: number;
     divIn30yEUR: number;
