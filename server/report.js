@@ -43,10 +43,10 @@ function internalReportUpdate(db, isin, currency, lastPrice, callbackError, call
           }).catch((err2) => { callbackError("Could not insert the report for isin "+isin+". "+err2.message) });
       })
       .catch((err) => { 
-        console.trace(err.message);
+        console.log(err.message);
         callbackError("Could not delete old report for isin "+isin+". "+err.message) });    
   }).catch((error) => {
-    console.trace(error.message);
+    console.log(error.message);
     callbackError("Could not update the report for isin "+isin+". "+error.message) });
 }
 
@@ -94,13 +94,19 @@ function internalCreateReportEntity(isin, rawResLst, lastPrice) {
   // div in 30y (=POW(1+E2;30)*D2*B2)
   var countStocks = Math.round(10000 / lastPrice);
   console.log("countStocks for 10000EUR="+countStocks);
-  var divIn30y = Math.round(Math.pow(1 + avgDivForCalc, 30) * resLst[0].price * countStocks);
+  var lastdividend = 0;
+  if (resLst.length > 0) {
+    lastdividend = resLst[0].price;
+    console.log("resLst[0].price="+lastPrice);
+  } else {
+    console.log("resLst[0].price not available. using 0.0");
+  }
+  var divIn30y = Math.round(Math.pow(1 + avgDivForCalc, 30) * lastdividend * countStocks);
   divIn30y = utils.roundDec10_2(divIn30y);
   // div Cum 30y cum =B2*D2*(POW(1+E2;30)-1)/(E2)
-  console.log("resLst[0].price="+resLst[0].price);
   var divCum30y = 0;
   if (avgDivForCalc > 0) {
-    divCum30y = Math.round(resLst[0].price * countStocks * (Math.pow(1 + avgDivForCalc, 30) - 1) / avgDivForCalc);
+    divCum30y = Math.round(lastdividend * countStocks * (Math.pow(1 + avgDivForCalc, 30) - 1) / avgDivForCalc);
     divCum30y = utils.roundDec10_2(divCum30y);
   }
   // insert new data
