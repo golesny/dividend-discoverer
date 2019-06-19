@@ -9,6 +9,7 @@ import { SocialUser } from "angularx-social-login";
 import { ISIN } from '../_interface/isin';
 import { ToastrService } from 'ngx-toastr';
 import { PriceDatePair } from '../_interface/price-date-pair';
+import { Portfolio } from '../_interface/portfolio';
 
 
 @Injectable({
@@ -73,6 +74,13 @@ export class DataService {
         console.log("posting", entityName, JSON.stringify(entity));
         return this.http.post<T>(environment.apiUrl + "/stock/"+entityName+"/create/"+currency, JSON.stringify(entity), this.createHttpHeader());
       }
+  }
+
+  getPortfolio(): Observable<Portfolio[]> {
+    if (this.isUserLoggedIn()) {
+      return this.http.get<Portfolio[]>(environment.apiUrl + "/portfolio", this.createHttpHeader());
+    }
+    return null;
   }
 
   // --------------- auth ------------------

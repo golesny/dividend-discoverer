@@ -18,6 +18,8 @@ import { ReportComponent } from './_template/report/report.component';
 import { DataService } from './_service/data.service';
 import { AppRoutingModule } from './app-routing.module';
 import { environment } from 'src/environments/environment';
+import { PortfolioComponent } from './_form/portfolio/portfolio.component';
+import { TransactionsComponent } from './_form/transactions/transactions.component';
  
 let config = new AuthServiceConfig([
   {
@@ -35,7 +37,9 @@ export function provideConfig() {
     AppComponent,
     StockFormComponent,
     PriceFormComponent,
-    ReportComponent
+    ReportComponent,
+    PortfolioComponent,
+    TransactionsComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,42 @@
+<h3>Add Portfolio transactions</h3>
+
+<div class="container" style="padding: 5px">
+  <form (ngSubmit)="onSubmit()" #isinForm="ngForm">
+
+    <div class="input-group" style="margin: 5px;">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon2" style="width:40px;"><span class="oi oi-info" style="padding-left: 5px"></span></span>
+        </div>
+        <input type="text" class="form-control" name="isin" [(ngModel)]="model.isin"
+               placeholder="ISIN" aria-label="ISIN" aria-describedby="basic-addon2" required>
+    </div>
+
+    <div class="input-group" style="margin: 5px;">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1" style="width:40px"><span class="oi oi-briefcase"></span></span>
+      </div>
+      <input type="number" class="form-control" id="amount" name="amount" [(ngModel)]="model.amount"
+              placeholder="Amount" aria-label="amount" aria-describedby="basic-addon1" required>
+    </div>
+
+    <div class="input-group" style="margin: 5px;">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon2" style="width:40px"><span class="oi oi-briefcase"></span></span>
+      </div>
+      <input type="number" class="form-control" id="pricetotal" name="pricetotal" [(ngModel)]="model.pricetotal"
+              placeholder="Price total" aria-label="pricetotal" aria-describedby="basic-addon2" required>
+    </div>
+
+    <div class="input-group" style="margin: 5px;">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon3" style="width:40px; text-align: center"><span class="oi oi-beaker"></span></span>
+      </div>
+      <input type="text" class="form-control" name="sector" [(ngModel)]="model.sector"
+             placeholder="Sector" aria-label="Sector" aria-describedby="basic-addon3" required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Add</button>
+
+  </form>
+</div>
+

@@ -27,39 +27,7 @@ router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-// db
-const Knex = require("knex");
-
 const report = require("./report");
-
-function connect() {
-  console.log("connecting to db "+config.SQL_DATABASE);
-  const dbconf = {
-    user: config.SQL_USER,
-    password: config.SQL_PASSWORD,
-    database: config.SQL_DATABASE,
-    timezone: 'UTC',
-    typeCast: function (field, next) {
-      if (field.type == 'DATE') {
-        return field.string().substr(0,10);
-      }
-      return next();
-    }
-  }
-  if (config.SQL_USE_UNIXSOCKET) {
-    dbconf.socketPath = `/cloudsql/${config.INSTANCE_CONNECTION_NAME}`;
-  } else {
-    dbconf.host = config.INSTANCE_CONNECTION_NAME
-    //dbconf.port = 3307
-  }
-  const knex = Knex({    
-    client: 'mysql',
-    connection: dbconf
-  });
-  return knex;
-}
-
-const db = connect();
     
 /**
  * GET /api/stock/
@@ -69,8 +37,9 @@ const db = connect();
 router.get('/', (req, res, next) => {
     // prepare report
     console.log("preparing reports");
+    const db = req.app.locals.db;
     var rates = fixer_io.getExchangeRates();
-    var reports = {};
+    var reports = {};    
     db.select().from('report').then((repRow) => {      
       repRow.forEach((rep) => {
         if (rep.isin != undefined) {
@@ -124,6 +93,7 @@ router.get('/', (req, res, next) => {
  * get ISINs 
  */
 router.get('/isin/list', (req, res, next) => {
+  const db = req.app.locals.db;
   // select isin.isin, isin.name, isin.currency, year(max(dividend.date)) as latest_entry from `isin`
   // left join `dividend` on isin.`isin` = dividend.`isin`
   //group by isin
@@ -152,6 +122,7 @@ router.get('/isin/list', (req, res, next) => {
  */
 router.get('/dividend/list/:isin', (req, res, next) => {
   var isin = req.params.isin;
+  const db = req.app.locals.db;
   db.raw("SELECT div1.*, div2.estimated as estimated2 FROM `dividend` div1 "+
          "left join `dividend` div2 on div2.isin ='"+isin+"' and div1.date  = div2.date and div2.estimated = 0 " +
          "WHERE div1.isin ='"+isin+"' " +
@@ -190,6 +161,7 @@ router.get('/price/list/:isin', (req, res, next) => {
  */
 function handleGetList(type, req, res) {
   var isin = req.params.isin;
+  const db = req.app.locals.db;
   db.select().from(type).where({"isin": isin}).orderBy('date', 'desc').then((rows) => {
     var resLst = [];
     rows.map((entry) => {
@@ -213,6 +185,7 @@ function handleGetList(type, req, res) {
  */
   router.post('/isin/create/:currency', (req, res, next) => {
     var entity = req.body;
+    const db = req.app.locals.db;
     // trim isin
     entity.isin = entity.isin.trim();
     console.log("creating ", util.inspect(entity, false, null, isDevMode /* enable colors */));
@@ -230,6 +203,7 @@ function handleGetList(type, req, res) {
   router.post('/price/create/:currency', (req, res, next) => {
     var priceentity = req.body; // array of PriceDatePairs
     var currency = req.params.currency;
+    const db = req.app.locals.db;
     console.log("creating ", util.inspect(priceentity, false, null, isDevMode /* enable colors */));
     for (let i = 0; i < priceentity.length; i++) {
       delete priceentity[i]["estimated"];
@@ -255,6 +229,7 @@ function handleGetList(type, req, res) {
   router.post('/dividend/create/:currency', (req, res, next) => {
     var diventities = req.body; // array of PriceDatePairs
     var currency = req.params.currency;
+    const db = req.app.locals.db;
     console.log("creating ", util.inspect(diventities, false, null, isDevMode /* enable colors */));
     db.insert(diventities).into("dividend").then((result) => {      
       console.log("created dividend", result);
@@ -279,6 +254,7 @@ function handleGetList(type, req, res) {
 router.post('/report/recreate/:isin/:currency', (req, res, next) => {
   var isin = req.params.isin;
   var currency = req.params.currency;
+  const db = req.app.locals.db;
   console.log("creating "+ isin);
   report.updateReportForISIN(db, isin, currency, (errormsg) => {
         console.error(errormsg);

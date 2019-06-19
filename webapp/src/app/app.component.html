@@ -11,7 +11,10 @@
       </li>
       <li class="nav-item">
           <button class="btn nav-link" routerLink="/stock-form"><span class="oi oi-briefcase"></span> Stocks</button>
-        </li>
+      </li>
+      <li class="nav-item">
+        <button class="btn nav-link" routerLink="/portfolio"><span class="oi oi-spreadsheet"></span> Portfolio</button>
+      </li>
       <li class="nav-item">
         <span class="btn nav-link"><img class="img-responsive photo" src="{{ user.photoUrl }}" height="22" *ngIf="user.photoUrl != undefined"><span class="oi oi-person" *ngIf="user.photoUrl == undefined"></span> {{ user.name }}</span>
       </li>

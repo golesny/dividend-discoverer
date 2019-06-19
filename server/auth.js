@@ -25,26 +25,27 @@ const router = express.Router();
 router.use(bodyParser.json());
 
 /**
- * GET /api/books/:id
+ * GET /api*
  *
  * Retrieve a book.
  */
 router.get('/', (req, res, next) => {
-    console.log("incoming request", req.url, req.method);
+    console.log("auth: incoming request", req.url, req.method);
     if (isDevMode) {
-        console.log("overriding oauth verification in dev mode");
+        console.log("auth: overriding oauth verification in dev mode");
+        res.locals.userid = config.adminGoogleId;
         next();
     } else {
         var authorizationToken = req.headers["authorization"];
         if (authorizationToken != null) {
-            console.log("verifying bearer token: " + authorizationToken.substr(0, 20) + "...");
+            console.log("auth: verifying bearer token: " + authorizationToken.substr(0, 20) + "...");
             // verify token
-            verify(authorizationToken).catch((err) => {
-                console.error("Could not verify user");
+            verify(authorizationToken, res).catch((err) => {
+                console.error("auth: Could not verify user");
                 res.status(403).send('Authentification failed');
                 next(err);
             }).then(() => {
-                console.log("ok, proceed with request");
+                console.log("auth: ok, proceed with request");
                 next();
             });
         } else {
@@ -55,16 +56,16 @@ router.get('/', (req, res, next) => {
 
 
 // https://developers.google.com/identity/sign-in/web/backend-auth
-async function verify(token) {
+async function verify(token, res) {
     const ticket = await client.verifyIdToken({
         idToken: token,
         audience: config.googleOAuthId
     });
     const payload = ticket.getPayload();
     const userid = payload['sub'];
-    
+    res.locals.userid = userid;
     // check in database, that user is valid
-    console.log("user logged in: "+userid);
+    console.log("auth: user logged in: "+userid);
 
     return checkUserRights(userid);
 }
@@ -72,7 +73,7 @@ async function verify(token) {
 function checkUserRights(userId) {
     if (config != null) {
         if (config.adminGoogleId == userId) {
-            console.log("user is authorized with admin Rights");
+            console.log("auth: user is authorized with admin Rights");
             return true;
         }
     }

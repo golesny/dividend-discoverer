@@ -40,3 +40,13 @@ CREATE TABLE `report` (
  `div_estimated` decimal(10,2),
  PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `portfolio` (
+  `user_id` varchar(20) NOT NULL,
+  `isin` varchar(20) NOT NULL,
+  `amount` float NOT NULL,
+  `date` date NOT NULL,
+  `pricetotal` float NOT NULL,
+  `type` char(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+COMMIT;
