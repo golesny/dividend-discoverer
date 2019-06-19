@@ -71,6 +71,10 @@ function internalCreateReportEntity(isin, rawResLst, lastPrice) {
   for (let i = 0; i < percentages.length;i+=diff) {
     avgDivs.push( percentages[i] );
   }
+  if (percentages.length % 4 == 0 && percentages.length <= 16) {
+    console.log("adding one previous value (percentages.length("+percentages.length+") % 4)="+(percentages.length % 4));
+    avgDivs.push( percentages[percentages.length - 1] );
+  }
   var avgDiv = calculateWeightedAvg(avgDivs);
   // 4,8,12,16
   for (let i = 0; i < avgDivs.length && i < 4; i++) {
@@ -193,14 +197,26 @@ function calculateEstimatedDiv(resLstEstimated) {
 
 function calculateAvgDividends(list, size) {
   var avgDivs = [];
-  for (let i = 0; i < list.length - size + 1; i++) {
+  var maxI = list.length - size + 1;
+  var lastTokenLength = list.length % 4;
+  // last token may be avg of 1 or 2 values smaller
+  var minTokenLength = size - 2;
+  if (minTokenLength < 1) {
+    minTokenLength = 1;
+  }
+  if (lastTokenLength >= minTokenLength) {
+      maxI += lastTokenLength;
+  }
+  for (let i = 0; i < maxI; i++) {
     var val = 0;
-    //console.log("avgDiv: i="+i);
-    for (let j = i; j < i + size; j++) {
-      //console.log("avgDiv: list["+j+"]="+list[j].price);
+    var count = 0;
+    //console.log("calculateAvgDividends: i="+i);
+    for (let j = i; j < i + size && j < list.length; j++) {
+      //console.log("calculateAvgDividends: list["+j+"]="+list[j].price);
       val += list[j].price;
+      count++;
     }
-    avgDivs.push( val / size );
+    avgDivs.push( val / count );
   }
   return avgDivs;
 }
