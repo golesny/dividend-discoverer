@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Report } from '../_interface/report';
 import { environment } from 'src/environments/environment';
@@ -49,6 +49,13 @@ export class DataService {
     if (this.isUserLoggedIn()) {
       console.log("dataservice:loading exchange rates");
       return this.http.get<Map<string, number>>(environment.apiUrl + "/rates", this.createHttpHeader());
+    }
+    return null;
+  }
+
+  getAlphaVantage(symbol:string): Observable<string> {
+    if (this.isUserLoggedIn()) {
+      return this.http.get<string>(environment.apiUrl + "/monthlyadjusted/"+symbol, this.createHttpHeader());
     }
     return null;
   }

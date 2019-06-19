@@ -7,5 +7,6 @@
     "SQL_DATABASE": "stock",
     "SQL_USE_UNIXSOCKET": true // false for tcp connection, true for GCP connection
     "FIXER_IO_ACCESS_TOKEN": "a1b2....",
-    "EXCHANGE_LIST": "EUR,USD,AUD,CAD,SKR,CHF,DKK,GBP,SEK,NOK"
+    "EXCHANGE_LIST": "EUR,USD,AUD,CAD,SKR,CHF,DKK,GBP,SEK,NOK",
+    "ALPHAVANTAGE_APIKEY": "get your key here: https://www.alphavantage.co/support/#api-key"
 }

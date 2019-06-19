@@ -21,6 +21,7 @@ const express = require('express');
 const fixerIO = require('./server/fixer_io.js');
 global.ratesObj;
 fixerIO.getExchangeRates(); // first pre-load
+const alphavantage = require('./server/alphavantage.js');
 
 const app = express();
 
@@ -40,6 +41,11 @@ app.use('/api/stock', require('./server/stock.js'));
 app.get('/api/rates', (req, res, next) => {
   var rates = fixerIO.getExchangeRates();
   res.json(rates);
+});
+// Returns the monthly data
+app.get('/api/monthlyadjusted/:symbol', (req, res, next) => {
+  var symbol = req.params.symbol;
+  alphavantage.getMonthlyAdjusted(symbol, res);
 });
 
 // Redirect the rest to /index.html (that the sub-pathes are supported)

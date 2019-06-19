@@ -49,9 +49,22 @@
           </div>
       </div>
         
-        <button (click)="transferSinglePrice()"><span class="oi oi-share"></span></button>
+      <button (click)="transferSinglePrice()"><span class="oi oi-share"></span></button>
+
+      <div *ngIf="type == 'dividend'">
+        <hr>
+        Alpha Vantage values<br>
+        <div class="input-group" style="margin: 5px;">            
+          <input type="text" class="form-control" id="symbol" name="symbol" [(ngModel)]="symbol"
+                  placeholder="Symbol" aria-label="symbol" aria-describedby="symbollabel" required>
+          <div class="input-group-append">
+            <span class="input-group-text" id="symbollabel" style="font-size: 80%;">Symbol</span>
+          </div>
+        </div>
+        <button (click)="getAlphaVantage()"><span class="oi oi-share"></span></button>
       </div>
-      <div class="col-md-8">
+    </div>
+    <div class="col-md-8">
           <button (click)="saveData(currency)" style="margin: 5px"><span class="oi oi-cloud-upload"></span></button>          
 
           <table class="table" style="fill: 100%">
@@ -66,7 +79,7 @@
             <tbody>
             <tr *ngFor="let price of prices">
               <td>{{price.date}}</td>
-              <td>{{price.price}}</td>
+              <td>{{price.price | number:'1.0-6'}}</td>
               <td>
                 <div class="oi oi-cloud" *ngIf="price.inDB"></div>&nbsp;
                 <div class="oi oi-eye" *ngIf="price.estimated == true && type == 'dividend'"></div>

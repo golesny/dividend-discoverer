@@ -5,7 +5,6 @@ import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from '../../_service/notify.service';
 import { NgbDateStruct, NgbDate, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 
-
 @Component({
   selector: 'app-price-form',
   templateUrl: './price-form.component.html',
@@ -22,6 +21,7 @@ export class PriceFormComponent implements OnInit {
   singleDat: Date;
   price: number;
   estimated: string;
+  symbol: string;
 
   constructor(private route:  ActivatedRoute,
               private dataService: DataService,
@@ -154,6 +154,41 @@ export class PriceFormComponent implements OnInit {
       this.prices.unshift(priceToSave);
     } else {
       // update entries? not yet implemented
+    }
+  }
+
+  getAlphaVantage() {
+    if (this.type == "dividend") {
+      this.dataService.getAlphaVantage(this.symbol).subscribe(
+        data => {
+          var ignoreCurrentYear = ""+new Date().getUTCFullYear();
+          var divMap = new Map<string, number>();
+          const timeseries = data["Monthly Adjusted Time Series"];
+          for (let mm in timeseries) {
+            var year = mm.substr(0,4);
+            if (year != ignoreCurrentYear) {
+              if (!divMap.has(year)) {
+                divMap.set(year, 0);
+              }
+              var price = Number.parseFloat(timeseries[mm]["7. dividend amount"]);
+              divMap.set(year, divMap.get(year) + price);
+            }
+          }
+          divMap.forEach((price, year) => {
+            var d = year + "-01-01";
+            var priceToSave = new PriceDatePair(this.isin, d, price, false);
+            var sameDateEntries: PriceDatePair[] = this.prices.filter(e => e.date == priceToSave.date);
+            if (sameDateEntries.length == 0) {
+              this.prices.unshift(priceToSave);
+            } else {
+              // update entries? not yet implemented
+            }
+          });
+        },
+        err =>{
+          this.notifyService.showError("error on loading from alpha vantage", err);
+        }
+      );
     }
   }
 
