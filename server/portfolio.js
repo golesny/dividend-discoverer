@@ -55,4 +55,50 @@ router.get('/', (req, res, next) => {
       ]);*/
 });
 
+/**
+ * GET /api/portfolio/transactions
+ *
+ * Returns 20 latest transactions
+ */
+router.get('/transactions', (req, res, next) => {
+  const db = req.app.locals.db;
+  var user_id = res.locals.userid;
+  db.select().from("portfolio").where({user_id:user_id}).limit(20).orderBy("date", "desc")
+     .leftJoin("isin", "isin.isin", "portfolio.isin")
+  .then((rows) => {
+    var resLst = [];
+    rows.map((entry) => {
+        delete entry.user_id;
+        console.log("transactions: "+JSON.stringify(entry));
+        resLst.push(entry);
+    });
+    res.json(resLst);
+  });
+});
+
+/**
+ * GET /api/portfolio/create
+ *
+ * Returns reports
+ */
+router.post('/create', (req, res, next) => {
+  var entity = req.body;
+  const db = req.app.locals.db;
+  var user_id = res.locals.userid;
+  // trim isin
+  entity.isin = entity.isin.trim();
+  entity["user_id"] = user_id;
+  if (entity.type == "BUY" && entity.pricetotal > 0) {
+    entity.pricetotal *= -1;
+  }
+  db.insert(entity).into("portfolio").then((result) => {      
+    console.log("created transaction", entity.isin);
+    res.json({msg:'created transaction', transaction: entity});
+  }
+  ).catch((err) => {
+    console.error("Could not create transaction", err.message);
+     res.status(500).send("Could not insert transaction");
+  });
+});
+
 module.exports = router;

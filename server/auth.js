@@ -25,17 +25,30 @@ const router = express.Router();
 router.use(bodyParser.json());
 
 /**
+ * POST authentification
+ */
+router.post('/', (req, res, next) => {
+    authenticate(req, res, next);
+});
+
+/**
  * GET /api*
  *
  * Retrieve a book.
  */
 router.get('/', (req, res, next) => {
+    authenticate(req, res, next);
+});
+
+
+function authenticate(req, res, next) {
     console.log("auth: incoming request", req.url, req.method);
     if (isDevMode) {
         console.log("auth: overriding oauth verification in dev mode");
         res.locals.userid = config.adminGoogleId;
         next();
-    } else {
+    }
+    else {
         var authorizationToken = req.headers["authorization"];
         if (authorizationToken != null) {
             console.log("auth: verifying bearer token: " + authorizationToken.substr(0, 20) + "...");
@@ -48,12 +61,12 @@ router.get('/', (req, res, next) => {
                 console.log("auth: ok, proceed with request");
                 next();
             });
-        } else {
+        }
+        else {
             res.status(403).send('Please login');
         }
     }
-  });
-
+}
 
 // https://developers.google.com/identity/sign-in/web/backend-auth
 async function verify(token, res) {

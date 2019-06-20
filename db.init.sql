@@ -42,11 +42,16 @@ CREATE TABLE `report` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `portfolio` (
-  `user_id` varchar(20) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(40) NOT NULL,
   `isin` varchar(20) NOT NULL,
   `amount` float NOT NULL,
   `date` date NOT NULL,
   `pricetotal` float NOT NULL,
-  `type` char(1) NOT NULL
+  `type` enum('BUY','SELL','DIV','CASH') NOT NULL,
+  `comment` varchar(100) NOT NULL
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 COMMIT;

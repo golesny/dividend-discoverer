@@ -13,7 +13,7 @@
 
     <div class="input-group" style="margin: 5px;">
       <div class="input-group-prepend">
-        <span class="input-group-text" id="basic-addon1" style="width:40px"><span class="oi oi-briefcase"></span></span>
+        <span class="input-group-text" id="basic-addon1" style="width:40px"><span class="oi oi-calculator"></span></span>
       </div>
       <input type="number" class="form-control" id="amount" name="amount" [(ngModel)]="model.amount"
               placeholder="Amount" aria-label="amount" aria-describedby="basic-addon1" required>
@@ -21,22 +21,59 @@
 
     <div class="input-group" style="margin: 5px;">
       <div class="input-group-prepend">
-        <span class="input-group-text" id="basic-addon2" style="width:40px"><span class="oi oi-briefcase"></span></span>
+        <span class="input-group-text" id="basic-addon2" style="width:40px"><span class="oi oi-dollar"></span></span>
       </div>
       <input type="number" class="form-control" id="pricetotal" name="pricetotal" [(ngModel)]="model.pricetotal"
               placeholder="Price total" aria-label="pricetotal" aria-describedby="basic-addon2" required>
     </div>
 
+    
     <div class="input-group" style="margin: 5px;">
       <div class="input-group-prepend">
-        <span class="input-group-text" id="basic-addon3" style="width:40px; text-align: center"><span class="oi oi-beaker"></span></span>
+        <span class="input-group-text" id="typelabel" style="width: 40px;">
+          <span class="oi oi-tag"></span>
+        </span>
       </div>
-      <input type="text" class="form-control" name="sector" [(ngModel)]="model.sector"
-             placeholder="Sector" aria-label="Sector" aria-describedby="basic-addon3" required>
+      <select class="form-control" id="type" name="type" [(ngModel)]="model.type" required>
+        <option value="BUY">Buy</option>
+        <option value="SELL">Sell</option>
+        <option value="DIV">Dividend</option>
+        <option value="CASH">Cash Input</option>
+      </select>
     </div>
 
-    <button type="submit" class="btn btn-success">Add</button>
+    <div class="input-group" style="margin: 5px;">
+      <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"><span class="oi oi-calendar"></span></button>
+      </div>
+      <input class="form-control" placeholder="yyyy-mm-dd"
+            name="date" [(ngModel)]="date" ngbDatepicker #d="ngbDatepicker">
+    </div>
+
+    <button type="submit" class="btn btn-success" style="margin: 5px;">Add</button>
 
   </form>
+
+  <h3>Last Transactions:</h3>
+  <table class="table table-striped table-bordered table-sm" style="fill: 100%">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col-lg-1">Date</th>
+        <th scope="col-lg-2">ISIN / Comment</th>
+        <th scope="col-sm-1">Amount</th>
+        <th scope="col-sm-1">Price</th>
+        <th scope="col-sm-1">Type</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let t of transactions">
+      <td>{{t.date}}</td>
+      <td>{{t.name}} <span class="small">{{t.isin}}</span><br><span class="small">{{t.comment}}</span></td>
+      <td>{{t.amount}}</td>
+      <td>{{t.pricetotal}}</td>
+      <td>{{t.type}}</td>
+    </tr>
+    </tbody>
+  </table>
 </div>
 

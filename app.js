@@ -51,11 +51,16 @@ app.get('/api/monthlyadjusted/:symbol', (req, res, next) => {
   alphavantage.getMonthlyAdjusted(symbol, res);
 });
 // Portfolio
-app.use('/api/portfolio/', require('./server/portfolio.js'));
+app.use('/api/portfolio', require('./server/portfolio.js'));
 
 // Redirect the rest to /index.html (that the sub-pathes are supported)
 app.use((req, res) => {
-  console.debug("index.html: unhandled request for url", req.url);
+  if (req.url != '/transactions' &&
+      req.url != '/report' &&
+      req.url != '/stock' &&
+      req.url != '/portfolio' ) {
+    console.warn("index.html: unhandled request for url", req.url);
+  }
   res.sendFile(path.resolve("./webapp/dist/webapp/index.html"));
 });
 

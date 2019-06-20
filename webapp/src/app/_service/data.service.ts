@@ -10,6 +10,7 @@ import { ISIN } from '../_interface/isin';
 import { ToastrService } from 'ngx-toastr';
 import { PriceDatePair } from '../_interface/price-date-pair';
 import { Portfolio } from '../_interface/portfolio';
+import { Transaction } from '../_interface/transaction';
 
 
 @Injectable({
@@ -74,6 +75,21 @@ export class DataService {
         console.log("posting", entityName, JSON.stringify(entity));
         return this.http.post<T>(environment.apiUrl + "/stock/"+entityName+"/create/"+currency, JSON.stringify(entity), this.createHttpHeader());
       }
+  }
+
+  // create
+  postTransaction(entity:Transaction): Observable<Transaction> {
+    if (this.isUserLoggedIn()) {
+      console.log("posting transaction", JSON.stringify(entity));
+      return this.http.post<Transaction>(environment.apiUrl + "/portfolio/create", JSON.stringify(entity), this.createHttpHeader());
+    }
+  }
+
+  getTransactions(): Observable<Transaction[]> {
+    if (this.isUserLoggedIn()) {
+      return this.http.get<Transaction[]>(environment.apiUrl + "/portfolio/transactions", this.createHttpHeader());
+    }
+    return null;
   }
 
   getPortfolio(): Observable<Portfolio[]> {
