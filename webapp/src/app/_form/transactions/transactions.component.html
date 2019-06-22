@@ -8,7 +8,7 @@
           <span class="input-group-text" id="basic-addon2" style="width:40px;"><span class="oi oi-info" style="padding-left: 5px"></span></span>
         </div>
         <input type="text" class="form-control" name="isin" [(ngModel)]="model.isin"
-               placeholder="ISIN" aria-label="ISIN" aria-describedby="basic-addon2" required>
+               placeholder="ISIN (optional)" aria-label="ISIN" aria-describedby="basic-addon2" required>
     </div>
 
     <div class="input-group" style="margin: 5px;">
@@ -49,6 +49,14 @@
       <input class="form-control" placeholder="yyyy-mm-dd"
             name="date" [(ngModel)]="date" ngbDatepicker #d="ngbDatepicker">
     </div>
+    
+    <div class="input-group" style="margin: 5px;">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon3" style="width:40px;"><span class="oi oi-pencil" style="padding-left: 5px"></span></span>
+      </div>
+      <input type="text" class="form-control" name="comment" [(ngModel)]="model.comment"
+             placeholder="Comment (optional)" aria-label="Comment" aria-describedby="basic-addon3">
+    </div>
 
     <button type="submit" class="btn btn-success" style="margin: 5px;">Add</button>
 
@@ -68,7 +76,7 @@
     <tbody>
     <tr *ngFor="let t of transactions">
       <td>{{t.date}}</td>
-      <td>{{t.name}} <span class="small">{{t.isin}}</span><br><span class="small">{{t.comment}}</span></td>
+      <td>{{t.name}} <span class="small">{{t.isin}}<br>{{t.comment}}</span></td>
       <td>{{t.amount}}</td>
       <td>{{t.pricetotal}}</td>
       <td>{{t.type}}</td>

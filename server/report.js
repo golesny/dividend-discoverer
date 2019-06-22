@@ -27,6 +27,9 @@ function internalReportUpdate(db, isin, currency, lastPrice, callbackError, call
       rows.map((entry) => {      
         rawResLst.push(entry);
       });
+      if (rawResLst.length == 0) {
+        callbackSuccess("report creation ignored (no dividends) for isin "+isin, {}); 
+      }
       const reportEntry = internalCreateReportEntity(isin, rawResLst, lastPrice);
       // delete old report data
       db.delete().from("report").where("isin", isin).then((r) => {

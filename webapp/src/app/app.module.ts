@@ -20,6 +20,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { environment } from 'src/environments/environment';
 import { PortfolioComponent } from './_form/portfolio/portfolio.component';
 import { TransactionsComponent } from './_form/transactions/transactions.component';
+import { registerLocaleData } from '@angular/common';
+import localeDE from '@angular/common/locales/de';
+import localeDEExtra from '@angular/common/locales/extra/de';
+
+// the second parameter 'fr' is optional
+registerLocaleData(localeDE, 'de', localeDEExtra);
  
 let config = new AuthServiceConfig([
   {

@@ -11,6 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 import { PriceDatePair } from '../_interface/price-date-pair';
 import { Portfolio } from '../_interface/portfolio';
 import { Transaction } from '../_interface/transaction';
+import { PortfolioContainer } from '../_interface/portfolio-container';
 
 
 @Injectable({
@@ -92,9 +93,9 @@ export class DataService {
     return null;
   }
 
-  getPortfolio(): Observable<Portfolio[]> {
+  getPortfolio(): Observable<PortfolioContainer> {
     if (this.isUserLoggedIn()) {
-      return this.http.get<Portfolio[]>(environment.apiUrl + "/portfolio", this.createHttpHeader());
+      return this.http.get<PortfolioContainer>(environment.apiUrl + "/portfolio", this.createHttpHeader());
     }
     return null;
   }

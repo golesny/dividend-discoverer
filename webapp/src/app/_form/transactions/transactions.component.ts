@@ -41,6 +41,7 @@ export class TransactionsComponent implements OnInit {
     this.dataService.postTransaction(this.model).subscribe(
       data => {
         this.transactions.unshift(data["transaction"]);
+        this.resetForm();
       }
     )
   }
