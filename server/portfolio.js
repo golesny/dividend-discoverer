@@ -44,15 +44,26 @@ router.get('/', (req, res, next) => {
       .then((rows) => {        
         var result = handleRowsforOverview(rows);
         db.raw("SELECT year(date) as year, sum(pricetotal) as cashinyear," +
-               "(select sum(pricetotal) FROM `portfolio` WHERE user_id  = '"+user_id+"') as currentcash " +
-               "FROM `portfolio` WHERE user_id  = '"+user_id+"' and type = 'CASH' group by year(date) order by year asc")
+               "(select sum(pricetotal) FROM `portfolio` WHERE user_id = '"+user_id+"') as currentcash " +
+               "FROM `portfolio` WHERE user_id = '"+user_id+"' and type = 'CASH' group by year(date) order by year asc")
                /*
                 * year   cashinyear    currentcash
                 * 2016   53000         3722.6696281433105
                 */
         .then((rows2) => {
           handleRowsForAnnualOverview(rows2, result);
-          res.json(result);
+          var isins = "";
+          result.overview.forEach(e => {isins += (isins.length>0?",":"")+"'"+e.isin+"'"});
+          db.raw("Select isin, EXTRACT( YEAR_MONTH FROM `date` ) as datemonth, price from `price` where isin in ("+isins+") and "+
+                 "date in ("+
+                 "  SELECT MAX(date) FROM `price` WHERE isin in ("+isins+") and date > '2018-06-01' group by EXTRACT( YEAR_MONTH FROM `date` )"+
+                 ") order by date asc")
+          .then((rows3) => {
+            handleRowsForMonthlyPrices(rows3, result);
+            //console.log("sending "+JSON.stringify(result));
+            res.json(result);
+          })
+          .catch((error) => {console.error(error);res.status(500).send("Could not read monthly prices");});
         })
         .catch((error) => {console.error(error);res.status(500).send("Could not create cash annual overview");});
       })
@@ -109,15 +120,58 @@ module.exports = router;
 
 
 function handleRowsforOverview(rows) {
+  console.log("handleRowsforOverview: start");
   var obj = {currency:'EUR', stock_sum: 0, overview: []};
   rows[0].forEach((entry) => {
-    entry["dates"] = ['2019-01', '2019-02', '2019-03', '2019-04', '2019-05'];
-    entry["values"] = [[103, 100], [150, 0.11], [130, -0.23], [130, -0.23], [130, -0.23]];
+    entry.timeseries = {};
     obj.overview.push(entry);
     // sum up each line to a total 
     obj.stock_sum += (entry.amount * entry.lastprice);
   });
   return obj;
+}
+
+function handleRowsForMonthlyPrices(rows, resObj) {
+  console.log("handleRowsForMonthlyPrices: start");
+  resObj.overview_col_headers = [];
+  // prepare col header
+  var d = new Date();
+  for (let i = 0; i < 12; i++) {
+    d.setDate(-1); // to last day of month
+    var yymmString = d.toISOString().substr(0,7).replace("-","");
+    resObj.overview_col_headers.unshift(yymmString);
+    console.log("handleRowsForMonthlyPrices: yymmString="+yymmString);
+    resObj.overview.forEach(o => {
+      o.timeseries[yymmString] = {price:0,growth:0};
+      console.log("handleRowsForMonthlyPrices:     isin="+o.isin);
+    });
+  }
+  console.log("handleRowsForMonthlyPrices: values.");
+  // values
+  rows[0].forEach((entry) => {
+    var isinRow = resObj.overview.filter(p => p.isin == entry.isin);
+    isinRow.forEach(e => {
+      if (entry.datemonth in e.timeseries) {
+        e.timeseries[entry.datemonth].price = entry.price;
+      } else {
+        console.log("handleRowsForMonthlyPrices: ignoring entry.datemonth="+entry.datemonth);
+      }
+    });
+  });
+  console.log("handleRowsForMonthlyPrices: calc growth");
+  // calculate the growth
+  for (let i = 1; i < resObj.overview_col_headers.length; i++) {
+    const currYYMM = resObj.overview_col_headers[i];
+    const prevYYMM = resObj.overview_col_headers[i-1];
+    resObj.overview.forEach(entry => {
+      const currPrice = entry.timeseries[currYYMM].price;
+      const prevPrice = entry.timeseries[prevYYMM].price;
+      if (prevPrice > 0) {
+        entry.timeseries[currYYMM].growth = currPrice / prevPrice - 1;
+      }
+    });
+  }
+  console.log("handleRowsForMonthlyPrices: end");
 }
 
 /**

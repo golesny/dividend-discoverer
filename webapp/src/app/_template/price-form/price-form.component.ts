@@ -158,12 +158,12 @@ export class PriceFormComponent implements OnInit {
   }
 
   getAlphaVantage() {
-    if (this.type == "dividend") {
-      this.dataService.getAlphaVantage(this.symbol).subscribe(
-        data => {
-          var ignoreCurrentYear = ""+new Date().getUTCFullYear();
-          var divMap = new Map<string, number>();
-          const timeseries = data["Monthly Adjusted Time Series"];
+    this.dataService.getAlphaVantage(this.symbol).subscribe(
+      data => {
+        var ignoreCurrentYear = ""+new Date().getUTCFullYear();
+        var divMap = new Map<string, number>();
+        const timeseries = data["Monthly Adjusted Time Series"];
+        if (this.type == "dividend") {
           for (let mm in timeseries) {
             var year = mm.substr(0,4);
             if (year != ignoreCurrentYear) {
@@ -177,19 +177,39 @@ export class PriceFormComponent implements OnInit {
           divMap.forEach((price, year) => {
             var d = year + "-01-01";
             var priceToSave = new PriceDatePair(this.isin, d, price, false);
-            var sameDateEntries: PriceDatePair[] = this.prices.filter(e => e.date == priceToSave.date);
-            if (sameDateEntries.length == 0) {
-              this.prices.unshift(priceToSave);
-            } else {
-              // update entries? not yet implemented
-            }
+            this.addPrice(priceToSave);
           });
-        },
-        err =>{
-          this.notifyService.showError("error on loading from alpha vantage", err);
+        } else if (this.type == "price") {
+          var count = 0;
+          var ignored = 0;
+          for(let mm in timeseries) {
+            var price = Number.parseFloat(timeseries[mm]["4. close"]);
+            var priceToSave = new PriceDatePair(this.isin, mm, price, false);
+            if (this.addPrice(priceToSave)) {
+              count++;
+            } else {
+              ignored++;
+            }
+          }
+          this.notifyService.showSuccess("Add "+count+" ignored "+ignored);
         }
-      );
+      },
+      err =>{
+        this.notifyService.showError("error on loading from alpha vantage", err);
+      }
+    );
+  }
+
+  addPrice(priceToSave: PriceDatePair): boolean {
+    var sameDateEntries: PriceDatePair[] = this.prices.filter(e => e.date == priceToSave.date);
+    if (sameDateEntries.length == 0) {
+      this.prices.unshift(priceToSave);
+      return true;
     }
+    else {
+      // update entries? not yet implemented
+    }
+    return false;
   }
 
   sortPrices(): void {
