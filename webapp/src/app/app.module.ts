@@ -12,9 +12,9 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgbModule, NgbDateAdapter, NgbDateNativeAdapter } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
-import { StockFormComponent } from './_template/stock-form/stock-form.component';
-import { PriceFormComponent } from './_template/price-form/price-form.component';
-import { ReportComponent } from './_template/report/report.component';
+import { StockFormComponent } from './_form/stock-form/stock-form.component';
+import { PriceFormComponent } from './_form/price-form/price-form.component';
+import { ReportComponent } from './_form/report/report.component';
 import { DataService } from './_service/data.service';
 import { AppRoutingModule } from './app-routing.module';
 import { environment } from 'src/environments/environment';
