@@ -10,8 +10,9 @@ module.exports = {
       .then((rows) => {
         rows.map((lastPriceRow) => {
           var lastPrice = lastPriceRow.price;
-          console.log("last Price is "+lastPrice);
-          internalReportUpdate(db, isin, currency, lastPrice, callbackError, callbackSuccess);
+          var lastPriceInEUR = lastPrice / fixer_io.getExchangeRates()[currency];
+          console.log("last Price is "+lastPrice+" in EUR "+lastPriceInEUR);
+          internalReportUpdate(db, isin, currency, lastPriceInEUR, callbackError, callbackSuccess);
         });
       }).catch((error) => {
         callbackError("Could not get last price for isin "+isin+". "+error.message);
@@ -19,7 +20,7 @@ module.exports = {
     }      
 }
 
-function internalReportUpdate(db, isin, currency, lastPrice, callbackError, callbackSuccess) {
+function internalReportUpdate(db, isin, currency, lastPriceInEUR, callbackError, callbackSuccess) {
   db.select().from("dividend").where({"isin": isin}).orderBy('date', 'desc')
   .then((rows) => {
       console.log("start updating report for isin " + isin);
@@ -30,7 +31,7 @@ function internalReportUpdate(db, isin, currency, lastPrice, callbackError, call
       if (rawResLst.length == 0) {
         callbackSuccess("report creation ignored (no dividends) for isin "+isin, {}); 
       }
-      const reportEntry = internalCreateReportEntity(isin, rawResLst, lastPrice);
+      const reportEntry = internalCreateReportEntity(isin, rawResLst, lastPriceInEUR);
       // delete old report data
       db.delete().from("report").where("isin", isin).then((r) => {
         console.log("report deleted for "+isin);
@@ -53,7 +54,7 @@ function internalReportUpdate(db, isin, currency, lastPrice, callbackError, call
     callbackError("Could not update the report for isin "+isin+". "+error.message) });
 }
 
-function internalCreateReportEntity(isin, rawResLst, lastPrice) { 
+function internalCreateReportEntity(isin, rawResLst, lastPriceInEUR) { 
   var reportEntry = {
     "isin": isin
   } 
@@ -99,12 +100,12 @@ function internalCreateReportEntity(isin, rawResLst, lastPrice) {
   }
   console.log("using " + avgDivForCalc + " for div calc");
   // div in 30y (=POW(1+E2;30)*D2*B2)
-  var countStocks = Math.round(10000 / lastPrice);
+  var countStocks = Math.round(10000 / lastPriceInEUR);
   console.log("countStocks for 10000EUR="+countStocks);
   var lastdividend = 0;
   if (resLst.length > 0) {
     lastdividend = resLst[0].price;
-    console.log("resLst[0].price="+lastPrice);
+    console.log("resLst[0].price="+resLst[0].price);
   } else {
     console.log("resLst[0].price not available. using 0.0");
   }

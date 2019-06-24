@@ -31,8 +31,7 @@
                     placeholder="{{type}}" aria-label="price" aria-describedby="pricelabel" required>
             <div class="input-group-append">
               <span class="input-group-text" id="pricelabel" style="font-size: 80%;">
-                <span *ngIf="type=='dividend'">{{currency}}</span>
-                <span *ngIf="type=='price'">EUR</span>
+                <span>{{currency}}</span>
               </span>
             </div>
         </div>
