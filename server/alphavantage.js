@@ -22,7 +22,7 @@ const https = require('https');
  */
 module.exports = {
   getMonthlyAdjusted: function (symbol, res) {
-      const path = "/query?apikey=" + config.ALPHAVANTAGE_APIKEY + "&symbol=" + symbol +"&function=TIME_SERIES_MONTHLY_ADJUSTED";
+      const path = "/query?apikey=" + config.ALPHAVANTAGE_APIKEY + "&symbol=" + encodeURIComponent(symbol) +"&function=TIME_SERIES_MONTHLY_ADJUSTED";
       console.log("loading monthly adjusted data");
       
 
@@ -36,7 +36,7 @@ module.exports = {
       });
   },
   getSymbolProposals: function(keywords, res) {
-      const path = "/query?apikey=" + config.ALPHAVANTAGE_APIKEY + "&keywords=" + keywords +"&function=SYMBOL_SEARCH";
+      const path = "/query?apikey=" + config.ALPHAVANTAGE_APIKEY + "&keywords=" + encodeURIComponent(keywords) +"&function=SYMBOL_SEARCH";
       console.log("loading symbol proposals");
 
       this.getJSON(path, (statusCode, result) => {

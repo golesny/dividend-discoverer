@@ -14,7 +14,5 @@ export interface Report extends ISIN {
     div_12_avg?: number;
     div_16_avg?: number;
     div_pessimistic?:number;
-    latest_price:number,
-    latest_div:number,
-    report_count:number
+
 }

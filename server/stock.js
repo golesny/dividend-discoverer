@@ -69,7 +69,7 @@ router.get('/', (req, res, next) => {
           }
       });
       // sort
-      resLst.sort((a, b) => (a.divIn30y > b.divIn30y) ? -1 : 1);
+      resLst.sort((a, b) => (a.divIn30yEUR > b.divIn30yEUR) ? -1 : 1);
       //
       console.log("sending report list, count="+resLst.length);
       res.json(resLst);
