@@ -56,9 +56,16 @@ export class DataService {
     return null;
   }
 
-  getAlphaVantage(symbol:string): Observable<string> {
+  getAlphaVantage(symbol:string): Observable<any> {
     if (this.isUserLoggedIn()) {
-      return this.http.get<string>(environment.apiUrl + "/monthlyadjusted/"+symbol, this.createHttpHeader());
+      return this.http.get<any>(environment.apiUrl + "/monthlyadjusted/"+symbol, this.createHttpHeader());
+    }
+    return null;
+  }
+
+  getAlphaVantageProposals(keywords:string): Observable<any> {
+    if (this.isUserLoggedIn()) {
+      return this.http.get<any>(environment.apiUrl + "/symbolsearch/"+keywords, this.createHttpHeader());
     }
     return null;
   }

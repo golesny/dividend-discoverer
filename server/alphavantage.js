@@ -24,20 +24,32 @@ module.exports = {
   getMonthlyAdjusted: function (symbol, res) {
       const path = "/query?apikey=" + config.ALPHAVANTAGE_APIKEY + "&symbol=" + symbol +"&function=TIME_SERIES_MONTHLY_ADJUSTED";
       console.log("loading monthly adjusted data");
-      const options = {
-          host: 'www.alphavantage.co',
-          port: 443,
-          path: path,
-          method: 'GET',
-          headers: {'Content-Type': 'application/json'}
-        };
+      
 
-      this.getJSON(options, (statusCode, result) => {
+      this.getJSON(path, (statusCode, result) => {
         console.log(`loaded monthly adjusted data: (${statusCode})\n${JSON.stringify(result)}`);
-        res.json(result); 
+        if ("Error Message" in result) {
+          res.status(500).send("Error from Alpha Vantage: "+result["Error Message"]);
+        } else {
+          res.json(result); 
+        }
       });
-    },
-  getJSON: function (options, onResult) {
+  },
+  getSymbolProposals: function(keywords, res) {
+      const path = "/query?apikey=" + config.ALPHAVANTAGE_APIKEY + "&keywords=" + keywords +"&function=SYMBOL_SEARCH";
+      console.log("loading symbol proposals");
+
+      this.getJSON(path, (statusCode, result) => {
+        console.log(`loaded symbol proposals: (${statusCode})\n${JSON.stringify(result)}`);
+        if ("Error Message" in result) {
+          res.status(500).send("Error from Alpha Vantage: "+result["Error Message"]);
+        } else {
+          res.json(result); 
+        }
+      });
+  },
+  getJSON: function (path, onResult) {
+    const options = this.getOptions(path);
     const port = options.port == 443 ? https : http;
     let output = '';
     const req = port.request(options, (res) => {
@@ -61,5 +73,14 @@ module.exports = {
     });
   
     req.end();
+  },
+  getOptions(path) {
+    return {
+      host: 'www.alphavantage.co',
+      port: 443,
+      path: path,
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'}
+    };
   }
 }

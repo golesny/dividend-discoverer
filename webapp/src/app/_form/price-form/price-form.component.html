@@ -53,6 +53,14 @@
       <div>
         <hr>
         Alpha Vantage values<br>
+        <div class="input-group" style="margin: 5px;">
+          <select class="form-control" id="symbolselection" name="symbolselection" [(ngModel)]="symbol" style="width: 100px">
+            <option *ngFor="let s of symbolproposals | keyvalue" [value]="s.key">{{s.value}}</option>
+          </select>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calendar" (click)="getAlphaVantageSymbol()" type="button"><span class="oi oi-magnifying-glass"></span></button>
+          </div>
+        </div>
         <div class="input-group" style="margin: 5px;">            
           <input type="text" class="form-control" id="symbol" name="symbol" [(ngModel)]="symbol"
                   placeholder="Symbol" aria-label="symbol" aria-describedby="symbollabel" required>
@@ -60,6 +68,7 @@
             <span class="input-group-text" id="symbollabel" style="font-size: 80%;">Symbol</span>
           </div>
         </div>
+        
         <button (click)="getAlphaVantage()"><span class="oi oi-share"></span></button>
       </div>
     </div>

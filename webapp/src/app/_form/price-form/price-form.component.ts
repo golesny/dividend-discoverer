@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from '../../_service/notify.service';
 import { NgbDateStruct, NgbDate, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { stringify } from '@angular/core/src/util';
 
 @Component({
   selector: 'app-price-form',
@@ -22,11 +23,14 @@ export class PriceFormComponent implements OnInit {
   price: number;
   estimated: string;
   symbol: string;
+  symbolproposals: Map<string, string>;
+  symbolselection: string;
 
   constructor(private route:  ActivatedRoute,
               private dataService: DataService,
               private notifyService: NotifyService) {
     this.prices = [];
+    this.symbolproposals = new Map<string, string>();
   }
 
   transferData() {
@@ -196,6 +200,19 @@ export class PriceFormComponent implements OnInit {
       },
       err =>{
         this.notifyService.showError("error on loading from alpha vantage", err);
+      }
+    );
+  }
+
+  getAlphaVantageSymbol() {
+    this.dataService.getAlphaVantageProposals(this.symbol).subscribe(
+      data => {
+        data["bestMatches"].forEach(proposal => {
+          this.symbolproposals.set(proposal["1. symbol"], proposal["1. symbol"] + " | " + proposal["2. name"] + " (" + proposal["3. type"] + "/" + proposal["8. currency"]+")");
+        });
+      },
+      err => {
+        this.notifyService.showError("error on loading alpha vantage proposals", err);
       }
     );
   }

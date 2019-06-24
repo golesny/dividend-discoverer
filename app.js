@@ -50,6 +50,11 @@ app.get('/api/monthlyadjusted/:symbol', (req, res, next) => {
   var symbol = req.params.symbol;
   alphavantage.getMonthlyAdjusted(symbol, res);
 });
+// alpha symbol search
+app.get('/api/symbolsearch/:keyword', (req, res, next) => {
+  var keyword = req.params.keyword;
+  alphavantage.getSymbolProposals(keyword, res);
+});
 // Portfolio
 app.use('/api/portfolio', require('./server/portfolio.js'));
 
@@ -58,6 +63,7 @@ app.use((req, res) => {
   if (req.url != '/transactions' &&
       req.url != '/report' &&
       req.url != '/stock' &&
+      req.url != '/price' &&
       req.url != '/portfolio' ) {
     console.warn("index.html: unhandled request for url", req.url);
   }
