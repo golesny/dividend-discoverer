@@ -68,8 +68,8 @@ router.get('/', (req, res, next) => {
             console.log("Merged: "+util.inspect(rep, false, null, isDevMode /* enable colors */))
           }
       });
-      // sort by cum 30y
-      resLst.sort((a, b) => (a.divCum30yEUR > b.divCum30yEUR) ? -1 : 1);
+      // sort
+      resLst.sort((a, b) => (a.divIn30y > b.divIn30y) ? -1 : 1);
       //
       console.log("sending report list, count="+resLst.length);
       res.json(resLst);
