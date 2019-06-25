@@ -40,20 +40,29 @@ router.get('/', (req, res, next) => {
     authenticate(req, res, next);
 });
 
-
 function authenticate(req, res, next) {
     console.log("auth: incoming request", req.url, req.method);
     if (isDevMode) {
         console.log("auth: overriding oauth verification in dev mode");
-        res.locals.userid = config.adminGoogleId;
-        next();
+        if (req.app.locals.users != undefined) {
+            var userID = Object.keys(req.app.locals.users)[0]; // first user must be an admin user in DEV mode
+            if (req.app.locals.users[userID].userrights.includges("admin")) {
+                res.locals.userid = userID;
+                res.locals.userrights = req.app.locals.users[userID].userrights;
+                next();
+            } else {
+                res.status(403).send("Only admin users allowed (DEV MODE)");
+            }
+        } else {
+            res.status(403).send("Could not find admin users (DEV MODE)");
+        }
     }
     else {
         var authorizationToken = req.headers["authorization"];
         if (authorizationToken != null) {
             console.log("auth: verifying bearer token: " + authorizationToken.substr(0, 20) + "...");
             // verify token
-            verify(authorizationToken, res).catch((err) => {
+            verify(authorizationToken, res, req).catch((err) => {
                 console.error("auth: Could not verify user");
                 res.status(403).send('Authentification failed');
                 next(err);
@@ -69,28 +78,27 @@ function authenticate(req, res, next) {
 }
 
 // https://developers.google.com/identity/sign-in/web/backend-auth
-async function verify(token, res) {
+async function verify(token, res, req) {
     const ticket = await client.verifyIdToken({
         idToken: token,
         audience: config.googleOAuthId
     });
     const payload = ticket.getPayload();
     const userid = payload['sub'];
-    res.locals.userid = userid;
-    // check in database, that user is valid
-    console.log("auth: user logged in: "+userid);
-
-    return checkUserRights(userid);
-}
-
-function checkUserRights(userId) {
-    if (config != null) {
-        if (config.adminGoogleId == userId) {
-            console.log("auth: user is authorized with admin Rights");
+    
+    if (userid in req.app.locals.users) {
+        var userrights = req.app.locals.users[userid].userrights;
+        if (userrights.includes(("admin"))) {
+            // currently only admins are allowed
+            res.locals.userid = userid;
+            res.locals.userrights = userrights;
+            console.log("auth: user logged in: "+userid);
             return true;
+        } else {
+            console.error("currently only admin users allowed/implemented. But found only "+JSON.stringify(userrights)+" for user "+userid);
+            return false;
         }
     }
-    return false;    
 }
 
 module.exports = router;

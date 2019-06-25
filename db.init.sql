@@ -53,5 +53,11 @@ CREATE TABLE `portfolio` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `user` (
+  `id` varchar(40) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `userrights` set('admin','alphavantage','read','write') NOT NULL,
+  `targetyear` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 COMMIT;

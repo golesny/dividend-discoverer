@@ -140,10 +140,10 @@ function handleRowsForMonthlyPrices(rows, resObj) {
     d.setDate(-1); // to last day of month
     var yymmString = d.toISOString().substr(0,7).replace("-","");
     resObj.overview_col_headers.unshift(yymmString);
-    console.log("handleRowsForMonthlyPrices: yymmString="+yymmString);
+    //console.log("handleRowsForMonthlyPrices: yymmString="+yymmString);
     resObj.overview.forEach(o => {
       o.timeseries[yymmString] = {price:0,growth:0};
-      console.log("handleRowsForMonthlyPrices:     isin="+o.isin);
+      //console.log("handleRowsForMonthlyPrices:     isin="+o.isin);
     });
   }
   console.log("handleRowsForMonthlyPrices: values.");

@@ -45,5 +45,19 @@ module.exports = {
             connection: dbconf
         });
         return knex;
-        }
+        },
+    initUsers: function(appLocal) {
+        appLocal.db.select().from("user")
+        .then((rows) => {
+            var users  = {};
+            rows.map((entry) => {            
+                users[entry.id] = entry;
+            });
+            console.log("loaded "+Object.keys(users).length+" user(s) from database");
+            appLocal.users = users;
+        })
+        .catch((err) => {
+            console.error("Could not read users from database", err.message);
+        });
+    }
 }

@@ -27,6 +27,7 @@ const app = express();
 
 const database = require("./server/db");
 app.locals.db = database.connect();
+database.initUsers(app.locals);
 
 app.disable('etag');
 app.set('views', path.join(__dirname, 'views'));

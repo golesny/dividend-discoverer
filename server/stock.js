@@ -43,17 +43,18 @@ router.get('/', (req, res, next) => {
     db.select().from('report').then((repRow) => {      
       repRow.forEach((rep) => {
         if (rep.isin != undefined) {
-          console.log("add report with isin "+rep.isin);
+          //console.log("add report with isin "+rep.isin);
           reports[rep.isin] = rep;
         }
       });
-      console.log("Reports: "+util.inspect(reports, false, null, isDevMode /* enable colors */));
+      console.log("read "+Object.keys(reports).length+" report entries from database");
+      //console.log("Reports: "+util.inspect(reports, false, null, isDevMode /* enable colors */));
       // 
     db.select().from('isin').orderBy('name').then((result) => {
       // join
       var resLst = [];
       result.forEach((row) => {
-        console.log("isin row: "+util.inspect(row, false, null, isDevMode /* enable colors */))
+          //console.log("isin row: "+util.inspect(row, false, null, isDevMode /* enable colors */))
           // merge report + isin
           var rep = reports[row.isin];
           if (rep != undefined) {
@@ -65,7 +66,7 @@ router.get('/', (req, res, next) => {
             rep["divCum30yEUR"] = utils.roundDec10_2(rep.divCum30y / rate);
             rep["divIn30yEUR"] = utils.roundDec10_2(rep.divIn30y / rate);
             resLst.push(rep);
-            console.log("Merged: "+util.inspect(rep, false, null, isDevMode /* enable colors */))
+            //console.log("Merged: "+util.inspect(rep, false, null, isDevMode /* enable colors */))
           }
       });
       // sort
@@ -107,7 +108,7 @@ router.get('/isin/list', (req, res, next) => {
     var isinList = [];
     result[0].forEach((entry) => {
       isinList.push(entry);
-      console.log("Entry: "+util.inspect(entry, false, null, isDevMode /* enable colors */))
+      //console.log("Entry: "+util.inspect(entry, false, null, isDevMode /* enable colors */))
     });
     console.log("sending isin list, count="+isinList.length);
     res.json(isinList);

@@ -1,6 +1,5 @@
 {
     "googleOAuthId": "<google-oauth-id>.apps.googleusercontent.com",
-    "adminGoogleId": "<google user id>",
     "INSTANCE_CONNECTION_NAME": "192.168.0.2", // <project-id>:europe-west1:stockdb or IP address
     "SQL_USER": "root",
     "SQL_PASSWORD": "<your pw>",
