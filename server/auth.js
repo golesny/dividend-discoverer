@@ -46,7 +46,7 @@ function authenticate(req, res, next) {
         console.log("auth: overriding oauth verification in dev mode");
         if (req.app.locals.users != undefined) {
             var userID = Object.keys(req.app.locals.users)[0]; // first user must be an admin user in DEV mode
-            if (req.app.locals.users[userID].userrights.includges("admin")) {
+            if (req.app.locals.users[userID].userrights.includes("admin")) {
                 res.locals.userid = userID;
                 res.locals.userrights = req.app.locals.users[userID].userrights;
                 next();
