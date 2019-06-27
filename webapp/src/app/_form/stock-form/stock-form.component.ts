@@ -83,4 +83,15 @@ export class StockFormComponent {
         this.notifyService.showError("Could not recreate the report:", err);}
     ); 
   }
+
+  updateAllPrices() {
+    this.dataService.updateAllPrices().subscribe(
+      data => {
+        this.notifyService.showSuccess(data["msg"]);
+      },
+      err => {
+        this.notifyService.showError("Could not start batch:", err);
+      }
+    )
+  }
 }

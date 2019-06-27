@@ -56,6 +56,14 @@ export class DataService {
     return null;
   }
 
+  updateAllPrices(): Observable<string> {
+    if (this.isUserLoggedIn()) {
+      console.log("dataservice:loading exchange rates");
+      return this.http.get<string>(environment.apiUrl + "/updateallprices", this.createHttpHeader());
+    }
+    return null;
+  }
+
   getAlphaVantage(symbol:string): Observable<any> {
     if (this.isUserLoggedIn()) {
       return this.http.get<any>(environment.apiUrl + "/monthlyadjusted/"+symbol, this.createHttpHeader());

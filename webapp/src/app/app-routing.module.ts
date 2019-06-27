@@ -9,13 +9,13 @@ import { TransactionsComponent } from 'src/app/_form/transactions/transactions.c
 const routes: Routes = [
   { path: 'report', component: ReportComponent },
   { path: 'stock', component: StockFormComponent },
-  { path: 'price/:isin/:name/:currency', component: PriceFormComponent,
+  { path: 'price/:isin/:name/:currency/:symbol', component: PriceFormComponent,
       data: {
         title: 'Price',
         type: 'price'
       }
   },
-  { path: 'dividend/:isin/:name/:currency', component: PriceFormComponent,
+  { path: 'dividend/:isin/:name/:currency/:symbol', component: PriceFormComponent,
       data: {
         title: 'Dividend',
         type: 'dividend'

@@ -35,6 +35,15 @@ module.exports = {
         }
       });
   },
+  getGlobalQuote: function (symbol, callback) {
+    const path = "/query?apikey=" + config.ALPHAVANTAGE_APIKEY + "&symbol=" + encodeURIComponent(symbol) +"&function=GLOBAL_QUOTE";
+    console.log("loading global quote data, symbol="+symbol);
+    
+    this.getJSON(path, (statusCode, result) => {
+      console.log(`[${new Date()}]loaded global quote data: (${statusCode})\n${JSON.stringify(result)}`);
+      callback(result);
+    });
+},
   getSymbolProposals: function(keywords, res) {
       const path = "/query?apikey=" + config.ALPHAVANTAGE_APIKEY + "&keywords=" + encodeURIComponent(keywords) +"&function=SYMBOL_SEARCH";
       console.log("loading symbol proposals");

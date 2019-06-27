@@ -6,8 +6,8 @@
     <div class="row">
       <div class="col-md-4" style="text-align: center">
         Go to
-        <button [routerLink]="['/price/',isin, name, currency]" *ngIf="type == 'dividend'"><span class="oi oi-dollar"></span></button>
-        <button [routerLink]="['/dividend/',isin, name, currency]" *ngIf="type == 'price'"><span class="oi oi-bar-chart"></span></button>
+        <button [routerLink]="['/price/',isin, name, currency, symbol]" *ngIf="type == 'dividend'"><span class="oi oi-dollar"></span></button>
+        <button [routerLink]="['/dividend/',isin, name, currency, symbol]" *ngIf="type == 'price'"><span class="oi oi-bar-chart"></span></button>
         <hr>
 
         Finanzen.net<br>

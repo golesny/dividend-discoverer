@@ -22,6 +22,7 @@ const fixerIO = require('./server/fixer_io.js');
 global.ratesObj;
 fixerIO.getExchangeRates(); // first pre-load
 const alphavantage = require('./server/alphavantage.js');
+const batch = require('./server/batch.js');
 
 const app = express();
 
@@ -58,6 +59,11 @@ app.get('/api/symbolsearch/:keyword', (req, res, next) => {
 });
 // Portfolio
 app.use('/api/portfolio', require('./server/portfolio.js'));
+// Batch calls
+app.get('/api/updateallprices', (req, res, next) => {
+  batch.loadCurrentPrices(req.app.locals.db);
+  res.json({msg: "Batch Queued"});
+});
 
 // Redirect the rest to /index.html (that the sub-pathes are supported)
 app.use((req, res) => {

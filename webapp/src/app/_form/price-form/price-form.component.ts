@@ -112,7 +112,8 @@ export class PriceFormComponent implements OnInit {
     this.route.params.subscribe(p => {
       this.isin = p['isin'];
       this.name = p['name'];
-      this.currency = p['currency'];
+      this.currency = p['currency'];      
+      this.symbol = p['symbol'];
     });
     this.route.data.subscribe(d => {
       this.title = d['title'];
@@ -241,13 +242,5 @@ export class PriceFormComponent implements OnInit {
 
     return 0;
     });
-  }
-
-  convertDateToUTC(d:Date): Date {
-        var hoursDiff = d.getHours() - d.getTimezoneOffset() / 60;
-        var minutesDiff = (d.getHours() - d.getTimezoneOffset()) % 60;
-        d.setHours(hoursDiff);
-        d.setMinutes(minutesDiff);
-        return d;
   }
 }
