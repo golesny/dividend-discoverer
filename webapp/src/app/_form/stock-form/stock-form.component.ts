@@ -63,7 +63,7 @@ export class StockFormComponent {
           // the complete list is resend
           this.isinlist.push(data);
           this.resetISIN();
-          this.router.navigate(['/price/',data.isin, data.name, data.currency]);
+          this.router.navigate(['/price/',data.isin, data.name, data.currency, data.symbol]);
         },
         err => {                        
             this.notifyService.showError("error on creating isin", err);
