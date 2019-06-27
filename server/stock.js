@@ -61,7 +61,7 @@ router.get('/', (req, res, next) => {
             rep["name"] = row.name;
             rep["currency"] = row.currency;
             rep["sector"] = row.sector;
-            rep["symbol"] = row.symbol == null ? "" : row.symbol;
+            rep["symbol"] = row.symbol;
             // calc exchange rate
             var rate = rates[row.currency];
             rep["divCum30yEUR"] = utils.roundDec10_2(rep.divCum30y / rate);
@@ -99,7 +99,7 @@ router.get('/isin/list', (req, res, next) => {
   // select isin.isin, isin.name, isin.currency, year(max(dividend.date)) as latest_entry from `isin`
   // left join `dividend` on isin.`isin` = dividend.`isin`
   //group by isin
-  db.raw("select isin.isin, isin.name, isin.sector, isin.currency, "+
+  db.raw("select isin.isin, isin.name, isin.sector, isin.currency, isin.symbol,"+
          "(select year(max(dividend.date))  from `dividend` where isin.`isin` = dividend.`isin`) as latest_div, "+
          "(select year(max(price.date))  from `price` where isin.`isin` = price.`isin`) as latest_price, "+
          "(select count(*) from `report` where isin.`isin` = report.`isin`) as report_count "+

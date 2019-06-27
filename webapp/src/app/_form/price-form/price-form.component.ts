@@ -113,7 +113,7 @@ export class PriceFormComponent implements OnInit {
       this.isin = p['isin'];
       this.name = p['name'];
       this.currency = p['currency'];      
-      this.symbol = p['symbol'];
+      this.symbol = p['symbol'] == undefined ? "" : p['symbol'];
     });
     this.route.data.subscribe(d => {
       this.title = d['title'];

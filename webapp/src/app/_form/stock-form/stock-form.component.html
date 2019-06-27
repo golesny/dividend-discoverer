@@ -36,6 +36,14 @@
              placeholder="Sector" aria-label="Sector" aria-describedby="basic-addon3" required>
     </div>
 
+    <div class="input-group" style="margin: 5px;">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon4" style="width:40px; text-align: center"><span class="oi oi-tag"></span></span>
+      </div>
+      <input type="text" class="form-control" name="symbol" [(ngModel)]="model.symbol"
+             placeholder="Symbol" aria-label="Symbol" aria-describedby="basic-addon4" required>
+    </div>
+
     <button type="submit" class="btn btn-success">Add</button>
 
   </form>
