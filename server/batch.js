@@ -21,7 +21,7 @@ const report = require("./report");
 module.exports = {
     loadCurrentPrices: function (db) {
       var promises = [];
-      db.select().from("isin").whereNotNull("symbol")
+      db.select().from("isin").whereRaw("symbol != ''")
         .then((rows) => {
             rows.map((entry) => {
               promises.push(createPromise(db, entry, promises.length * 12000)); // we are allowed to make every 12 s a call
