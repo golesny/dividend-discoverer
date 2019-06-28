@@ -44,7 +44,8 @@
              placeholder="Symbol" aria-label="Symbol" aria-describedby="basic-addon4" required>
     </div>
 
-    <button type="submit" class="btn btn-success">Add</button>
+    <button type="submit" class="btn btn-success">{{mode == 'new' ? "Add" : "Save"}}</button> &nbsp;
+    <button (click)="resetISIN()" class="btn btn-warning" *ngIf="mode == 'edit'">Cancel</button>
 
   </form>
 </div>
@@ -56,6 +57,7 @@
   <th scope="col"><button (click)="updateAllPrices()">Update all prices</button></th>
   <th scope="col">Name</th>
   <th scope="col">ISIN</th>
+  <th scope="col">Symbol</th>
   <th scope="col">Sector</th>
   <th scope="col">Currency</th>
   <th scope="col">Latest Price|Div</th>
@@ -70,9 +72,11 @@
       'oi-reload':isin.report_count == 1,
       'oi-spreadsheet':isin.report_count == 0
     }"></span></button>
+    <button (click)="editISIN(isin)"><span class="oi oi-pencil"></span></button>
   </td>
   <td>{{isin.name}}</td>
   <td>{{isin.isin}}</td>
+  <td>{{isin.symbol}}</td>
   <td>{{isin.sector}}</td>
   <td>{{isin.currency}}</td>
   <td>{{isin.latest_price}} | {{isin.latest_div}}</td>

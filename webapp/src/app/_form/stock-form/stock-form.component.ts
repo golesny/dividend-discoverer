@@ -13,6 +13,7 @@ export class StockFormComponent {
   public isinlist:ISIN[];
   currencies:Map<string, number>;
   public model:ISIN;
+  public mode:string;
 
   constructor(private dataService:DataService,
               private notifyService: NotifyService,
@@ -26,6 +27,12 @@ export class StockFormComponent {
 
   resetISIN() {
     this.model = new ISIN('', '', "EUR", "", "");
+    this.mode = "new";
+  }
+
+  editISIN(isin) {
+    this.model = JSON.parse(JSON.stringify(isin)); // use a copy
+    this.mode = "edit";
   }
 
   loadISINList() : void {
@@ -59,11 +66,16 @@ export class StockFormComponent {
 
     return this.dataService.post(this.model, "isin", this.model.currency).subscribe(
         data => {
-          this.notifyService.showSuccess("ISIN created: " + data.isin);
-          // the complete list is resend
-          this.isinlist.push(data);
-          this.resetISIN();
-          this.router.navigate(['/price/',data.isin, data.name, data.currency, data.symbol]);
+          this.notifyService.showSuccess("ISIN "+(this.mode == "new" ? "created" : "updated")+" " + data.isin);
+          if (this.mode == "edit") {
+            // delete old entry
+            var idx = this.isinlist.findIndex(e => e.isin == this.model.isin);
+            this.isinlist.splice( idx, 1, data);
+          } else {
+            this.isinlist.push(data);
+            this.resetISIN();
+            this.router.navigate(['/price/',data.isin, data.name, data.currency, data.symbol]);
+          }
         },
         err => {                        
             this.notifyService.showError("error on creating isin", err);

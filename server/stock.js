@@ -185,21 +185,38 @@ function handleGetList(type, req, res) {
  * create new ISIN.
  * currency is not used, it's just for same api to other create urls 
  */
-  router.post('/isin/create/:currency', (req, res, next) => {
+  router.post('/isin/:mode/:currency/', (req, res, next) => {
     var entity = req.body;
     const db = req.app.locals.db;
+    var mode = req.params.mode;
     // trim isin
     entity.isin = entity.isin.trim();
-    console.log("creating ", util.inspect(entity, false, null, isDevMode /* enable colors */));
-    db.insert(entity).into("isin").then((result) => {      
-      console.log("created isin", entity.isin);
-      entity.updated_ts = new Date();
-      res.json(entity);
+    console.log("insertUpdate ", util.inspect(entity, false, null, isDevMode /* enable colors */));
+    if (mode == "create") {
+      db.insert(entity).into("isin").then((result) => {      
+        console.log("created isin", entity.isin);
+        entity.updated_ts = new Date();
+        res.json(entity);
+      }
+      ).catch((err) => {
+        console.error("Could not create isin", err.message);
+        res.status(500).send("Could not insert isin");
+      });
+    } else if (mode == "update") {
+      // separate primary key
+      var pk = {isin: entity.isin};
+      var fields = {name: entity.name, currency: entity.currency, sector: entity.sector, symbol: entity.symbol};
+      
+      db.update(fields).into("isin").where(pk).then((result) => {      
+        console.log("updated isin", entity.isin);
+        entity.updated_ts = new Date();
+        res.json(entity);
+      }
+      ).catch((err) => {
+        console.error("Could not update isin", err.message);
+        res.status(500).send("Could not update isin");
+      });
     }
-    ).catch((err) => {
-      console.error("Could not create isin", err.message);
-       res.status(500).send("Could not insert isin");
-    });
   });
 
   router.post('/price/create/:currency', (req, res, next) => {
