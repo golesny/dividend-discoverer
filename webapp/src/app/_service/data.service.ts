@@ -86,10 +86,10 @@ export class DataService {
   }
 
   // create
-  post<T>(entity: T, entityName: string, currency: string, mode?: string): Observable<T> {
+  post<T>(entity: T, entityName: string, currency: string, mode: string): Observable<T> {
       if (this.isUserLoggedIn()) {
-        var modeString = mode == "new" ? "create" : "update";
-        console.log("posting", entityName, JSON.stringify(entity));
+        var modeString = mode == "edit" ? "update" : "create";
+        console.log("posting/"+mode, entityName, JSON.stringify(entity));
         return this.http.post<T>(environment.apiUrl + "/stock/"+entityName+"/"+modeString+"/"+currency, JSON.stringify(entity), this.createHttpHeader());
       }
   }

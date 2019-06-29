@@ -130,7 +130,7 @@ export class PriceFormComponent implements OnInit {
 
   saveData(currency: string) {
     var pricesToStore = this.prices.filter(p => !p.inDB );
-    this.dataService.post(pricesToStore, this.type, currency).subscribe(
+    this.dataService.post(pricesToStore, this.type, currency, "new").subscribe(
       res => {
         res["pricepairs"].forEach(r => {
           console.log("searching for " + r.isin + " " + r.date);
@@ -140,9 +140,10 @@ export class PriceFormComponent implements OnInit {
                pr.inDB = true;
             }
           });
-          this.sortPrices();
-        }
+        }        
         );
+        this.sortPrices();
+        this.notifyService.showSuccess(res["msg"]);
       },
       err => {
           this.notifyService.showError("error on saving "+this.type, err);

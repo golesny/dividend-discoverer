@@ -64,7 +64,7 @@ export class StockFormComponent {
   onSubmit() {
     console.log("creating new isin");
 
-    return this.dataService.post(this.model, "isin", this.model.currency).subscribe(
+    return this.dataService.post(this.model, "isin", this.model.currency, this.mode).subscribe(
         data => {
           this.notifyService.showSuccess("ISIN "+(this.mode == "new" ? "created" : "updated")+" " + data.isin);
           if (this.mode == "edit") {

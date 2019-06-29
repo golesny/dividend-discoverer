@@ -69,8 +69,9 @@ app.get('/api/updateallprices', (req, res, next) => {
 app.use((req, res) => {
   if (req.url != '/transactions' &&
       req.url != '/report' &&
-      req.url != '/stock' &&
-      req.url != '/price' &&
+      req.url.startsWith('/stock') &&
+      req.url.startsWith('/price') &&
+      req.url.startsWith('/dividend') &&
       req.url != '/portfolio' ) {
     console.warn("index.html: unhandled request for url", req.url);
   }

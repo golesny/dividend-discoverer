@@ -193,9 +193,9 @@ function handleGetList(type, req, res) {
     entity.isin = entity.isin.trim();
     console.log("insertUpdate ", util.inspect(entity, false, null, isDevMode /* enable colors */));
     if (mode == "create") {
-      db.insert(entity).into("isin").then((result) => {      
+      var fields = {isin: entity.isin, name: entity.name, currency: entity.currency, sector: entity.sector, symbol: entity.symbol};
+      db.insert(fields).into("isin").then((result) => {      
         console.log("created isin", entity.isin);
-        entity.updated_ts = new Date();
         res.json(entity);
       }
       ).catch((err) => {
@@ -231,11 +231,11 @@ function handleGetList(type, req, res) {
       console.log("created price", result);
       report.updateReportForISIN(db, priceentity[0].isin, currency, (errormsg) => {
         console.error(errormsg);
-        res.status(500).send(errormsg);
+        res.json({msg: "Could save "+priceentity.length+" prices, but not the report: \n" + errormsg, pricepairs: priceentity});
       },
       (msg, reportEntity) => {
         console.log("report created");
-        res.json({msg: msg, report: reportEntity, pricepairs: priceentity});
+        res.json({msg: "Could save "+priceentity.length+" prices. "+ msg, report: reportEntity, pricepairs: priceentity});
       }
       );
     }
@@ -254,11 +254,11 @@ function handleGetList(type, req, res) {
       console.log("created dividend", result);
       report.updateReportForISIN(db, diventities[0].isin, currency, (errormsg) => {
         console.error(errormsg);
-        res.status(500).send(errormsg);
+        res.json({msg: "Could create "+diventities.length+" dividends, but Error on report:\n"+errormsg, pricepairs: diventities});
       },
       (msg, reportEntity) => {
         console.log("report created");
-        res.json({msg: msg, report:reportEntity, pricepairs: diventities});
+        res.json({msg: "Could create "+diventities.length+" dividends. "+msg, report:reportEntity, pricepairs: diventities});
       });
     }
     ).catch((err) => {
