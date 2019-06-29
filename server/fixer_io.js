@@ -36,6 +36,11 @@ module.exports = {
 
         this.getJSON(options, (statusCode, result) => {
           console.log(`loaded exchange rates: (${statusCode})\n${JSON.stringify(result)}`);
+          // for London stock exchange we have to add GPpence
+          if ("GBP" in result.rates) {
+            result.rates["GB_"] = result.rates["GBP"] * 100;
+            console.log("add GP_(pence) as currency for London stock exchange.");
+          }
           global.ratesObj = result;          
         });
       }
