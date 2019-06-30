@@ -14,6 +14,7 @@
 'use strict';
 
 const isDevMode = (process.argv.length >= 3 && process.argv[2] == "dev");
+const fixer_io = require("./fixer_io");
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -129,12 +130,15 @@ module.exports = router;
 
 function handleRowsforOverview(rows) {
   console.log("handleRowsforOverview: start");
+  var rates = fixer_io.getExchangeRates();
   var obj = {currency:'EUR', stock_sum: 0, overview: []};
   rows[0].forEach((entry) => {
     entry.timeseries = {};
     obj.overview.push(entry);
     // sum up each line to a total 
-    obj.stock_sum += (entry.amount * entry.lastprice);
+    var rate = rates[entry.currency];
+    var priceInEUR = entry.lastprice / rate;
+    obj.stock_sum += (entry.amount * priceInEUR);
   });
   return obj;
 }
