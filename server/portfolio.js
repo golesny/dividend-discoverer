@@ -54,10 +54,18 @@ router.get('/', (req, res, next) => {
           handleRowsForAnnualOverview(rows2, result);
           var isins = "";
           result.overview.forEach(e => {isins += (isins.length>0?",":"")+"'"+e.isin+"'"});
-          db.raw("Select isin, EXTRACT( YEAR_MONTH FROM `date` ) as datemonth, price from `price` where isin in ("+isins+") and "+
-                 "date in ("+
-                 "  SELECT MAX(date) FROM `price` WHERE isin in ("+isins+") and date > '2018-06-01' group by EXTRACT( YEAR_MONTH FROM `date` )"+
-                 ") order by date asc")
+          var d = new Date();
+          d.setDate(-410);
+          var dateStr = d.toISOString().substr(0,10);
+          var monthlyQuery = "Select isin, EXTRACT( YEAR_MONTH FROM `date` ) as datemonth, price "+
+          "from `price` where CONCAT(isin, date) in ( "+
+          "  Select concat(isin, MAX(date)) "+
+          "  from `price` "+
+          "  where isin in ("+isins+") "+
+          "  and date > '"+dateStr+"' "+
+          "  group by isin, EXTRACT( YEAR_MONTH FROM `date` ) )";
+          console.log("monthly query=\n"+monthlyQuery);
+          db.raw(monthlyQuery)
           .then((rows3) => {
             handleRowsForMonthlyPrices(rows3, result);
             //console.log("sending "+JSON.stringify(result));
@@ -136,8 +144,7 @@ function handleRowsForMonthlyPrices(rows, resObj) {
   resObj.overview_col_headers = [];
   // prepare col header
   var d = new Date();
-  for (let i = 0; i < 12; i++) {
-    d.setDate(-1); // to last day of month
+  for (let i = 0; i < 12; i++) {    
     var yymmString = d.toISOString().substr(0,7).replace("-","");
     resObj.overview_col_headers.unshift(yymmString);
     //console.log("handleRowsForMonthlyPrices: yymmString="+yymmString);
@@ -145,6 +152,7 @@ function handleRowsForMonthlyPrices(rows, resObj) {
       o.timeseries[yymmString] = {price:0,growth:0};
       //console.log("handleRowsForMonthlyPrices:     isin="+o.isin);
     });
+    d.setDate(-1); // to last day of month
   }
   console.log("handleRowsForMonthlyPrices: values.");
   // values
@@ -153,8 +161,9 @@ function handleRowsForMonthlyPrices(rows, resObj) {
     isinRow.forEach(e => {
       if (entry.datemonth in e.timeseries) {
         e.timeseries[entry.datemonth].price = entry.price;
+        //console.log("handleRowsForMonthlyPrices: ["+e.isin+" | "+entry.datemonth+" "+entry.price);
       } else {
-        console.log("handleRowsForMonthlyPrices: ignoring entry.datemonth="+entry.datemonth);
+        console.log("handleRowsForMonthlyPrices: ["+e.isin+" | "+entry.datemonth+" ignoring entry");
       }
     });
   });
