@@ -1,7 +1,7 @@
-<h3>Stocks</h3>
+<h3 #inputform>Stocks</h3>
 
 <div class="container" style="padding: 5px">
-  <form (ngSubmit)="onSubmit()" #isinForm="ngForm">
+  <form (ngSubmit)="onSubmit()" #isinForm="ngForm" autocomplete="off">
 
     <div class="input-group" style="margin: 5px;">
         <div class="input-group-prepend">
@@ -44,6 +44,18 @@
              placeholder="Symbol" aria-label="Symbol" aria-describedby="basic-addon4" required>
     </div>
 
+    <!-- symbol search -->
+    <div class="input-group" style="margin: 5px;">
+      <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary calendar" (click)="getAlphaVantageSymbol()" type="button">
+          <span class="oi" [ngClass]="symbolproposalstatus"></span>
+        </button>
+      </div>
+      <select class="form-control" id="symbolselection" name="symbolselection" [(ngModel)]="model.symbol" style="width: 100px">
+        <option *ngFor="let s of symbolproposals | keyvalue" [value]="s.key">{{s.value}}</option>
+      </select>      
+    </div>
+
     <button type="submit" class="btn btn-success">{{mode == 'new' ? "Add" : "Save"}}</button> &nbsp;
     <button (click)="resetISIN()" class="btn btn-warning" *ngIf="mode == 'edit'">Cancel</button>
 
@@ -72,7 +84,7 @@
       'oi-reload':isin.report_count == 1,
       'oi-spreadsheet':isin.report_count == 0
     }"></span></button>
-    <button (click)="editISIN(isin)"><span class="oi oi-pencil"></span></button>
+    <button (click)="editISIN(isin, inputform)"><span class="oi oi-pencil"></span></button>
   </td>
   <td>{{isin.name}}</td>
   <td>{{isin.isin}}</td>
