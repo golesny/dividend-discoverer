@@ -63,6 +63,12 @@
 </div>
 
 <div class="container">
+  
+    <ngb-pagination
+    [(page)]="page"
+    [pageSize]="pageSize"
+    [collectionSize]="isinlist.length"></ngb-pagination>
+
 <table id="dtDynamicVerticalScroll" class="table table-striped table-bordered table-sm">
   <thead class="thead-dark">
 <tr>
@@ -76,7 +82,7 @@
 </tr>
 </thead>
 <tbody>
-<tr *ngFor="let isin of isinlist">
+<tr *ngFor="let isin of isinlist | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
   <td>
     <button [routerLink]="['/price/',isin.isin, isin.name, isin.currency, isin.symbol]"><span class="oi oi-dollar"></span></button>
     <button [routerLink]="['/dividend/',isin.isin, isin.name, isin.currency, isin.symbol]"><span class="oi oi-bar-chart"></span></button>

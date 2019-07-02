@@ -16,12 +16,16 @@ export class StockFormComponent {
   public mode:string;
   symbolproposals: Map<string, string>;
   symbolproposalstatus: string;
+  page:number;
+  pageSize:number;
 
   constructor(private dataService:DataService,
               private notifyService: NotifyService,
               private router: Router) {
     this.currencies = new Map();
     this.currencies.set("EUR", 1);
+    this.pageSize = 30;
+    this.page = 1;
     this.resetISIN();
     this.loadISINList();
     this.loadRates();

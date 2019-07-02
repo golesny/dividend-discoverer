@@ -10,10 +10,14 @@ import { NotifyService } from 'src/app/_service/notify.service';
 })
 export class ReportComponent implements OnInit {
   public reports: Report[];
+  page:number;
+  pageSize:number;
 
   constructor(private dataService: DataService,
               private notifyService: NotifyService) { 
     this.reports = [];
+    this.pageSize = 30;
+    this.page = 1;
     this.loadStockList();
   }
 
