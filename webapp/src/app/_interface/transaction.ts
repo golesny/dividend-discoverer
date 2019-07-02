@@ -8,7 +8,8 @@ export class Transaction {
       public type: string,
       public date: string,
       public name?: string,
-      public comment?: string
+      public comment?: string,
+      public id?: number
       ) {
       }
 }

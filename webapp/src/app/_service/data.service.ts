@@ -95,10 +95,17 @@ export class DataService {
   }
 
   // create
-  postTransaction(entity:Transaction): Observable<Transaction> {
+  postTransaction(entity:Transaction): Observable<any> {
     if (this.isUserLoggedIn()) {
       console.log("posting transaction", JSON.stringify(entity));
-      return this.http.post<Transaction>(environment.apiUrl + "/portfolio/create", JSON.stringify(entity), this.createHttpHeader());
+      return this.http.post<any>(environment.apiUrl + "/portfolio/create", JSON.stringify(entity), this.createHttpHeader());
+    }
+  }
+
+  deleteTransaction(id:number): Observable<any> {
+    if (this.isUserLoggedIn()) {
+      console.log("deleting transaction " + id);
+      return this.http.get<any>(environment.apiUrl + "/portfolio/delete/" + id, this.createHttpHeader());
     }
   }
 

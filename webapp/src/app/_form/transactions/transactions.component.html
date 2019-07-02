@@ -1,7 +1,7 @@
 <h3>Add Portfolio transactions</h3>
 
 <div class="container" style="padding: 5px">
-  <form (ngSubmit)="onSubmit()" #isinForm="ngForm">
+  <form #isinForm="ngForm">
 
     <div class="input-group" style="margin: 5px;">
         <div class="input-group-prepend">
@@ -58,7 +58,8 @@
              placeholder="Comment (optional)" aria-label="Comment" aria-describedby="basic-addon3">
     </div>
 
-    <button type="submit" class="btn btn-success" style="margin: 5px;">Add</button>
+    <button type="submit" (click)="onSubmit()" class="btn btn-success" style="margin: 5px;">{{model.id == undefined ? "Add" : "Update"}}</button>
+    <button type="button" (click)="resetForm()" class="btn btn-warning" style="margin: 5px;">{{model.id == undefined ? "Reset" : "Cancel"}}</button>
 
   </form>
 
@@ -66,6 +67,7 @@
   <table class="table table-striped table-bordered table-sm" style="fill: 100%">
     <thead class="thead-dark">
       <tr>
+        <th></th>
         <th scope="col-lg-1">Date</th>
         <th scope="col-lg-2">ISIN / Comment</th>
         <th scope="col-sm-1">Amount</th>
@@ -75,6 +77,10 @@
     </thead>
     <tbody>
     <tr *ngFor="let t of transactions">
+      <td>
+        <button (click)="edit(t)" style="margin-right: 5px;"><span class="oi oi-pencil"></span></button>
+        <button (click)="delete(t)"><span class="oi oi-x"></span></button>
+      </td>
       <td>{{t.date}}</td>
       <td>{{t.name}} <span class="small">{{t.isin}}<br>{{t.comment}}</span></td>
       <td>{{t.amount}}</td>

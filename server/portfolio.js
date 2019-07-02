@@ -110,18 +110,52 @@ router.post('/create', (req, res, next) => {
   const db = req.app.locals.db;
   var user_id = res.locals.userid;
   // trim isin
-  entity.isin = entity.isin.trim();
+  if (entity.isin == undefined) {
+    entity.isin = "";
+  } else {
+    entity.isin = entity.isin.trim();
+  }
   entity["user_id"] = user_id;
   if (entity.type == "BUY" && entity.pricetotal > 0) {
     entity.pricetotal *= -1;
   }
-  db.insert(entity).into("portfolio").then((result) => {      
-    console.log("created transaction", entity.isin);
-    res.json({msg:'created transaction', transaction: entity});
+  if (entity.id == undefined) {
+    db.insert(entity).into("portfolio").then((result) => {      
+      console.log("created transaction: " + entity.isin + " result: "+JSON.stringify(result));
+      entity.id = result;
+      res.json({msg:'created transaction', transaction: entity});
+    }
+    ).catch((err) => {
+      console.error("Could not create transaction", err.message);
+      res.status(500).send("Could not insert transaction");
+    });
+  } else {
+    var pk = {id: entity.id, user_id: user_id}; // for security reasons user_id is part of PK
+    var fields = {	isin: entity.isin, amount: entity.amount, date: entity.date, 
+                    pricetotal: entity.pricetotal, type: entity.type, comment: entity.comment	};
+    db.update(fields).into("portfolio").where(pk).then((result) => {
+      console.log("updated transaction: " + entity.isin);
+      res.json({msg:'Updated transaction', transaction: entity});
+    }).catch((err) => {
+      console.error("Could not update transaction", err.message);
+      res.status(500).send("Could not update transaction");
+    });
   }
-  ).catch((err) => {
-    console.error("Could not create transaction", err.message);
-     res.status(500).send("Could not insert transaction");
+});
+
+/**
+ * get /api/portfolio/:transactionid
+ */
+router.get('/delete/:transactionid', (req, res, next) => {
+  var transactionid = req.params.transactionid;
+  const db = req.app.locals.db;
+  var user_id = res.locals.userid;
+  db.del().from("portfolio").where({id:transactionid, user_id: user_id}).then((result) => {
+    console.log("deleted transaction: " + transactionid);
+    res.json({msg:'Deleted transaction', deleted_transaction_id: transactionid});
+  }).catch((err) => {
+    console.error("Could not delete transaction", err.message);
+    res.status(500).send("Could not delete transaction");
   });
 });
 

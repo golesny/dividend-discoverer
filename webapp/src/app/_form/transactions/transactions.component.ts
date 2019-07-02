@@ -12,6 +12,7 @@ export class TransactionsComponent implements OnInit {
   model: Transaction;
   date: Date;
   transactions: Transaction[];
+  mode:string;
 
   constructor(private dataService: DataService,
               private notifyService: NotifyService) {
@@ -30,6 +31,22 @@ export class TransactionsComponent implements OnInit {
     );
   }
 
+  edit(t: Transaction) {
+    this.model = JSON.parse(JSON.stringify(t));
+    this.date = new Date(Date.parse(this.model.date));
+  }
+  
+  delete(t: Transaction) {
+    if (confirm("Are you sure to delete "+t.date +", "+t.type+" "+t.amount)) {
+      this.dataService.deleteTransaction(t.id).subscribe(
+        data => {
+          var idx = this.transactions.findIndex(e => e.id == data["deleted_transaction_id"]);
+          this.transactions.splice(idx, 1); 
+        }
+      )
+    }
+  }
+
   resetForm() {
     this.model = new Transaction('', 1, 0, 'BUY', '');
     this.date = new Date();
@@ -40,8 +57,13 @@ export class TransactionsComponent implements OnInit {
     this.model.date = d;
     this.dataService.postTransaction(this.model).subscribe(
       data => {
-        this.transactions.unshift(data["transaction"]);
-        this.resetForm();
+        if (this.model.id == undefined) {
+          this.transactions.unshift(data["transaction"]);
+          this.resetForm();
+        } else {
+          var idx = this.transactions.findIndex(e => e.id == data["transaction"].id);
+          this.transactions.splice(idx, 1, data["transaction"]);
+        }
       }
     )
   }
