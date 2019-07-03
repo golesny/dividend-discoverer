@@ -104,7 +104,7 @@ router.get('/isin/list', (req, res, next) => {
          "(select year(max(price.date))  from `price` where isin.`isin` = price.`isin`) as latest_price, "+
          "(select count(*) from `report` where isin.`isin` = report.`isin`) as report_count "+
          "from `isin` "+
-         "group by isin")
+         "group by isin order by name")
         .then((result) => {
     var isinList = [];
     result[0].forEach((entry) => {
