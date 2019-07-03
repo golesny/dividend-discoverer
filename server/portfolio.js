@@ -14,6 +14,7 @@
 'use strict';
 
 const isDevMode = (process.argv.length >= 3 && process.argv[2] == "dev");
+const config = require("../config"+(isDevMode?"":".prod")+".json");
 const fixer_io = require("./fixer_io");
 
 const express = require('express');
@@ -55,15 +56,11 @@ router.get('/', (req, res, next) => {
           handleRowsForAnnualOverview(rows2, result);
           var isins = "";
           result.overview.forEach(e => {isins += (isins.length>0?",":"")+"'"+e.isin+"'"});
-          var d = new Date();
-          d.setDate(-410);
-          var dateStr = d.toISOString().substr(0,10);
           var monthlyQuery = "Select isin, EXTRACT( YEAR_MONTH FROM `date` ) as datemonth, price "+
           "from `price` where CONCAT(isin, date) in ( "+
           "  Select concat(isin, MAX(date)) "+
           "  from `price` "+
           "  where isin in ("+isins+") "+
-          "  and date > '"+dateStr+"' "+
           "  group by isin, EXTRACT( YEAR_MONTH FROM `date` ) )";
           console.log("monthly query=\n"+monthlyQuery);
           db.raw(monthlyQuery)
@@ -179,18 +176,28 @@ function handleRowsforOverview(rows) {
 
 function handleRowsForMonthlyPrices(rows, resObj) {
   console.log("handleRowsForMonthlyPrices: start");
-  resObj.overview_col_headers = [];
+  resObj.overview_cols = [];
   // prepare col header
-  var d = new Date();
-  for (let i = 0; i < 12; i++) {    
+  const monthCfg = config.PORTFOLIO_PROGRESS_COLS;
+  for (let i = 0; i < monthCfg.length; i++) {
+    var d = new Date();
+    d.setDate(1); // to avoid strange behavior at end of month
+    d.setMonth(d.getMonth() - monthCfg[i]);
     var yymmString = d.toISOString().substr(0,7).replace("-","");
-    resObj.overview_col_headers.unshift(yymmString);
+    
+    var timestr = monthCfg[i]+"m";
+    if (monthCfg[i] > 11) {
+      timestr = Math.ceil(monthCfg[i] / 12) + "y";
+      if (monthCfg[i]%12 != 0) {
+        timestr += " "+ monthCfg[i]%12 + "m"
+      }
+    }
+    resObj.overview_cols.unshift({yyyymm:yymmString, timestr:timestr});
     //console.log("handleRowsForMonthlyPrices: yymmString="+yymmString);
     resObj.overview.forEach(o => {
       o.timeseries[yymmString] = {price:0,growth:0};
       //console.log("handleRowsForMonthlyPrices:     isin="+o.isin);
     });
-    d.setDate(-1); // to last day of month
   }
   console.log("handleRowsForMonthlyPrices: values.");
   // values
@@ -200,21 +207,20 @@ function handleRowsForMonthlyPrices(rows, resObj) {
       if (entry.datemonth in e.timeseries) {
         e.timeseries[entry.datemonth].price = entry.price;
         //console.log("handleRowsForMonthlyPrices: ["+e.isin+" | "+entry.datemonth+" "+entry.price);
-      } else {
-        console.log("handleRowsForMonthlyPrices: ["+e.isin+" | "+entry.datemonth+" ignoring entry");
       }
     });
   });
   console.log("handleRowsForMonthlyPrices: calc growth");
   // calculate the growth
-  for (let i = 1; i < resObj.overview_col_headers.length; i++) {
-    const currYYMM = resObj.overview_col_headers[i];
-    const prevYYMM = resObj.overview_col_headers[i-1];
+  for (let i = 0; i < resObj.overview_cols.length; i++) {
+    const currYYMM = resObj.overview_cols[i].yyyymm;
     resObj.overview.forEach(entry => {
       const currPrice = entry.timeseries[currYYMM].price;
-      const prevPrice = entry.timeseries[prevYYMM].price;
-      if (prevPrice > 0) {
-        entry.timeseries[currYYMM].growth = currPrice / prevPrice - 1;
+      if (currPrice > 0) {
+        entry.timeseries[currYYMM].growth = entry.lastprice / currPrice  - 1;
+        if (entry.isin == "DE0008430026") {
+          console.log(currYYMM + ": lastprice="+entry.lastprice+" currPrice="+currPrice+" => "+entry.timeseries[currYYMM].growth);
+        }
       }
     });
   }

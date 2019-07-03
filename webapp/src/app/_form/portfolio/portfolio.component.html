@@ -26,15 +26,15 @@
   <thead class="thead-dark">
     <tr>
       <th>Stock</th>
-      <th *ngFor="let d of portfolio_overview.overview_col_headers">{{d}}</th>
+      <th *ngFor="let d of portfolio_overview.overview_cols">{{d.yyyymm}}<br>{{d.timestr}}</th>
     </tr>
   </thead>
   <tbody>
   <tr *ngFor="let p of portfolio_overview.overview">
     <td>{{p.name}} <span class="small">{{p.isin}}</span></td>
     <td *ngFor="let t of p.timeseries | keyvalue">
-      <span class="small">{{t.value.price | number:'1.0-2':'de'}} {{p.currency}}</span><br>
-      <span [ngClass]="t.value.growth < 0 ? 'negative' : (t.value.growth > 0 ? 'positive': 'zero')">{{t.value.growth * 100 | number:'1.0-2'}}%</span>
+      <span class="small">{{t.value.price | number:'1.2-2':'de'}} {{p.currency}}</span><br>
+      <span [ngClass]="t.value.growth < 0 ? 'negative' : (t.value.growth > 0 ? 'positive': 'zero')">{{t.value.growth * 100 | number:'1.1-1':'de'}}%</span>
     </td>
   </tr>
   </tbody>
