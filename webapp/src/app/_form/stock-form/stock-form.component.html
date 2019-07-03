@@ -73,7 +73,7 @@
   <thead class="thead-dark">
 <tr>
   <th scope="col"><button (click)="updateAllPrices()">Update all prices</button></th>
-  <th scope="col">Name</th>
+  <th scope="col"><input type="text" [(ngModel)]="filter_name" (change)="filterList()" placeholder="filter"><br>Name</th>
   <th scope="col">ISIN</th>
   <th scope="col">Symbol</th>
   <th scope="col">Sector</th>

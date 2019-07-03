@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 })
 export class StockFormComponent {
   public isinlist:ISIN[];
+  public allisinlist:ISIN[];
   currencies:Map<string, number>;
   public model:ISIN;
   public mode:string;
@@ -18,6 +19,7 @@ export class StockFormComponent {
   symbolproposalstatus: string;
   page:number;
   pageSize:number;
+  filter_name:string;
 
   constructor(private dataService:DataService,
               private notifyService: NotifyService,
@@ -26,9 +28,18 @@ export class StockFormComponent {
     this.currencies.set("EUR", 1);
     this.pageSize = 30;
     this.page = 1;
+    this.filter_name = "";
     this.resetISIN();
     this.loadISINList();
     this.loadRates();
+  }
+
+  filterList() {
+    if (this.filter_name.length > 0) {
+      this.isinlist = this.allisinlist.filter(r => {  return r.name.toLowerCase().indexOf(this.filter_name.toLowerCase()) != -1; });
+    } else {
+      this.isinlist = this.allisinlist;
+    }
   }
 
   resetISIN() {
@@ -48,10 +59,12 @@ export class StockFormComponent {
   loadISINList() : void {
     console.log('loading isin list');
     this.isinlist = [];
+    this.allisinlist = [];
     this.dataService.getISINList()
       .subscribe((data: ISIN[]) => {
-        this.isinlist = data;        
-        console.log('isin loaded %s', this.isinlist);
+        this.allisinlist = data;
+        console.log('isin loaded %s', this.allisinlist);
+        this.filterList();
       }, error => {
         console.error('ERROR: ${error.message}');
         this.notifyService.showError("error ", error.message);
@@ -99,13 +112,14 @@ export class StockFormComponent {
           this.notifyService.showSuccess("ISIN "+(this.mode == "new" ? "created" : "updated")+" " + data.isin);
           if (this.mode == "edit") {
             // delete old entry
-            var idx = this.isinlist.findIndex(e => e.isin == this.model.isin);
-            this.isinlist.splice( idx, 1, data);
+            var idx = this.allisinlist.findIndex(e => e.isin == this.model.isin);
+            this.allisinlist.splice( idx, 1, data);
           } else {
-            this.isinlist.push(data);
+            this.allisinlist.push(data);
             this.resetISIN();
             this.router.navigate(['/price/',data.isin, data.name, data.currency, data.symbol]);
           }
+          this.filterList();
         },
         err => {                        
             this.notifyService.showError("error on creating isin", err);
@@ -118,7 +132,7 @@ export class StockFormComponent {
       data => {
         console.log("data="+JSON.stringify(data));
         this.notifyService.showSuccess(data["msg"]);
-        this.isinlist.filter((f) => (f.isin == isin)).forEach((e) => e.report_count = 1);
+        this.allisinlist.filter((f) => (f.isin == isin)).forEach((e) => e.report_count = 1);
       },
       err => {
         console.log("err="+err);

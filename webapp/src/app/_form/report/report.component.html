@@ -8,7 +8,7 @@
     <thead class="thead-dark">
   <tr>
     <th scope="col"></th>
-    <th scope="col">Name</th>
+    <th scope="col"><input type="text" [(ngModel)]="filter_name" (change)="filterList()" placeholder="filter"><br>Name</th>
     <th scope="col">Div p.a.<br>in 30y</th>
     <th scope="col">Total Div<br>over 30y</th>
     <th scope="col">Div<br>inc</th>
