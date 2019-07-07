@@ -4,6 +4,7 @@ CREATE TABLE `isin` (
  `currency` varchar(3) NOT NULL,
  `sector` varchar(50),
  `symbol` varchar(20) NOT NULL,
+ `symbolcurrency` varchar(3),
  PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

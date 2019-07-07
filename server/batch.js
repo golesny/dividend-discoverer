@@ -17,6 +17,7 @@ const isDevMode = (process.argv.length >= 3 && process.argv[2] == "dev");
 const config = require("../config"+(isDevMode?"":".prod")+".json");
 const alphavantage = require('./alphavantage.js');
 const report = require("./report");
+const fixer_io = require("./fixer_io");
 
 module.exports = {
     loadCurrentPrices: function (db) {
@@ -42,10 +43,24 @@ module.exports = {
             if ("Error Message" in result) {
               // error
               reject(isin.isin+": error");
-            } else {
+            } else if ("Global Quote" in result && "07. latest trading day" in result["Global Quote"]) {
               // put to db
               var quote = result["Global Quote"];
-              var priceentity = {isin: isin.isin, date: quote["07. latest trading day"], price: Number.parseFloat(quote["05. price"])};
+              var p = Number.parseFloat(quote["05. price"]);
+              // convert currency
+              // Example: symbolcurrency USD --> EUR --> target currency DKK 
+              // price 100 USD / 1.12 = 89,2 EUR
+              // 89,2 EUR * 7.46 = 665,42 DKK
+              if (isin.symbolcurrency && isin.currency != isin.symbolcurrency && isin.symbolcurrency.length == 3) {
+                var rates = fixer_io.getExchangeRates();
+                var symbolcurr = rates[isin.symbolcurrency];
+                var stockcurr = rates[isin.currency];
+                var priceInEUR = p / symbolcurr;
+                var pInTargetCurr = priceInEUR * stockcurr;
+                console.log("converted "+p+" "+isin.symbolcurrency+" -> "+priceInEUR+" EUR "+" -> "+pInTargetCurr+" "+isin.currency);
+                p = pInTargetCurr;
+              }
+              var priceentity = {isin: isin.isin, date: quote["07. latest trading day"], price: p};
               db.insert(priceentity).into('price').then((result) => {
                 console.log("created price", result);
                 report.updateReportForISIN(db, isin.isin, isin.currency, (errormsg) => {
@@ -60,6 +75,8 @@ module.exports = {
                 console.error("Could not create price for isin "+isin.isin, err.message);
                 reject(isin.isin+": "+err.message);
               });
+            } else {
+              console.log("skipping due to bad data");
             }
             
           });

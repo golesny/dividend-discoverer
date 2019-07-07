@@ -42,6 +42,12 @@
       </div>
       <input type="text" class="form-control" name="symbol" [(ngModel)]="model.symbol"
              placeholder="Symbol" aria-label="Symbol" aria-describedby="basic-addon4" required>
+      
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon5" style="width:40px; text-align: center"><span class="oi oi-dollar"></span></span>
+      </div>
+      <input type="text" class="form-control" name="symbolcurrency" [(ngModel)]="model.symbolcurrency"
+             placeholder="Symbol Currency" aria-label="Symbol Currency" aria-describedby="basic-addon5" required>
     </div>
 
     <!-- symbol search -->
@@ -51,7 +57,7 @@
           <span class="oi" [ngClass]="symbolproposalstatus"></span>
         </button>
       </div>
-      <select class="form-control" id="symbolselection" name="symbolselection" [(ngModel)]="model.symbol" style="width: 100px">
+      <select class="form-control" id="symbolselection" name="symbolselection" [(ngModel)]="symbolselection" (change)="onSymbolSelection()" style="width: 100px">
         <option *ngFor="let s of symbolproposals | keyvalue" [value]="s.key">{{s.value}}</option>
       </select>      
     </div>

@@ -7,6 +7,7 @@ export class ISIN {
       public currency: string,
       public sector: string,
       public symbol: string,
+      public symbolcurrency?: string,
       public updated_ts?: Date,
       public report_count?: number      
       ) {

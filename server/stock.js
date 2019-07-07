@@ -192,8 +192,10 @@ function handleGetList(type, req, res) {
     // trim isin
     entity.isin = entity.isin.trim();
     console.log("insertUpdate ", util.inspect(entity, false, null, isDevMode /* enable colors */));
+    var fields = {name: entity.name, currency: entity.currency, sector: entity.sector,
+      symbol: entity.symbol, symbolcurrency: entity.symbolcurrency};
     if (mode == "create") {
-      var fields = {isin: entity.isin, name: entity.name, currency: entity.currency, sector: entity.sector, symbol: entity.symbol};
+      fields.isin = entity.isin;
       db.insert(fields).into("isin").then((result) => {      
         console.log("created isin", entity.isin);
         res.json(entity);
@@ -203,11 +205,7 @@ function handleGetList(type, req, res) {
         res.status(500).send("Could not insert isin");
       });
     } else if (mode == "update") {
-      // separate primary key
-      var pk = {isin: entity.isin};
-      var fields = {name: entity.name, currency: entity.currency, sector: entity.sector, symbol: entity.symbol};
-      
-      db.update(fields).into("isin").where(pk).then((result) => {      
+      db.update(fields).into("isin").where({isin: entity.isin}).then((result) => {      
         console.log("updated isin", entity.isin);
         entity.updated_ts = new Date();
         res.json(entity);

@@ -15,6 +15,7 @@ export class StockFormComponent {
   currencies:Map<string, number>;
   public model:ISIN;
   public mode:string;
+  symbolselection: string;
   symbolproposals: Map<string, string>;
   symbolproposalstatus: string;
   page:number;
@@ -45,12 +46,12 @@ export class StockFormComponent {
   resetISIN() {
     this.model = new ISIN('', '', "EUR", "", "");
     this.mode = "new";
-    this.symbolproposals = new Map<string, string>();
+    this.symbolproposals = new Map<any, string>();
     this.symbolproposalstatus = "oi-magnifying-glass";
   }
 
   editISIN(isin, $formEl) {
-    this.symbolproposals = new Map<string, string>();
+    this.symbolproposals = new Map<any, string>();
     this.model = JSON.parse(JSON.stringify(isin)); // use a copy
     this.mode = "edit";
     $formEl.scrollIntoView({block: "start", inline: "nearest"});
@@ -94,7 +95,7 @@ export class StockFormComponent {
       data => {
         this.symbolproposalstatus = "oi-magnifying-glass";
         data["bestMatches"].forEach(proposal => {
-          this.symbolproposals.set(proposal["1. symbol"], proposal["1. symbol"] + " | " + proposal["2. name"] + " (" + proposal["3. type"] + "/" + proposal["8. currency"]+")");
+          this.symbolproposals.set(proposal["1. symbol"] + "/" +proposal["8. currency"], proposal["1. symbol"] + " | " + proposal["2. name"] + " (" + proposal["3. type"] + "/" + proposal["8. currency"]+")");
         });
       },
       err => {
@@ -102,6 +103,13 @@ export class StockFormComponent {
         this.symbolproposalstatus = "oi-warning";
       }
     );
+  }
+
+  onSymbolSelection() {
+    console.log("symbol selection changed: "+this.symbolselection);
+    var tok = this.symbolselection.split("/");
+    this.model.symbol = tok[0];
+    this.model.symbolcurrency = tok[1];
   }
 
   onSubmit() {
