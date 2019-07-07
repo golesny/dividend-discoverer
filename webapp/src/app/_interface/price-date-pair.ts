@@ -8,6 +8,7 @@ export class PriceDatePair {
         public price: number,
         public estimated: boolean,
         public inDB?: boolean,
-        public deltaPercentage?: number
+        public deltaPercentage?: number,
+        public currency?: string
     ) {}
 };

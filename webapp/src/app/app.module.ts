@@ -23,6 +23,7 @@ import { TransactionsComponent } from './_form/transactions/transactions.compone
 import { registerLocaleData } from '@angular/common';
 import localeDE from '@angular/common/locales/de';
 import localeDEExtra from '@angular/common/locales/extra/de';
+import { ImportComponent } from './_form/import/import.component';
 
 // the second parameter 'fr' is optional
 registerLocaleData(localeDE, 'de', localeDEExtra);
@@ -45,7 +46,8 @@ export function provideConfig() {
     PriceFormComponent,
     ReportComponent,
     PortfolioComponent,
-    TransactionsComponent
+    TransactionsComponent,
+    ImportComponent
   ],
   imports: [
     BrowserModule,

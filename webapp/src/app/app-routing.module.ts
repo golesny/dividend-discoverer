@@ -5,6 +5,7 @@ import { ReportComponent }       from 'src/app/_form/report/report.component';
 import { PriceFormComponent }    from 'src/app/_form/price-form/price-form.component';
 import { PortfolioComponent }    from 'src/app/_form/portfolio/portfolio.component';
 import { TransactionsComponent } from 'src/app/_form/transactions/transactions.component';
+import { ImportComponent } from './_form/import/import.component';
 
 const routes: Routes = [
   { path: 'report', component: ReportComponent },
@@ -21,7 +22,8 @@ const routes: Routes = [
         type: 'dividend'
       } },
   { path: 'portfolio', component: PortfolioComponent },
-  { path: 'transactions', component: TransactionsComponent }
+  { path: 'transactions', component: TransactionsComponent },
+  { path: 'import', component: ImportComponent }
 ];
 
 @NgModule({

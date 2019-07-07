@@ -39,7 +39,7 @@ app.set('trust proxy', true);
 app.use(express.static("webapp/dist/webapp"));
 
 // authentification of api requests
-app.use("/api/*", require('./server/auth.js'));
+app.use("/api", require('./server/auth.js'));
 // business logic modules
 app.use('/api/stock', require('./server/stock.js'));
 // Returns the exchange rates

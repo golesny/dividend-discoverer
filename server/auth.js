@@ -27,7 +27,7 @@ router.use(bodyParser.json());
 /**
  * POST authentification
  */
-router.post('/', (req, res, next) => {
+router.post('/*', (req, res, next) => {
     authenticate(req, res, next);
 });
 
@@ -36,7 +36,7 @@ router.post('/', (req, res, next) => {
  *
  * Retrieve a book.
  */
-router.get('/', (req, res, next) => {
+router.get('/*', (req, res, next) => {
     authenticate(req, res, next);
 });
 

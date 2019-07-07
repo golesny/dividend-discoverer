@@ -224,11 +224,12 @@ function handleGetList(type, req, res) {
     var currency = req.params.currency;
     const db = req.app.locals.db;
     console.log("creating ", util.inspect(priceentity, false, null, isDevMode /* enable colors */));
+    var fields = [];
     for (let i = 0; i < priceentity.length; i++) {
-      delete priceentity[i]["estimated"];
+      fields.push({isin: priceentity[i].isin, date: priceentity[i].date, price: priceentity[i].price});
     }
-    db.insert(priceentity).into("price").then((result) => {      
-      console.log("created price", result);
+    db.insert(fields).into("price").then((result) => {      
+      console.log("created price ", JSON.stringify(fields));
       report.updateReportForISIN(db, priceentity[0].isin, currency, (errormsg) => {
         console.error(errormsg);
         res.json({msg: "Could save "+priceentity.length+" prices, but not the report: \n" + errormsg, pricepairs: priceentity});

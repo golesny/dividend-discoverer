@@ -16,7 +16,10 @@
         <button class="btn nav-link" routerLink="/portfolio"><span class="oi oi-spreadsheet"></span> Portfolio</button>
       </li>
       <li class="nav-item">
-        <span class="btn nav-link"><img class="img-responsive photo" src="{{ user.photoUrl }}" height="22" *ngIf="user.photoUrl != undefined"><span class="oi oi-person" *ngIf="user.photoUrl == undefined"></span> {{ user.name }}</span>
+        <button class="btn nav-link" routerLink="/import"><span class="oi oi-data-transfer-upload"></span> Import</button>
+      </li>
+      <li class="nav-item">
+        <button class="btn nav-link"><img class="img-responsive photo" src="{{ user.photoUrl }}" height="22" *ngIf="user.photoUrl != undefined"><span class="oi oi-person" *ngIf="user.photoUrl == undefined"></span> {{ user.name }}</button>
       </li>
       <li class="nav-item">
         <button class="btn nav-link" (click)="signOut()"><span class="oi oi-account-logout"></span> Logout</button>
