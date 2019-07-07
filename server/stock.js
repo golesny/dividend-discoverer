@@ -271,7 +271,7 @@ function handleGetList(type, req, res) {
   /**
  * create new Report
  */
-router.post('/report/recreate/:isin/:currency', (req, res, next) => {
+router.get('/report/recreate/:isin/:currency', (req, res, next) => {
   var isin = req.params.isin;
   var currency = req.params.currency;
   const db = req.app.locals.db;

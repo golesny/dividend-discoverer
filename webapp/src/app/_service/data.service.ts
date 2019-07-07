@@ -30,7 +30,7 @@ export class DataService {
 
   refreshReport(isin: string, currency: string): Observable<any> {
     if (this.isUserLoggedIn()) {
-      return this.http.post<any>(environment.apiUrl + "/stock/report/recreate/"+isin+"/"+currency, this.createHttpHeader());
+      return this.http.get<any>(environment.apiUrl + "/stock/report/recreate/"+isin+"/"+currency, this.createHttpHeader());
     }
   }
 
