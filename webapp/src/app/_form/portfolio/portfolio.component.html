@@ -25,12 +25,17 @@
 <table class="table table-striped table-bordered table-sm" *ngIf="portfolio_overview">
   <thead class="thead-dark">
     <tr>
+      <th></th>
       <th>Stock</th>
       <th *ngFor="let d of portfolio_overview.overview_cols">{{d.yyyymm}}<br>{{d.timestr}}</th>
     </tr>
   </thead>
   <tbody>
   <tr *ngFor="let p of portfolio_overview.overview">
+    <td>
+        <button [routerLink]="['/price/',p.isin, p.name, p.currency, p.symbol]"><span class="oi oi-dollar"></span></button>
+        <button [routerLink]="['/dividend/',p.isin, p.name, p.currency, p.symbol]"><span class="oi oi-bar-chart"></span></button>
+    </td>
     <td>{{p.name}} <span class="small">{{p.isin}}</span></td>
     <td *ngFor="let t of p.timeseries | keyvalue">
       <span class="small">{{t.value.price | number:'1.2-2':'de'}} {{p.currency}}</span><br>
