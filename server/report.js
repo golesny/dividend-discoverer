@@ -84,9 +84,9 @@ function internalCreateReportEntity(isin, rawResLst, currency, lastPrice) {
     reportEntry["div_"+(i*diff+diff)+"_avg"] = utils.roundDec10_2(avgDivs[i] * 100);
   }
   // estimated
-  var estimatedDiv = calculateEstimatedDiv( rawResLst.filter(e => e.estimated) );
+  var estimatedDiv = calculateEstimatedDiv( rawResLst.filter(e => e.estimated), resLst);
   if ( typeof estimatedDiv != "number" ) {
-    estimatedDiv = 0.0;
+    estimatedDiv = avgDiv * 0.5; // w/o estimation we use half of the historic value
   }
   if (estimatedDiv < avgDiv) {
     avgDivForCalc =  (estimatedDiv * 4 + avgDiv) / 5;
@@ -183,19 +183,32 @@ function extractPercentages(resLst, diff) {
   return percentages;
 }
 
-function calculateEstimatedDiv(resLstEstimated) {
+function calculateEstimatedDiv(resLstEstimated, resLstDividends) {
   if (resLstEstimated == undefined || resLstEstimated.length == 0) {
     console.log("no future values available");
     return undefined;
   }
+  if (resLstDividends == undefined || resLstDividends.length == 0) {
+    console.log("no dividend entries found");
+    return undefined;
+  }
   console.log("calculateEstimatedDiv start -----------");
-  var divs = [];
+  var mostFutureEntry = undefined;
   resLstEstimated.forEach(e => {
-    divs.push(e.price);
+    if (mostFutureEntry == undefined || e.date > mostFutureEntry.date) {
+      mostFutureEntry = e;
+    }
   });
-  var percentages = extractPercentages(divs, 1);
-  var estimated = calculatePessimisticMedian(percentages);
-  console.log("calculateEstimatedDiv end -------------");
+  if (mostFutureEntry == undefined) {
+    console.log("only outdated values available");
+    return undefined;
+  }
+  var latestDivEntry = resLstDividends[0];
+  var perc = (mostFutureEntry.price / latestDivEntry.price);
+  var yearsDiff = Number.parseInt(mostFutureEntry.date.substr(0,4)) - Number.parseInt(latestDivEntry.date.substr(0,4));
+  console.log("yearsDiff="+yearsDiff+" perc="+perc);
+  var estimated = Math.pow( perc, 1 / yearsDiff ) - 1;
+  console.log("calculateEstimatedDiv end -------------estimated="+estimated);
   return estimated;
 }
 
@@ -223,61 +236,4 @@ function calculateAvgDividends(list, size) {
     avgDivs.push( val / count );
   }
   return avgDivs;
-}
-
-function calculatePessimisticMedian(percentages) {
-  console.log("calculatePessimisticMedian");
-  if (percentages == undefined || percentages.length == 0) {
-    return 0.0;
-  }
-  var edges    = [-99999999, -1.00, -0.60, -0.45, -0.30, -0.15, -0.02, 0.02, 0.15, 0.30, 0.45, 0.60, 1.0, 99999999];
-  var countArr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-  var valArr   = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-  for (let i = 0; i < percentages.length; i++) {
-    const p = percentages[i];
-    let j = 0;
-    while (j < edges.length && edges[j] < p) {
-      j++;
-    }
-    countArr[j]++;
-    valArr[j] += p;
-  }
-  // find max
-  var maxI = -1;
-  var maxVal = 0;
-  for (let i = 0; i < countArr.length; i++) {
-    if (countArr[i] > maxVal) {
-      maxVal = countArr[i];
-      maxI = i;
-    }
-  }
-  // find max edge
-  let maxEdge = maxI;
-  while (maxEdge < countArr.length && countArr[maxEdge] > 1) {
-    maxEdge++;
-  }
-  // find min edge
-  let minEdge = maxI;
-  while (minEdge > 0 && countArr[minEdge] > 1) {
-    minEdge--;
-  }
-  console.log("max="+maxI+" minEdge="+minEdge+" maxEdge="+maxEdge);
-  // calculate pessimistic avg
-  var sum = 0;
-  var count = 0;
-  for (let i = minEdge; i < maxEdge; i++) {
-    sum += valArr[i];
-    count += countArr[i];
-  }
-  if ( count == 0 && minEdge >= 0) {
-    sum = valArr[minEdge];
-    count = 1;
-  }
-  var pessAvg = sum / count;
-  // debug output
-  for (let i = 0; i < countArr.length; i++) {
-    console.log(""+i+": "+edges[i]+" => "+countArr[i]);
-  }
-  console.log("pessimistic avg = "+pessAvg);
-  return pessAvg;
 }
