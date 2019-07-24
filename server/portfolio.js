@@ -253,34 +253,38 @@ function handleRowsForAnnualOverview(rows, resultObj) {
   do  {
     resultObj.depotExpectedValue = internalDepotExpectedValue(resultObj.annualoverview, resultObj.depotAnnualPercentage);
     var cP = resultObj.depotAnnualPercentage;
-    if ( resultObj.depot_total_value < resultObj.depotExpectedValue ) {
-      cP -= 0.0001;
-      // speed up
-      if (p < 0.9) {
-        cP -= 0.005;
-      } else if (p < 0.995) {
-        cP -= 0.0015; //0.001 = 0.1%
+    if (resultObj.depotExpectedValue != 0) {
+      console.log(Date.now() + " portfolio: " + (resultObj.depotExpectedValue != 0));
+      if ( resultObj.depot_total_value < resultObj.depotExpectedValue ) {
+        cP -= 0.0001;
+        // speed up
+        if (p < 0.9) {
+          cP -= 0.005;
+        } else if (p < 0.995) {
+          cP -= 0.0015; //0.001 = 0.1%
+        }
+      } else if ( resultObj.depot_total_value > resultObj.depotExpectedValue ) {
+        cP += 0.0001;
+        // speed up
+        if (p > 1.01) {
+          cP += 0.005;
+        } else if (p > 1.005) {
+          cP += 0.0015; //0.001 = 0.1%
+        }
       }
-    } else if ( resultObj.depot_total_value > resultObj.depotExpectedValue ) {
-      cP += 0.0001;
-      // speed up
-      if (p > 1.01) {
-        cP += 0.005;
-      } else if (p > 1.005) {
-        cP += 0.0015; //0.001 = 0.1%
-      }
+      resultObj.depotAnnualPercentage = cP;
+      p = resultObj.depot_total_value / resultObj.depotExpectedValue;
+      console.log(Date.now() + " portfolio: calc annual percentage: cP="+cP+" p="+p);
+    } else {
+      p = 1; // abort
     }
-    resultObj.depotAnnualPercentage = cP;
-    p = resultObj.depot_total_value / resultObj.depotExpectedValue;
-    console.log("calc annual percentage: cP="+cP+" p="+p);
-  } while(p < 0.9995 || p > 1.0005);
+  } while (p < 0.9995 || p > 1.0005);
 }
 
 function internalDepotExpectedValue(annualentries, percentage) {
   var yearNow = new Date().getUTCFullYear();
   var expectedSum = 0;
   annualentries.forEach((entry) => {
-    entry.cashinyear 
     // =B3*POW(1+$C$1;Year(now())-A3+1)
     //console.log("internalDepotExpectedValue: yearNow="+yearNow+" entry.year="+entry.year+" percentage="+percentage);
     var expected = entry.cashinyear * Math.pow(1+percentage, yearNow - entry.year + 1);

@@ -39,7 +39,7 @@ app.set('trust proxy', true);
 app.use(express.static("webapp/dist/webapp"));
 
 // authentification of api requests
-app.use("/api", require('./server/auth.js'));
+app.use("/", require('./server/auth.js'));
 // business logic modules
 app.use('/api/stock', require('./server/stock.js'));
 // Returns the exchange rates
@@ -67,14 +67,6 @@ app.get('/api/updateallprices', (req, res, next) => {
 
 // Redirect the rest to /index.html (that the sub-pathes are supported)
 app.use((req, res) => {
-  if (req.url != '/transactions' &&
-      req.url != '/report' &&
-      req.url.startsWith('/stock') &&
-      req.url.startsWith('/price') &&
-      req.url.startsWith('/dividend') &&
-      req.url != '/portfolio' ) {
-    console.warn("index.html: unhandled request for url", req.url);
-  }
   res.sendFile(path.resolve("./webapp/dist/webapp/index.html"));
 });
 

@@ -25,35 +25,36 @@ const router = express.Router();
 router.use(bodyParser.json());
 
 /**
- * POST authentification
+ * POST /api/* authentification
  */
-router.post('/*', (req, res, next) => {
+router.post('*', (req, res, next) => {
     authenticate(req, res, next);
 });
 
 /**
- * GET /api*
- *
- * Retrieve a book.
+ * GET /api* authentification
  */
-router.get('/*', (req, res, next) => {
+router.get('*', (req, res, next) => {
     authenticate(req, res, next);
 });
 
 function authenticate(req, res, next) {
+    // ignore static content
+    if (isStaticContent(req)) {
+        next();
+        return true;
+    }
     console.log("auth: incoming request", req.url, req.method);
     if (isDevMode) {
-        console.log("auth: overriding oauth verification in dev mode");
+        console.log("auth: DEV_MODE - overriding oauth verification in dev mode. user="+config.DEV_MODE_USER_ID);
         if (req.app.locals.users != undefined) {
-            var userID = Object.keys(req.app.locals.users)[0]; // first user must be an admin user in DEV mode
-            if (req.app.locals.users[userID].userrights.includes("admin")) {
-                res.locals.userid = userID;
-                res.locals.userrights = req.app.locals.users[userID].userrights;
+            if (authorize(config.DEV_MODE_USER_ID, res, req)) {
                 next();
             } else {
-                res.status(403).send("Only admin users allowed (DEV MODE)");
+                res.status(403).send('Authentification failed (DEV_MODE)');
             }
         } else {
+            console.log("auth: no user loaded");
             res.status(403).send("Could not find admin users (DEV MODE)");
         }
     }
@@ -85,20 +86,73 @@ async function verify(token, res, req) {
     });
     const payload = ticket.getPayload();
     const userid = payload['sub'];
-    
+    return authorize(userid, res, req);
+}
+
+function authorize(userid, res, req) {
     if (userid in req.app.locals.users) {
         var userrights = req.app.locals.users[userid].userrights;
-        if (userrights.includes(("admin"))) {
-            // currently only admins are allowed
-            res.locals.userid = userid;
-            res.locals.userrights = userrights;
-            console.log("auth: user logged in: "+userid);
-            return true;
+        if (userrights.includes(("read"))) {
+            // basic authorization
+            //console.log("auth: url="+req.url);
+            var accessmatrix = [
+                { match: function(url){return url == "/api/stock"}, role: "read"},
+                { match: function(url){return url.startsWith("/api/stock/price/list") }, role: "read"},
+                { match: function(url){return url == "/api/stock/price" }, role: "write"},                
+                { match: function(url){return url.startsWith("/api/stock/isin")}, role: "write"},
+                { match: function(url){return url.startsWith("/api/stock/report")}, role: "write"},
+                { match: function(url){return url.startsWith("/api/stock/dividend/list")}, role: "read"},
+                { match: function(url){return url == "/api/stock/dividend"}, role: "write"},
+                { match: function(url){return url.startsWith("/api/stock/isin")}, role: "write"},
+                { match: function(url){return url == "/api/report"}, role: "read"},
+                { match: function(url){return url == "/api/rates" }, role: "read"},
+                { match: function(url){return url == "/api/monthlyadjusted" }, role: "alphavantage"},
+                { match: function(url){return url.startsWith("/api/portfolio") }, role: "read"},
+                { match: function(url){return url == "/api/updateallprices" }, role: "admin"},
+                { match: function(url){return url == "/api/symbolsearch" }, role: "alphavantage"}
+            ];
+            var neededRole = undefined;
+            for (let i = 0; i < accessmatrix.length; i++) {
+                if (accessmatrix[i].match(req.url)) {
+                    neededRole = accessmatrix[i].role;
+                }
+            }
+            //console.log("auth: found needed role "+neededRole);
+            if (neededRole != undefined) {
+                if (userrights.includes(neededRole)){
+                    // ok
+                    res.locals.userid = userid;
+                    res.locals.userrights = userrights;
+                    console.log("auth: user "+userid+" authorized to access "+req.url);
+                    return true;
+                } else {
+                    // not ok
+                    console.log("auth: user "+userid+" may not access "+req.url+". needed right: "+accessmatrix[req.url]);
+                    return false;
+                }
+            } else {
+                // not in list
+                console.log("auth: url "+req.url+" is not matching with any accessmatrix entry");
+                return false;
+            }
         } else {
-            console.error("currently only admin users allowed/implemented. But found only "+JSON.stringify(userrights)+" for user "+userid);
+            console.error("Minimal read rights are needed for access. "+JSON.stringify(userrights)+" for user "+userid);
             return false;
         }
     }
+}
+
+function isStaticContent(req) {
+    if (req.url == '/transactions' ||
+      req.url == '/report' ||
+      req.url.startsWith('/stock') ||
+      req.url.startsWith('/price') ||
+      req.url.startsWith('/dividend') ||
+      req.url == '/portfolio' ) {
+          return true;
+  } else {
+      return false;
+  }
 }
 
 module.exports = router;

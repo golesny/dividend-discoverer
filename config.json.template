@@ -8,5 +8,6 @@
     "FIXER_IO_ACCESS_TOKEN": "a1b2....",
     "EXCHANGE_LIST": "EUR,USD,AUD,CAD,SKR,CHF,DKK,GBP,SEK,NOK",
     "ALPHAVANTAGE_APIKEY": "get your key here: https://www.alphavantage.co/support/#api-key",
-    "PORTFOLIO_PROGRESS_COLS": [0,1,2,3,6,12,36,60,120,180]
+    "PORTFOLIO_PROGRESS_COLS": [0,1,2,3,6,12,36,60,120,180],
+    "DEV_MODE_USER_ID": "<fill this only for dev mode>"
 }
