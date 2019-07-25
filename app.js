@@ -64,6 +64,8 @@ app.get('/api/updateallprices', (req, res, next) => {
   batch.loadCurrentPrices(req.app.locals.db);
   res.json({msg: "Batch Queued"});
 });
+// user
+app.use('/api/user', require('./server/user.js'));
 
 // Redirect the rest to /index.html (that the sub-pathes are supported)
 app.use((req, res) => {

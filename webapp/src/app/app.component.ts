@@ -1,15 +1,18 @@
 import { Component } from '@angular/core';
 import { DataService } from './_service/data.service';
+import { AuthComponent } from './_form/auth/auth-component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.sass']
 })
-export class AppComponent {  
+export class AppComponent extends AuthComponent {  
   title = 'Dividend Discoverer';
 
-  constructor(private dataService:DataService) { }
+  constructor(protected dataService:DataService) {
+    super(dataService);
+  }
 
   signInWithGoogle(): void {
     this.dataService.signInWithGoogle();

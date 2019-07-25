@@ -9,9 +9,9 @@ import { SocialUser } from "angularx-social-login";
 import { ISIN } from '../_interface/isin';
 import { ToastrService } from 'ngx-toastr';
 import { PriceDatePair } from '../_interface/price-date-pair';
-import { Portfolio } from '../_interface/portfolio';
 import { Transaction } from '../_interface/transaction';
 import { PortfolioContainer } from '../_interface/portfolio-container';
+import { UserInfo } from '../_interface/user-info';
 
 
 @Injectable({
@@ -19,6 +19,7 @@ import { PortfolioContainer } from '../_interface/portfolio-container';
 })
 export class DataService {
   public user: SocialUser;
+  public userInfo: UserInfo;
 
   constructor(private http: HttpClient,
               private authService: AuthService,
@@ -123,6 +124,10 @@ export class DataService {
     return null;
   }
 
+  getUserInfo(): UserInfo {
+    return this.userInfo;
+  }
+
   // --------------- auth ------------------
   signInWithGoogle(): void {
     console.log("sign in with google")
@@ -168,6 +173,7 @@ export class DataService {
         this.user = user;
         console.log("login successful: token "+this.bearerToken());
         this.toastr.success("Logged in successfully");
+        this.initUserInfo();
       });
     } else {
       console.info("developer auto-login");
@@ -176,6 +182,18 @@ export class DataService {
       devUser.name = "Dev Op";
       devUser.idToken = "none";
       this.user = devUser;
+      this.initUserInfo();
     }
+  }
+
+  initUserInfo() {
+    if (this.isUserLoggedIn()) {
+      var ob = this.http.get<UserInfo>(environment.apiUrl + "/user/userinfo", this.createHttpHeader());
+      ob.subscribe((userInfo) => {
+        this.userInfo = userInfo;
+        console.log("userinfo: "+JSON.stringify(userInfo));
+      });
+    }
+    return null;
   }
 }

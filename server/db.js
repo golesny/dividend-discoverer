@@ -50,8 +50,9 @@ module.exports = {
         appLocal.db.select().from("user")
         .then((rows) => {
             var users  = {};
-            rows.map((entry) => {            
-                users[entry.id] = entry;
+            rows.map((entry) => {       
+                entry.userrights = entry.userrights.split(",");     
+                users[entry.id] = entry;            
             });
             console.log("loaded "+Object.keys(users).length+" user(s) from database");
             appLocal.users = users;

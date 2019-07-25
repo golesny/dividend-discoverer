@@ -2,21 +2,23 @@ import { Component, OnInit } from '@angular/core';
 import { Report } from 'src/app/_interface/report';
 import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from 'src/app/_service/notify.service';
+import { AuthComponent } from '../auth/auth-component';
 
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.sass']
 })
-export class ReportComponent implements OnInit {
+export class ReportComponent extends AuthComponent implements OnInit {
   public reports: Report[];
   public allreports: Report[];
   page:number;
   pageSize:number;
   filter_name:string;
 
-  constructor(private dataService: DataService,
+  constructor(protected dataService: DataService,
               private notifyService: NotifyService) { 
+    super(dataService);
     this.reports = [];
     this.allreports = [];
     this.filter_name = "";

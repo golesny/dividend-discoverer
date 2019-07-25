@@ -3,15 +3,14 @@ import { PriceDatePair } from 'src/app/_interface/price-date-pair';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from '../../_service/notify.service';
-import { NgbDateStruct, NgbDate, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { stringify } from '@angular/core/src/util';
+import { AuthComponent } from '../auth/auth-component';
 
 @Component({
   selector: 'app-price-form',
   templateUrl: './price-form.component.html',
   styleUrls: ['./price-form.component.sass']
 })
-export class PriceFormComponent implements OnInit {
+export class PriceFormComponent extends AuthComponent implements OnInit {
   prices: PriceDatePair[];
   public inArea: string;
   isin: string;
@@ -27,8 +26,9 @@ export class PriceFormComponent implements OnInit {
   symbolselection: string;
 
   constructor(private route:  ActivatedRoute,
-              private dataService: DataService,
+              protected dataService: DataService,
               private notifyService: NotifyService) {
+    super(dataService);
     this.prices = [];
     this.symbolproposals = new Map<string, string>();
   }

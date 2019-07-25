@@ -1,9 +1,5 @@
 <h3>Portfolio</h3>
-<div style="margin: 5px;">
-    <button [routerLink]="['/transactions']"><span class="oi oi-document"></span></button>
-</div>
 
-<h3>Overview</h3>
 <table class="table table-striped table-bordered table-sm" *ngIf="portfolio_overview">
     <tbody>
     <tr><td>Cash</td><td style="text-align: right">{{portfolio_overview.currentcash | number:'1.0-0':'de'}} {{portfolio_overview.currency}}</td></tr>

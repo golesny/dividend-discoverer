@@ -7,16 +7,19 @@
   <div *ngIf="user" class="collapse navbar-collapse" id="navbarSupportedContent">    
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <button class="btn nav-link" routerLink="/report"><span class="oi oi-bar-chart"></span> Report</button>
+        <button class="btn nav-link" routerLink="/report" *ngIf="hasUserRights('read')"><span class="oi oi-bar-chart"></span> Report</button>
       </li>
       <li class="nav-item">
-          <button class="btn nav-link" routerLink="/stock"><span class="oi oi-briefcase"></span> Stocks</button>
+          <button class="btn nav-link" routerLink="/stock" *ngIf="hasUserRights('write')"><span class="oi oi-briefcase"></span> Stocks</button>
       </li>
       <li class="nav-item">
-        <button class="btn nav-link" routerLink="/portfolio"><span class="oi oi-spreadsheet"></span> Portfolio</button>
+        <button class="btn nav-link" routerLink="/portfolio" *ngIf="user != undefined"><span class="oi oi-spreadsheet"></span> Portfolio</button>
       </li>
       <li class="nav-item">
-        <button class="btn nav-link" routerLink="/import"><span class="oi oi-data-transfer-upload"></span> Import</button>
+        <button class="btn nav-link" routerLink="/transactions" *ngIf="user != undefined"><span class="oi oi-document"></span> Transactions</button>
+      </li>
+      <li class="nav-item">
+        <button class="btn nav-link" routerLink="/import" *ngIf="hasUserRights('write')"><span class="oi oi-data-transfer-upload"></span> Import</button>
       </li>
       <li class="nav-item">
         <button class="btn nav-link"><img class="img-responsive photo" src="{{ user.photoUrl }}" height="22" *ngIf="user.photoUrl != undefined"><span class="oi oi-person" *ngIf="user.photoUrl == undefined"></span> {{ user.name }}</button>

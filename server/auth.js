@@ -109,7 +109,8 @@ function authorize(userid, res, req) {
                 { match: function(url){return url == "/api/monthlyadjusted" }, role: "alphavantage"},
                 { match: function(url){return url.startsWith("/api/portfolio") }, role: "read"},
                 { match: function(url){return url == "/api/updateallprices" }, role: "admin"},
-                { match: function(url){return url == "/api/symbolsearch" }, role: "alphavantage"}
+                { match: function(url){return url == "/api/symbolsearch" }, role: "alphavantage"},
+                { match: function(url){return url.startsWith("/api/user") }, role: ""}
             ];
             var neededRole = undefined;
             for (let i = 0; i < accessmatrix.length; i++) {
@@ -119,7 +120,7 @@ function authorize(userid, res, req) {
             }
             //console.log("auth: found needed role "+neededRole);
             if (neededRole != undefined) {
-                if (userrights.includes(neededRole)){
+                if (userrights.includes(neededRole) || "" === neededRole){
                     // ok
                     res.locals.userid = userid;
                     res.locals.userrights = userrights;
