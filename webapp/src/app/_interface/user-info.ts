@@ -1,3 +1,8 @@
-export interface UserInfo {
-    rights: string[];
+export class UserInfo {
+    constructor(
+        public rights: string[]
+    ) {
+
+    }
+    
 }

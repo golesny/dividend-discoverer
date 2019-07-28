@@ -128,6 +128,13 @@ export class DataService {
     return this.userInfo;
   }
 
+  requestAccess(): Observable<UserInfo> {
+    if (this.isUserLoggedIn()) {
+      return this.http.get<UserInfo>(environment.apiUrl + "/user/requestaccess", this.createHttpHeader());
+    }
+    return null; 
+  }
+
   // --------------- auth ------------------
   signInWithGoogle(): void {
     console.log("sign in with google")
@@ -140,6 +147,7 @@ export class DataService {
       console.log(res);
     });
     this.user = null;
+    this.userInfo = null;
   }
 
   bearerToken(): string {
@@ -192,6 +200,12 @@ export class DataService {
       ob.subscribe((userInfo) => {
         this.userInfo = userInfo;
         console.log("userinfo: "+JSON.stringify(userInfo));
+      }, (err) => {
+        console.log("login failed" + JSON.stringify(err));
+        if (err.status == 403) {
+          // no user currently created in database --> request
+          this.userInfo = new UserInfo(['userNoInDB']);
+        }
       });
     }
     return null;

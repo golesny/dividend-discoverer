@@ -12,4 +12,8 @@ export class AuthComponent  {
     var hasRight = this.dataService.getUserInfo().rights.includes(role);
     return hasRight;
   }
+
+  get userInfo() {
+    return this.dataService.userInfo;
+  }
 }

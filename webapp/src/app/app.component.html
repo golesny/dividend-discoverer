@@ -13,16 +13,16 @@
           <button class="btn nav-link" routerLink="/stock" *ngIf="hasUserRights('write')"><span class="oi oi-briefcase"></span> Stocks</button>
       </li>
       <li class="nav-item">
-        <button class="btn nav-link" routerLink="/portfolio" *ngIf="user != undefined"><span class="oi oi-spreadsheet"></span> Portfolio</button>
+        <button class="btn nav-link" routerLink="/portfolio" *ngIf="hasUserRights('read')"><span class="oi oi-spreadsheet"></span> Portfolio</button>
       </li>
       <li class="nav-item">
-        <button class="btn nav-link" routerLink="/transactions" *ngIf="user != undefined"><span class="oi oi-document"></span> Transactions</button>
+        <button class="btn nav-link" routerLink="/transactions" *ngIf="hasUserRights('read')"><span class="oi oi-document"></span> Transactions</button>
       </li>
       <li class="nav-item">
         <button class="btn nav-link" routerLink="/import" *ngIf="hasUserRights('write')"><span class="oi oi-data-transfer-upload"></span> Import</button>
       </li>
       <li class="nav-item">
-        <button class="btn nav-link"><img class="img-responsive photo" src="{{ user.photoUrl }}" height="22" *ngIf="user.photoUrl != undefined"><span class="oi oi-person" *ngIf="user.photoUrl == undefined"></span> {{ user.name }}</button>
+        <button class="btn nav-link" routerLink="/"><img class="img-responsive photo" src="{{ user.photoUrl }}" height="22" *ngIf="user.photoUrl != undefined"><span class="oi oi-person" *ngIf="user.photoUrl == undefined"></span> {{ user.name }}</button>
       </li>
       <li class="nav-item">
         <button class="btn nav-link" (click)="signOut()"><span class="oi oi-account-logout"></span> Logout</button>
@@ -38,10 +38,46 @@
 <div class="jumbotron bg-transparent text-center">
   <div *ngIf="!user" class="card text-center">
     <div class="card-block">
-      <h4 class="card-title">Not signed in</h4>
+      <h4 class="card-title">Signed in to trequest access</h4>
     </div>
     <div class="card-block">
       <button class="btn btn-social-icon btn-google mx-1" (click)="signInWithGoogle()"><span class="fa fa-google">Sign in with Google</span></button>
+    </div>
+  </div>
+
+  <div *ngIf="hasUserRights('userNoInDB')">
+    <div class="card-block">
+      <h4 class="card-title">Request access</h4>
+    </div>
+    <div class="card-block">
+      <div>
+        At the moment the is just a closed beta, probably forever.
+        But if you know the developer, perhaps you will get access.
+      </div>
+      <div>First step is to request access which means the user is created in the database without rights.</div>
+      <button class="btn btn-success" (click)="requestAccess()">Request access</button>
+    </div>
+  </div>
+
+  <div *ngIf="hasUserRights('requestedAccess')">
+      <div class="card-block">
+        <h4 class="card-title">Your have requested the access</h4>
+      </div>
+      <div class="card-block">
+        <div>
+         You can just wait and drop the admins a message.
+        </div>
+      </div>
+    </div>
+  
+  <div *ngIf="hasUserRights('read')">
+    <div class="card-block">
+      <h4 class="card-title">Your user info:</h4>
+    </div>
+    <div class="card-block">
+      <div>
+        Userrights: {{userInfo.rights}}
+      </div>
     </div>
   </div>
    

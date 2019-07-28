@@ -48,7 +48,7 @@ function authenticate(req, res, next) {
     if (isDevMode) {
         console.log("auth: DEV_MODE - overriding oauth verification in dev mode. user="+config.DEV_MODE_USER_ID);
         if (req.app.locals.users != undefined) {
-            if (authorize(config.DEV_MODE_USER_ID, res, req)) {
+            if (authorize(config.DEV_MODE_USER_ID, 'testuser@gmail.com', res, req)) {
                 next();
             } else {
                 res.status(403).send('Authentification failed (DEV_MODE)');
@@ -86,60 +86,69 @@ async function verify(token, res, req) {
     });
     const payload = ticket.getPayload();
     const userid = payload['sub'];
-    return authorize(userid, res, req);
+    const email = payload.getEmail();
+    return authorize(userid, email, res, req);
 }
 
-function authorize(userid, res, req) {
+function authorize(userid, email, res, req) {
     if (userid in req.app.locals.users) {
         var userrights = req.app.locals.users[userid].userrights;
-        if (userrights.includes(("read"))) {
-            // basic authorization
-            //console.log("auth: url="+req.url);
-            var accessmatrix = [
-                { match: function(url){return url == "/api/stock"}, role: "read"},
-                { match: function(url){return url.startsWith("/api/stock/price/list") }, role: "read"},
-                { match: function(url){return url == "/api/stock/price" }, role: "write"},                
-                { match: function(url){return url.startsWith("/api/stock/isin")}, role: "write"},
-                { match: function(url){return url.startsWith("/api/stock/report")}, role: "write"},
-                { match: function(url){return url.startsWith("/api/stock/dividend/list")}, role: "read"},
-                { match: function(url){return url == "/api/stock/dividend"}, role: "write"},
-                { match: function(url){return url.startsWith("/api/stock/isin")}, role: "write"},
-                { match: function(url){return url == "/api/report"}, role: "read"},
-                { match: function(url){return url == "/api/rates" }, role: "read"},
-                { match: function(url){return url == "/api/monthlyadjusted" }, role: "alphavantage"},
-                { match: function(url){return url.startsWith("/api/portfolio") }, role: "read"},
-                { match: function(url){return url == "/api/updateallprices" }, role: "admin"},
-                { match: function(url){return url == "/api/symbolsearch" }, role: "alphavantage"},
-                { match: function(url){return url.startsWith("/api/user") }, role: ""}
-            ];
-            var neededRole = undefined;
-            for (let i = 0; i < accessmatrix.length; i++) {
-                if (accessmatrix[i].match(req.url)) {
-                    neededRole = accessmatrix[i].role;
-                }
+        // basic authorization
+        //console.log("auth: url="+req.url);
+        var accessmatrix = [
+            { match: function(url){return url == "/api/stock"}, role: "read"},
+            { match: function(url){return url.startsWith("/api/stock/price/list") }, role: "read"},
+            { match: function(url){return url == "/api/stock/price" }, role: "write"},                
+            { match: function(url){return url.startsWith("/api/stock/isin")}, role: "write"},
+            { match: function(url){return url.startsWith("/api/stock/report")}, role: "write"},
+            { match: function(url){return url.startsWith("/api/stock/dividend/list")}, role: "read"},
+            { match: function(url){return url == "/api/stock/dividend"}, role: "write"},
+            { match: function(url){return url.startsWith("/api/stock/isin")}, role: "write"},
+            { match: function(url){return url == "/api/report"}, role: "read"},
+            { match: function(url){return url == "/api/rates" }, role: "read"},
+            { match: function(url){return url == "/api/monthlyadjusted" }, role: "alphavantage"},
+            { match: function(url){return url.startsWith("/api/portfolio") }, role: "read"},
+            { match: function(url){return url == "/api/updateallprices" }, role: "admin"},
+            { match: function(url){return url == "/api/symbolsearch" }, role: "alphavantage"},
+            { match: function(url){return url.startsWith("/api/user") }, role: ""}
+        ];
+        var neededRole = undefined;
+        for (let i = 0; i < accessmatrix.length; i++) {
+            if (accessmatrix[i].match(req.url)) {
+                neededRole = accessmatrix[i].role;
             }
-            //console.log("auth: found needed role "+neededRole);
-            if (neededRole != undefined) {
-                if (userrights.includes(neededRole) || "" === neededRole){
-                    // ok
-                    res.locals.userid = userid;
-                    res.locals.userrights = userrights;
-                    console.log("auth: user "+userid+" authorized to access "+req.url);
-                    return true;
-                } else {
-                    // not ok
-                    console.log("auth: user "+userid+" may not access "+req.url+". needed right: "+accessmatrix[req.url]);
-                    return false;
-                }
+        }
+        //console.log("auth: found needed role "+neededRole);
+        if (neededRole != undefined) {
+            if (userrights.includes(neededRole) || "" === neededRole){
+                // ok
+                storeUserToLocals();
+                return true;
             } else {
-                // not in list
-                console.log("auth: url "+req.url+" is not matching with any accessmatrix entry");
+                // not ok
+                console.log("auth: user "+userid+" may not access "+req.url+". needed right: "+accessmatrix[req.url]);
                 return false;
             }
         } else {
-            console.error("Minimal read rights are needed for access. "+JSON.stringify(userrights)+" for user "+userid);
+            // not in list
+            console.log("auth: auth: url "+req.url+" is not matching with any accessmatrix entry");
             return false;
         }
+    } else {
+        console.error("auth: user not found");
+        if (req.url == "/api/user/requestaccess") {
+            storeUserToLocals();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function storeUserToLocals() {
+        res.locals.userid = userid;
+        res.locals.userrights = userrights;
+        res.locals.useremail = email;
+        console.log("auth: user " + userid + " authorized to access " + req.url);
     }
 }
 

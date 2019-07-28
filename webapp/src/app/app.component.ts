@@ -22,6 +22,14 @@ export class AppComponent extends AuthComponent {
     this.dataService.signOut();
   }
 
+  requestAccess(): void {
+    console.log("requestAccess");
+    this.dataService.requestAccess().subscribe((userinfo) => {
+      console.log("user created");
+      this.dataService.userInfo = userinfo;
+    }, (err) => {console.log(err.message)});
+  }
+
   get user() {
     return this.dataService.user;
   }
