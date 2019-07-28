@@ -86,7 +86,7 @@ async function verify(token, res, req) {
     });
     const payload = ticket.getPayload();
     const userid = payload['sub'];
-    const email = payload.getEmail();
+    const email = payload['email'];
     return authorize(userid, email, res, req);
 }
 
