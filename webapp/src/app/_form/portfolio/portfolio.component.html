@@ -32,7 +32,7 @@
         <button [routerLink]="['/price/',p.isin, p.name, p.currency, p.symbol]"><span class="oi oi-dollar"></span></button>
         <button [routerLink]="['/dividend/',p.isin, p.name, p.currency, p.symbol]"><span class="oi oi-bar-chart"></span></button>
     </td>
-    <td>{{p.name}} <span class="small">{{p.isin}}</span></td>
+    <td>{{p.name}} <span class="small">{{p.isin}}<br>{{p.amount}} x {{-1 * p.entryprice / p.amount  | number:'1.2-2':'de'}} {{p.currency}} = {{ -1 * p.entryprice | number:'1.2-2':'de'}} {{p.currency}} ({{ ((p.lastprice / (-1 * p.entryprice / p.amount)) - 1) * 100 | number:'1.2-2':'de' }}%)</span></td>
     <td *ngFor="let t of p.timeseries | keyvalue">
       <span class="small">{{t.value.price | number:'1.2-2':'de'}} {{p.currency}}</span><br>
       <span [ngClass]="t.value.growth < 0 ? 'negative' : (t.value.growth > 0 ? 'positive': 'zero')">{{t.value.growth * 100 | number:'1.1-1':'de'}}%</span>

@@ -33,7 +33,9 @@ router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 router.get('/', (req, res, next) => {
     const db = req.app.locals.db;
     var user_id = res.locals.userid;
-    db.raw("SELECT isin.isin, isin.name, isin.currency,sum(portfolio.amount) as amount, "+
+    db.raw("SELECT isin.isin, isin.name, isin.currency,"+        
+           "(select sum(p2.amount) from portfolio p2 where type in ('BUY', 'SELL') and p2.isin = isin.isin) as amount, "+
+           "(select sum(p3.pricetotal) from portfolio p3 where type in ('BUY', 'SELL') and p3.isin = isin.isin) as entryprice, "+
            "(select price from price where price.isin = isin.isin order by date desc limit 1) as lastprice "+
            "FROM portfolio, isin "+
            "where isin.isin = portfolio.isin and user_id = '"+user_id+"' "+
@@ -165,11 +167,15 @@ function handleRowsforOverview(rows) {
   var obj = {currency:'EUR', stock_sum: 0, overview: []};
   rows[0].forEach((entry) => {
     entry.timeseries = {};
-    obj.overview.push(entry);
+    
     // sum up each line to a total 
     var rate = rates[entry.currency];
     var priceInEUR = entry.lastprice / rate;
     obj.stock_sum += (entry.amount * priceInEUR);
+    // convert entryprice in isin currency (from EUR)
+    entry.entryprice = entry.entryprice * rate;
+    //
+    obj.overview.push(entry);
   });
   return obj;
 }

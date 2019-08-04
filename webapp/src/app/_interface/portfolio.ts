@@ -5,6 +5,9 @@ export interface Portfolio {
     name: string;
     currency: string;
     symbol: string;
+    amount: number;
+    entryprice: number;
+    lastprice: number;
 
     timeseries: Map<string,TimeseriesPair>;
 }
