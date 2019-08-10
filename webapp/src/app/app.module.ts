@@ -56,7 +56,9 @@ export function provideConfig() {
     SocialLoginModule,
     FormsModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      positionClass: 'toast-top-left'
+    }),
     NgbModule
   ],
   providers: [

@@ -67,6 +67,9 @@ app.get('/api/updateallprices', (req, res, next) => {
 // user
 app.use('/api/user', require('./server/user.js'));
 
+// import
+app.use('/api/import', require('./server/import.js'));
+
 // Redirect the rest to /index.html (that the sub-pathes are supported)
 app.use((req, res) => {
   res.sendFile(path.resolve("./webapp/dist/webapp/index.html"));

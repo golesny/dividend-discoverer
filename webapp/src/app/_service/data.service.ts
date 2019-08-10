@@ -12,6 +12,7 @@ import { PriceDatePair } from '../_interface/price-date-pair';
 import { Transaction } from '../_interface/transaction';
 import { PortfolioContainer } from '../_interface/portfolio-container';
 import { UserInfo } from '../_interface/user-info';
+import { Router } from '@angular/router';
 
 
 @Injectable({
@@ -23,7 +24,8 @@ export class DataService {
 
   constructor(private http: HttpClient,
               private authService: AuthService,
-              private toastr: ToastrService) {
+              private toastr: ToastrService,
+              private router: Router) {
     this.init();
   }
 
@@ -87,6 +89,7 @@ export class DataService {
   }
 
   // create
+  // TODO: return value is not T
   post<T>(entity: T, entityName: string, currency: string, mode: string): Observable<T> {
       if (this.isUserLoggedIn()) {
         var modeString = mode == "edit" ? "update" : "create";
@@ -134,6 +137,21 @@ export class DataService {
     }
     return null; 
   }
+
+  getISINs(symbolCompanyPair: string[] ): Observable<ISIN[]> {
+    if (this.isUserLoggedIn()) {
+      return this.http.post<ISIN[]>(environment.apiUrl + "/import/isin", JSON.stringify(symbolCompanyPair), this.createHttpHeader());
+    } else {
+      this.router.navigate(['/']);
+    }
+    return null;
+  }
+
+  postImportDividends(entityList: PriceDatePair[]): Observable<any> {
+    if (this.isUserLoggedIn()) {
+      return this.http.post<any>(environment.apiUrl + "/import/divaristos", JSON.stringify(entityList), this.createHttpHeader());
+    }
+}
 
   // --------------- auth ------------------
   signInWithGoogle(): void {

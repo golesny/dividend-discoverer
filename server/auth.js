@@ -110,7 +110,8 @@ function authorize(userid, email, res, req) {
             { match: function(url){return url.startsWith("/api/portfolio") }, role: "read"},
             { match: function(url){return url == "/api/updateallprices" }, role: "admin"},
             { match: function(url){return url == "/api/symbolsearch" }, role: "alphavantage"},
-            { match: function(url){return url.startsWith("/api/user") }, role: ""}
+            { match: function(url){return url.startsWith("/api/user") }, role: ""},
+            { match: function(url){return url.startsWith("/api/import") }, role: "admin"}
         ];
         var neededRole = undefined;
         for (let i = 0; i < accessmatrix.length; i++) {
@@ -158,7 +159,8 @@ function isStaticContent(req) {
       req.url.startsWith('/stock') ||
       req.url.startsWith('/price') ||
       req.url.startsWith('/dividend') ||
-      req.url == '/portfolio' ) {
+      req.url == '/portfolio' ||
+      req.url == '/import' ) {
           return true;
   } else {
       return false;
