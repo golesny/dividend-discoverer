@@ -29,7 +29,7 @@
   <tbody>
   <tr *ngFor="let price of prices">
     <td>{{price.isin}}<button *ngIf="price.isin == ''" (click)="insertISIN(price)"><span class="oi oi-pencil"></span></button></td>
-    <td>{{price.name}}</td>
+    <td>{{price.name}} ({{price.symbol}})</td>
     <td>{{price.price | number:'1.0-6'}} {{price.currency}}</td>
     <td>{{price.date}}</td>
     <td>

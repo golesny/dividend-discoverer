@@ -3,6 +3,7 @@ import { PriceDatePair } from 'src/app/_interface/price-date-pair';
 import { NotifyService } from 'src/app/_service/notify.service';
 import { DataService } from 'src/app/_service/data.service';
 import { stringify } from '@angular/core/src/util';
+import { ISIN } from 'src/app/_interface/isin';
 
 @Component({
   selector: 'app-import',
@@ -96,11 +97,19 @@ export class ImportComponent implements OnInit {
 
   insertISIN(price: PriceDatePair){
     var isin = prompt("Please enter the ISIN of "+price["name"], "");
-    isin = isin.trim();
-    if (isin  != undefined) {
-      this.prices.filter(p => p["symbol"] == price["symbol"]).forEach(pr => pr.isin = isin);
+    if (isin != undefined) {
+      isin = isin.trim();
+      var entity = new ISIN(isin, price["name"], price.currency, "", price["symbol"]);
+
+      return this.dataService.post(entity, "isin", price.currency, this.mode).subscribe(
+        data => {
+          this.notifyService.showSuccess("ISIN created: " + data.isin);
+          this.prices.filter(p => p["symbol"] == price["symbol"]).forEach(pr => pr.isin = isin);
+          this.updateValidity();
+        }, err => {
+          this.notifyService.showError("error on creating isin", err);
+        });
     }
-    this.updateValidity();
   }
 
   private importActiveTrader(content: string) {

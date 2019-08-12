@@ -90,6 +90,13 @@ export class DataService {
 
   // create
   // TODO: return value is not T
+  /**
+   * 
+   * @param entity 
+   * @param entityName 
+   * @param currency 
+   * @param mode create | edit
+   */
   post<T>(entity: T, entityName: string, currency: string, mode: string): Observable<T> {
       if (this.isUserLoggedIn()) {
         var modeString = mode == "edit" ? "update" : "create";

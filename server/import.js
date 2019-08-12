@@ -47,7 +47,24 @@ router.post('/isin', (req, res, next) => {
 router.post('/divaristos', (req, res, next) => {
     const db = req.app.locals.db;
     var entityList = req.body; // array of PricePairs
-    res.json({errCode: 0});
+    // get all isins
+    var isins = [];
+    entityList.forEach(e => {
+        if (isins.indexOf(e.isin) == -1) {
+            isins.push(e.isin);
+        }
+    });
+    if (isins.length > 0) {
+        db.select().from('dividend').whereIn({isin: isins}).then((rows) => {
+            rows.map((entry) => {
+                // determine what to update and what to insert
+            });
+            res.json({errCode: 0});
+        }).catch((error) => {
+            console.error(error);
+            res.status(500).send("Could not read for isin "+isin);
+        });
+    }
 });
 
 module.exports = router;
