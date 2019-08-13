@@ -205,7 +205,7 @@ function calculateEstimatedDiv(resLstEstimated, resLstDividends) {
   }
   var latestDivEntry = resLstDividends[0];
   var perc = (mostFutureEntry.price / latestDivEntry.price);
-  var yearsDiff = Number.parseInt(mostFutureEntry.date.substr(0,4)) - Number.parseInt(latestDivEntry.date.substr(0,4));
+  var yearsDiff = mostFutureEntry.date - latestDivEntry.date;
   console.log("yearsDiff="+yearsDiff+" perc="+perc);
   var estimated = Math.pow( perc, 1 / yearsDiff ) - 1;
   console.log("calculateEstimatedDiv end -------------estimated="+estimated);

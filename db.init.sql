@@ -10,7 +10,7 @@ CREATE TABLE `isin` (
 
 CREATE TABLE `dividend` (
  `isin` varchar(20) NOT NULL,
- `date` date NOT NULL,
+ `date` int(11) NOT NULL,
  `price` decimal(10,6) NOT NULL,
  `estimated` tinyint(1) NOT NULL,
  PRIMARY KEY (`isin`,`date`,`estimated`)

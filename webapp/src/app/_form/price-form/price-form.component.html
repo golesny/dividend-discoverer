@@ -20,12 +20,22 @@
           <hr>
 
           Single values<br>
-          <div class="input-group" style="margin: 5px;">
+          <div class="input-group" style="margin: 5px;" *ngIf="type == 'price'">
               <input class="form-control" placeholder="yyyy-mm-dd"
                     name="singleDat" [(ngModel)]="singleDat" ngbDatepicker #d="ngbDatepicker">
               <div class="input-group-append">
                 <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"><span class="oi oi-calendar"></span></button>
               </div>
+          </div>
+
+          <div class="input-group" style="margin: 5px;"  *ngIf="type == 'dividend'">            
+            <input type="number" class="form-control" id="singleYear" name="singleYear" [(ngModel)]="singleYear"
+                    placeholder="yyyy" aria-label="singleYear" aria-describedby="singleYear" required>
+            <div class="input-group-append">
+              <span class="input-group-text" id="singleYear" style="font-size: 80%;">
+                <span class="oi oi-calendar"></span>
+              </span>
+            </div>
           </div>
 
           <div class="input-group" style="margin: 5px;">            

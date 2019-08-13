@@ -18,6 +18,7 @@ export class PriceFormComponent extends AuthComponent implements OnInit {
   currency: string;
   title: string;
   type: string;
+  singleYear: number;
   singleDat: Date;
   price: number;
   estimated: string;
@@ -108,6 +109,7 @@ export class PriceFormComponent extends AuthComponent implements OnInit {
 
   ngOnInit() {
     this.singleDat = new Date();
+    this.singleYear = new Date().getFullYear();
 
     this.route.params.subscribe(p => {
       this.isin = p['isin'];
@@ -152,7 +154,12 @@ export class PriceFormComponent extends AuthComponent implements OnInit {
   }
 
   transferSinglePrice() {
-    var d = this.singleDat.toISOString().substr(0, 10);
+    var d;
+    if (this.type == "price") {
+      d = this.singleDat.toISOString().substr(0, 10)
+    } else if (this.type == "dividend") {
+      d = "" + this.singleYear;
+    }
     var p:number = Number.parseFloat(this.price.toString().replace(",","."));
     var priceToSave = new PriceDatePair(this.isin, d, p, "estimated" === this.estimated);
     var sameDateEntries: PriceDatePair[] = this.prices.filter(e => e.date == priceToSave.date);
