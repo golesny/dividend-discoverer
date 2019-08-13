@@ -29,9 +29,9 @@
     "cover": "nyc --cache npm test; nyc report --reporter=html"
   },
   "dependencies": {
-    "express": "^4.16.4",
-    "google-auth-library": "^4.0.0",
-    "knex": "^0.17.0-next6",
+    "express": "^4.17.1",
+    "google-auth-library": "^4.2.6",
+    "knex": "^0.17.6",
     "mysql": "^2.17.1"
   },
   "devDependencies": {
