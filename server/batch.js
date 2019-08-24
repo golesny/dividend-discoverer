@@ -37,7 +37,8 @@ module.exports = {
             res.status(500).send("Could not read symbols for price updates");
           });
 
-      Promise.all(promises);
+      Promise.all(promises)
+             .catch((err) => {console.error("batch: "+err.message)});
       }
     };
 

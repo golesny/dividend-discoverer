@@ -112,7 +112,8 @@ function authorize(userid, email, res, req) {
             { match: function(url){return url == "/api/updateallprices" }, role: "admin"},
             { match: function(url){return url == "/api/symbolsearch" }, role: "alphavantage"},
             { match: function(url){return url.startsWith("/api/user") }, role: ""},
-            { match: function(url){return url.startsWith("/api/import") }, role: "admin"}
+            { match: function(url){return url.startsWith("/api/import") }, role: "admin"},
+            { match: function(url){return url.startsWith("/api/symbolsearch/") }, role: "admin"}
         ];
         var neededRole = undefined;
         for (let i = 0; i < accessmatrix.length; i++) {
