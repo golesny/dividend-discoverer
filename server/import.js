@@ -47,7 +47,7 @@ router.post('/isin', (req, res, next) => {
 router.post('/divaristos', (req, res, next) => {
     const db = req.app.locals.db;
     var entityList = req.body; // array of PricePairs
-    // get all isins
+    // collect all isins
     var isins = [];
     entityList.forEach(e => {
         if (isins.indexOf(e.isin) == -1) {
@@ -55,16 +55,72 @@ router.post('/divaristos', (req, res, next) => {
         }
     });
     if (isins.length > 0) {
-        db.select().from('dividend').whereIn({isin: isins}).then((rows) => {
+        // get all dividends of that isins
+        var updateList = [];
+        console.log("import: isins="+JSON.stringify(isins));
+        db.select().from('dividend').whereIn('isin', isins).andWhere('estimated', 0).then((rows) => {
             rows.map((entry) => {
                 // determine what to update and what to insert
+                var entityFiltered = entityList.filter(e => (e.isin == entry.isin && e.date == entry.date));
+                if (entityFiltered.length == 1) {
+                    // already in db --> update if price is different
+                    if (entityFiltered[0].price != entry.price) {  
+                        updateList.push({key: {isin: entityFiltered[0].isin,
+                                            date: entityFiltered[0].date,
+                                            estimated: 0},
+                                        price: entityFiltered[0].price});
+                    }
+                    // remove from list
+                    var idx = entityList.indexOf(entityFiltered[0]);
+                    entityList.splice(idx, 1);
+                }
             });
-            res.json({errCode: 0});
+            // prepare inserts
+            var insertList = [];
+            entityList.forEach(e => {
+                insertList.push({isin: e.isin, date: e.date, price: e.price, estimated: 0});
+            });
+            console.log("import: insertList="+JSON.stringify(insertList));
+            console.log("import: updateList="+JSON.stringify(updateList));
+            // insert all new dividends
+            if (insertList.length > 0) {
+                db.insert(insertList).into("dividend").then((result) => {
+                    console.log("import: created "+insertList.length+" dividend entries");
+                    // update the rest
+                    updateEntry(db, updateList, res);
+                })
+                .catch((err) => {
+                    console.error("Could not insert dividends", err.message);
+                    res.status(500).send("Could not insert dividends");
+                });
+            } else {
+                updateEntry(db, updateList, res);
+            }
         }).catch((error) => {
             console.error(error);
             res.status(500).send("Could not read for isin "+isin);
         });
     }
 });
+
+function updateEntry(db, updateList, res) {
+    if (updateList.length > 0) {
+        let upd = updateList.splice(0,1)[0];
+        console.log("import: update "+JSON.stringify(upd.key)+" value="+upd.price);
+        db("dividend").update({price: upd.price}).where(upd.key).then(
+            updateEntry(db, updateList, res)
+        ).catch((err) => {
+            console.log("import: update failed ("+err.message+") for key="+JSON.stringify(upd.key)+" value="+upd.price);
+            res.status(500).send("Could not update isin "+isin);
+        });
+    } else {
+        sendOK(res);
+    }
+}
+
+function sendOK(res) {
+    console.log("import: all data imported");
+    res.json({errCode: 0, msg: "Data imported"})
+}
 
 module.exports = router;

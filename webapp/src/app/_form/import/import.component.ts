@@ -4,6 +4,7 @@ import { NotifyService } from 'src/app/_service/notify.service';
 import { DataService } from 'src/app/_service/data.service';
 import { stringify } from '@angular/core/src/util';
 import { ISIN } from 'src/app/_interface/isin';
+import { ExpectedConditions } from 'protractor';
 
 @Component({
   selector: 'app-import',
@@ -68,7 +69,7 @@ export class ImportComponent implements OnInit {
           var currency = tok[2].trim();
           for (let j=3; j < tok.length; j++) {
             var div = Number.parseFloat(tok[j].replace(",", "."));
-            var datStr = years[j] + "-01-01";
+            var datStr = ""+ years[j];
             
             var pdp = new PriceDatePair("", datStr, div, false, false, 0, currency);
             pdp["name"] = companyName;
@@ -150,7 +151,7 @@ export class ImportComponent implements OnInit {
         // send isin by isin to reduce the big amount of data
         // prepare packages
         var packs = new Map<string, PriceDatePair[]>();
-        var isins = [];
+        var isins:string[] = [];
         this.prices.forEach(element => {
           if (isins.indexOf(element.isin) == -1) {
             // new isin
@@ -160,20 +161,27 @@ export class ImportComponent implements OnInit {
           packs.get(element.isin).push(element);
         });
         // send isin packs
-        isins.forEach(isin => {
-          this.dataService.postImportDividends(packs.get(isin)).subscribe(res => {
-            if (res["errCode"] == 0){
-              console.log("import: isin "+isin+" successfully imported");
-              packs.get(isin).forEach(p => p.inDB = true);
-            }
-          }, err => {
-            this.notifyService.showError("error on saving dividends", err);
-          });
-        });
+        this.sendIsinPackage(packs, isins);
       }
     }
   }
 
+
+  private sendIsinPackage(packs: Map<string, PriceDatePair[]>, isins: string[]) {
+    var isin = isins.splice(0, 1)[0];
+    this.dataService.postImportDividends(packs.get(isin)).subscribe(res => {
+      if (res["errCode"] == 0) {
+        console.log("import: isin " + isin + " successfully imported");
+        packs.get(isin).forEach(p => p.inDB = true);
+        // call next package
+        if (isins.length > 0) {
+          this.sendIsinPackage(packs, isins);
+        }
+      }
+    }, err => {
+      this.notifyService.showError("error on saving dividends", err);
+    });
+  }
 
   updateValidity() {
     this.isValid = this.isPriceListValid();
