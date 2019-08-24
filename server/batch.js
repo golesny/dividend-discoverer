@@ -22,9 +22,14 @@ const fixer_io = require("./fixer_io");
 module.exports = {
     loadCurrentPrices: function (db) {
       var promises = [];
-      db.select().from("isin").whereRaw("symbol != ''")
+      db.raw("select isin.*, max(price.date) as lastdate from isin "+
+             "left join price on isin.isin = price.isin "+
+             "where symbol != '' "+
+             "group by isin.isin "+
+             "order by lastdate ASC "+
+             "limit 300")
         .then((rows) => {
-            rows.map((entry) => {
+            rows[0].forEach((entry) => {
               promises.push(createPromise(db, entry, promises.length * 12000)); // we are allowed to make every 12 s a call
             })
           }).catch((error) => {
