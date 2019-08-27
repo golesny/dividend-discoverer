@@ -26,3 +26,4 @@ Tool to find the best dividends for a maximum passive income in 30y
 - cd ..
 - gcloud app deploy
 - see url from output
+- see logs with: gcloud app logs tail -s default

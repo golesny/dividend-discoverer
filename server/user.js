@@ -25,17 +25,22 @@ router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 /**
- * GET /api/user/userrights
+ * GET /api/user/userinfo
  *
  * Returns reports
  */
 router.get('/userinfo', (req, res, next) =>  {
              console.log("user: requesting userinfo");
-             res.json({rights: req.app.locals.users[res.locals.userid].userrights });
+             var ur = ["userNoInDB"];
+             var user = req.app.locals.users[res.locals.userid];
+             if (user != undefined) {
+               ur = user.userrights;
+             };
+             res.json({rights: ur });
           });
 
 /**
- * GET /api/user/userrights
+ * GET /api/user/requestaccess
  *
  * Returns reports
  */

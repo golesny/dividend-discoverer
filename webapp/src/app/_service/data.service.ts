@@ -203,10 +203,14 @@ export class DataService {
     if (environment.loginEnabled) {
       console.log("subscribing for authState");
       this.authService.authState.subscribe((user) => {
-        this.user = user;
-        console.log("login successful: token "+this.bearerToken());
-        this.toastr.success("Logged in successfully");
-        this.initUserInfo();
+        if (user != null) {
+          this.user = user;
+          console.log("login successful: token "+this.bearerToken());
+          this.toastr.success("Logged in successfully");
+          this.initUserInfo();
+        } else {
+          console.log("Could not log in user "+JSON.stringify(user));
+        }
       });
     } else {
       console.info("developer auto-login");
@@ -233,6 +237,5 @@ export class DataService {
         }
       });
     }
-    return null;
   }
 }
