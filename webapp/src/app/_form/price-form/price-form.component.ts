@@ -58,7 +58,7 @@ export class PriceFormComponent extends AuthComponent implements OnInit {
         console.log("estimated="+estimated+" div="+p+ " tok="+lineTok[2]);
         // new Date(Date.UTC(myDate.getFullYear(),myDate.getMonth(), myDate.getDate()));
         // var midnightUTCDate = new Date( dateString + 'T00:00:00Z');
-        var d = lineTok[4]+"-01-01";
+        var d = lineTok[4];
         var pd = new PriceDatePair(this.isin, d,  p, estimated);
         // search for entry
         var sameDateEntries: PriceDatePair[] = this.prices.filter(e => e.date == pd.date && e.estimated == pd.estimated);
