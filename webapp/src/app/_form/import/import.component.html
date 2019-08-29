@@ -1,12 +1,13 @@
-<h3>Import from Cortal Consors Active Trader</h3>
+<h3>Import</h3>
 
-<div>Exported File format must contain the columns: ISIN, Ltz. Kurs;Währung;Kursdatum</div>
 
 <form>
+    <h5>from Cortal Consors Active Trader: Exported File format must contain the columns: ISIN, Ltz. Kurs;Währung;Kursdatum</h5>
     <div class="form-group">
         <label for="csvfileActiveTrader">Export-File from ActiveTrader: </label>
         <input type="file" id="csvfileActiveTrader" (change)="onFileChange($event)">
     </div>
+    <h5>from CSV Format: Name;Symbol;Currency;2018;2017;...</h5>
     <div class="form-group">
       <label for="csvfileAristo">Dividends-CSV from Aristorcrats-Excels: </label>
       <input type="file" id="csvfileAristo" (change)="onFileChange($event)">
