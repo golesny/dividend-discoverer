@@ -11,9 +11,7 @@
     <th scope="col"><input type="text" [(ngModel)]="filter_name" (change)="filterList()" placeholder="filter"><br>Name</th>
     <th scope="col">Div p.a.<br>in 30y</th>
     <th scope="col">Total Div<br>over 30y</th>
-    <th scope="col">Div<br>inc</th>
-    <th scope="col">Div<br>eq</th>
-    <th scope="col">Div<br>dec</th>
+    <th scope="col">Div</th>
     <th scope="col">Div<br>periods</th>
     <th scope="col">Div</th>
   </tr>
@@ -32,9 +30,7 @@
     <td>{{stock.divCum30yEUR | number:'.2'}} <span class="small">EUR</span>
         <div *ngIf="stock.currency != 'EUR'" class="small">{{stock.divCum30y | number:'.2'}} {{stock.currency}}</div>
     </td>
-    <td>{{stock.div_increases}}</td>
-    <td>{{stock.div_equal}}</td>
-    <td>{{stock.div_decreases}}</td>
+    <td>&#8593; {{stock.div_increases}}<br>&#8594; {{stock.div_equal}}<br>&#8595; {{stock.div_decreases}}</td>
     <td>      
       <span class="dividendlbl">1-4: </span> <span class="dividendval">{{stock.div_4_avg}}%</span><br>
       <span class="dividendlbl">5-8: </span> <span class="dividendval">{{stock.div_8_avg}}%</span><br>
