@@ -86,7 +86,8 @@ router.get('/', (req, res, next) => {
 router.get('/transactions', (req, res, next) => {
   const db = req.app.locals.db;
   var user_id = res.locals.userid;
-  db.select().from("portfolio").where({user_id:user_id}).limit(20).orderBy("date", "desc")
+  db.select("id", "date", "portfolio.isin", "currency", "amount","pricetotal", "type", "isin.name")
+     .from("portfolio").where({user_id:user_id}).limit(30).orderBy("date", "desc")
      .leftJoin("isin", "isin.isin", "portfolio.isin")
   .then((rows) => {
     var resLst = [];

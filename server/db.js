@@ -29,11 +29,7 @@ module.exports = {
             timezone: 'UTC',
             typeCast: function (field, next) {
             if (field.type == 'DATE') {
-                if (field.string() == null){
-                    return null;
-                } else {
-                    return field.string().substr(0,10);
-                }
+                return field.string().substr(0,10);
             }
             return next();
             }
