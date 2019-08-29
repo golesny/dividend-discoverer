@@ -27,3 +27,7 @@ Tool to find the best dividends for a maximum passive income in 30y
 - gcloud app deploy
 - see url from output
 - see logs with: gcloud app logs tail -s default
+
+# install the cron job
+- gcloud app deploy cron.yaml
+- see [[ https://cloud.google.com/appengine/docs/standard/nodejs/scheduling-jobs-with-cron-yaml ]]

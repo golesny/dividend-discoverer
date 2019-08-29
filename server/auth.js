@@ -44,6 +44,10 @@ function authenticate(req, res, next) {
         next();
         return true;
     }
+    if (isCronJob(req)) {
+        next();
+        return true;
+    }
     console.log("auth: incoming request", req.url, req.method);
     if (isDevMode) {
         console.log("auth: DEV_MODE - overriding oauth verification in dev mode. user="+config.DEV_MODE_USER_ID);
@@ -167,6 +171,10 @@ function isStaticContent(req) {
   } else {
       return false;
   }
+}
+
+function isCronJob(req) {
+    return req.headers["x-appengine-cron"] == "true";
 }
 
 module.exports = router;

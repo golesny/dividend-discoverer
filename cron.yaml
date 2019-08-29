@@ -1,0 +1,5 @@
+cron:
+- description: "Mon/Wed/Fri get all prices after NASDAQ close"
+  url: /api/updateallprices
+  schedule: every mon,wed,fri 21:00
+  timezone: UTC
