@@ -36,7 +36,10 @@ app.set('view engine', 'pug');
 app.set('trust proxy', true);
 
 // static content (accessable without login)
-app.use(express.static("webapp/dist/webapp"));
+var oneDay = 86400000;
+app.use(express.static("webapp/dist/webapp",{
+  maxAge: oneDay
+}));
 
 // authentification of api requests
 app.use("/", require('./server/auth.js'));
