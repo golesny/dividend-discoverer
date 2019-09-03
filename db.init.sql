@@ -40,6 +40,7 @@ CREATE TABLE `report` (
  `div_16_avg` decimal(10,2),
  `calcbase` float,
  `div_estimated` decimal(10,2),
+ `div_estimated_calculated` BOOLEAN NOT NULL
  PRIMARY KEY (`isin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

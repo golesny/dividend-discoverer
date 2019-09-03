@@ -85,8 +85,10 @@ function internalCreateReportEntity(isin, rawResLst, currency, lastPrice) {
   }
   // estimated
   var estimatedDiv = calculateEstimatedDiv( rawResLst.filter(e => e.estimated), resLst);
+  var estimatedDivCalculated = false;
   if ( typeof estimatedDiv != "number" ) {
     estimatedDiv = avgDiv * 0.5; // w/o estimation we use half of the historic value
+    estimatedDivCalculated = true;
   }
   if (estimatedDiv < avgDiv) {
     avgDivForCalc =  (estimatedDiv * 4 + avgDiv) / 5;
@@ -125,6 +127,7 @@ function internalCreateReportEntity(isin, rawResLst, currency, lastPrice) {
   reportEntry["div_decreases"] = div_decreases;
   reportEntry["div_avg"] = utils.roundDec10_2(avgDiv * 100);
   reportEntry["div_estimated"] = utils.roundDec10_2(estimatedDiv * 100);
+  reportEntry["div_estimated_calculated"] = estimatedDivCalculated;
   reportEntry["calcbase"] = avgDivForCalc;
   console.log("created report: "+JSON.stringify(reportEntry));
   return reportEntry;

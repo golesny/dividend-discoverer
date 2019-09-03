@@ -39,7 +39,10 @@
     </td>
     <td>
       <span class="dividendlbl">Total: </span> <span class="dividendval">{{stock.div_avg}}%</span><br>
-      <span class="dividendlbl">Estimated: </span> <span class="dividendval">{{stock.div_estimated}}%</span><br>
+      <span class="dividendlbl">Estimated: </span> <span [ngClass]="{
+          'dividendwarn':stock.div_estimated_calculated == 1,
+          'dividendval': stock.div_estimated_calculated == 0
+      }">{{stock.div_estimated}}%</span><br>
       <span class="dividendlbl">Calc base: </span> <span class="dividendval">{{stock.calcbase * 100 | number:'1.0-2'}}%</span>
     </td>
   </tr>
