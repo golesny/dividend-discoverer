@@ -30,7 +30,7 @@
     <td>{{stock.divCum30yEUR | number:'.2'}} <span class="small">EUR</span>
         <div *ngIf="stock.currency != 'EUR'" class="small">{{stock.divCum30y | number:'.2'}} {{stock.currency}}</div>
     </td>
-    <td>&#8593; {{stock.div_increases}}<br>&#8594; {{stock.div_equal}}<br>&#8595; {{stock.div_decreases}}</td>
+    <td>&#8593;&nbsp;{{stock.div_increases}}<br>&#8594;&nbsp;{{stock.div_equal}}<br>&#8595;&nbsp;{{stock.div_decreases}}</td>
     <td>      
       <span class="dividendlbl">1-4: </span> <span class="dividendval">{{stock.div_4_avg}}%</span><br>
       <span class="dividendlbl">5-8: </span> <span class="dividendval">{{stock.div_8_avg}}%</span><br>
