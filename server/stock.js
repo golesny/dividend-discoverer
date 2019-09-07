@@ -72,6 +72,8 @@ router.get('/', (req, res, next) => {
       });
       // sort
       resLst.sort((a, b) => (a.divIn30yEUR > b.divIn30yEUR) ? -1 : 1);
+      var idx = 0;
+      resLst.forEach(r => r['index'] = idx++);
       //
       console.log("sending report list, count="+resLst.length);
       res.json(resLst);

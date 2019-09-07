@@ -1,6 +1,7 @@
 import { ISIN } from './isin';
 
 export interface Report extends ISIN {
+    index: number;
     divIn30y: number;
     divCum30y: number;
     divIn30yEUR: number;
