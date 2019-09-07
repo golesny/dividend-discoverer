@@ -30,7 +30,7 @@ module.exports = {
              "limit 300")
         .then((rows) => {
             rows[0].forEach((entry) => {
-              promises.push(createPromise(db, entry, promises.length * 12000)); // we are allowed to make every 12 s a call
+              promises.push(createPromise(db, entry, promises.length * 13000)); // we are allowed to make every 13 s a call (5/minute is maximum)
             })
           }).catch((error) => {
             console.error(error);
@@ -48,7 +48,10 @@ module.exports = {
           alphavantage.getGlobalQuote(isin.symbol, result => {
             if ("Error Message" in result) {
               // error
-              reject(isin.isin+": error");
+              var log = {severity: 2, isin: isin.isin, message: result};
+              db.insert(log).into("log").then((result) => {
+                reject(isin.isin+": error");
+              });
             } else if ("Global Quote" in result && "07. latest trading day" in result["Global Quote"]) {
               // put to db
               var quote = result["Global Quote"];
@@ -83,6 +86,10 @@ module.exports = {
               });
             } else {
               console.log("skipping due to bad data");
+              var log = {severity: 2, isin: isin.isin, message: result};
+              db.insert(log).into("log").then((result) => {
+                reject(isin.isin+": error");
+              });
             }
             
           });

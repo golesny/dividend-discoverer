@@ -63,4 +63,14 @@ CREATE TABLE `user` (
   `targetyear` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE `log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `severity` int(11) NOT NULL,
+  `isin` varchar(20),
+  `message` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 COMMIT;
