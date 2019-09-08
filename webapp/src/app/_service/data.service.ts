@@ -21,6 +21,7 @@ import { Router } from '@angular/router';
 export class DataService {
   public user: SocialUser;
   public userInfo: UserInfo;
+  public filterISIN: string;
 
   constructor(private http: HttpClient,
               private authService: AuthService,
@@ -39,7 +40,11 @@ export class DataService {
 
   getReportList(): Observable<Report[]> {
     if (this.isUserLoggedIn()) {
-      return this.http.get<Report[]>(environment.apiUrl + "/stock", this.createHttpHeader());
+      if (this.filterISIN != undefined) {
+        return this.http.get<Report[]>(environment.apiUrl + "/stock/report/"+this.filterISIN, this.createHttpHeader());
+      } else {
+        return this.http.get<Report[]>(environment.apiUrl + "/stock/report/all", this.createHttpHeader());
+      }
     }
     return null;
   }

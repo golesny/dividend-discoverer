@@ -100,7 +100,7 @@ function authorize(userid, email, res, req) {
         // basic authorization
         //console.log("auth: url="+req.url);
         var accessmatrix = [
-            { match: function(url){return url == "/api/stock"}, role: "read"},
+            { match: function(url){return url.startsWith("/api/stock/report")}, role: "read"},
             { match: function(url){return url.startsWith("/api/stock/price/list") }, role: "read"},
             { match: function(url){return url == "/api/stock/price" }, role: "write"},                
             { match: function(url){return url.startsWith("/api/stock/isin")}, role: "write"},

@@ -108,11 +108,13 @@ export class PriceFormComponent extends AuthComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log("init price-form component");
     this.singleDat = new Date();
     this.singleYear = new Date().getFullYear();
 
     this.route.params.subscribe(p => {
       this.isin = p['isin'];
+      this.dataService.filterISIN = this.isin;
       this.name = p['name'];
       this.currency = p['currency'];      
       this.symbol = p['symbol'] == undefined ? "" : p['symbol'];

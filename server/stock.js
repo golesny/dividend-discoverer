@@ -34,13 +34,19 @@ const report = require("./report");
  *
  * Returns reports
  */
-router.get('/', (req, res, next) => {
+router.get('/report/:isin', (req, res, next) => {
     // prepare report
     console.log("preparing reports");
     const db = req.app.locals.db;
+    var isin = req.params.isin;
     var rates = fixer_io.getExchangeRates();
-    var reports = {};    
-    db.select().from('report').then((repRow) => {      
+    var reports = {};
+    var where = {};
+    if (isin != "all"){
+      where = {isin:isin};
+    }
+    console.log("stock: "+JSON.stringify(where));
+    db.select().from('report').where(where).then((repRow) => {      
       repRow.forEach((rep) => {
         if (rep.isin != undefined) {
           //console.log("add report with isin "+rep.isin);

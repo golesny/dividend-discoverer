@@ -3,6 +3,7 @@ import { Report } from 'src/app/_interface/report';
 import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from 'src/app/_service/notify.service';
 import { AuthComponent } from '../auth/auth-component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-report',
@@ -17,18 +18,23 @@ export class ReportComponent extends AuthComponent implements OnInit {
   filter_name:string;
 
   constructor(protected dataService: DataService,
-              private notifyService: NotifyService) { 
+              private notifyService: NotifyService,
+              private route:  ActivatedRoute,) { 
     super(dataService);
     this.reports = [];
     this.allreports = [];
     this.filter_name = "";
     this.pageSize = 30;
     this.page = 1;
-    this.loadStockList();
   }
 
   ngOnInit() {
-    console.log("init Stock Data component");
+    console.log("init report component");
+    this.route.params.subscribe(p => {
+      console.log("report: param isin="+p['isin']);
+      this.dataService.filterISIN = p['isin'];
+    });
+    this.loadStockList();
   }
 
   filterList() {
