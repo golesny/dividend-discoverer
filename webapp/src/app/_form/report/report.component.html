@@ -2,13 +2,15 @@
 <ngb-pagination
 [(page)]="page"
 [pageSize]="pageSize"
-[collectionSize]="reports.length" *ngIf="reports.length > 1"></ngb-pagination>
+[collectionSize]="reports.length" *ngIf="allreports.length > 1"></ngb-pagination>
 
 <table class="table table-striped table-bordered table-sm">
     <thead class="thead-dark">
   <tr>
     <th scope="col"></th>
-    <th scope="col"><input type="text" [(ngModel)]="filter_name" (change)="filterList()" placeholder="filter" *ngIf="reports.length > 1"><br>Name</th>
+    <th scope="col">
+      <input type="text" [(ngModel)]="filter_name" (change)="filterList()" placeholder="filter" *ngIf="allreports.length > 1"> <button (click)="filter_name = '';filterList()"  *ngIf="allreports.length > 1">X</button><br>
+      Name</th>
     <th scope="col">Div p.a.<br>in 30y</th>
     <th scope="col">Total Div<br>over 30y</th>
     <th scope="col">Div</th>
@@ -19,7 +21,7 @@
   <tbody>
   <tr *ngFor="let stock of reports | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize">
     <td>
-       #{{stock.index + 1}}<br>
+       <div *ngIf="allreports.length > 1">#{{stock.index + 1}}</div><br>
         <button [routerLink]="['/price/',stock.isin, stock.name, stock.currency, stock.symbol]"><span class="oi oi-dollar"></span></button>
         <button [routerLink]="['/dividend/',stock.isin, stock.name, stock.currency, stock.symbol]"><span class="oi oi-bar-chart"></span></button>
         <button (click)="refreshReport(stock.isin, stock.currency)" *ngIf="hasUserRights('write')"><span class="oi oi-reload"></span></button>
@@ -53,4 +55,4 @@
 <ngb-pagination
 [(page)]="page"
 [pageSize]="pageSize"
-[collectionSize]="reports.length" *ngIf="reports.length > 1"></ngb-pagination>
+[collectionSize]="reports.length" *ngIf="allreports.length > 1"></ngb-pagination>
