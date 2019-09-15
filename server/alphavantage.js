@@ -41,6 +41,7 @@ module.exports = {
     
     this.getJSON(path, (statusCode, result) => {
       console.log(`[${new Date()}]loaded global quote data: (${statusCode})\n${JSON.stringify(result)}`);
+      result["path"] = path;
       callback(result);
     });
 },

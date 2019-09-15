@@ -38,7 +38,10 @@ module.exports = {
           });
 
       Promise.all(promises)
-             .catch((err) => {console.error("batch: "+err.message)});
+             .then(function(arrayOfValuesOrErrors) {
+
+             })
+             .catch(function(err) {console.error("batch: "+err.message)});
       }
     };
 
@@ -48,10 +51,8 @@ module.exports = {
           alphavantage.getGlobalQuote(isin.symbol, result => {
             if ("Error Message" in result) {
               // error
-              var log = {severity: 2, isin: isin.isin, message: result};
-              db.insert(log).into("log").then((result) => {
-                reject(isin.isin+": error");
-              });
+              handleServiceErrorResult(isin, result, db);
+              //reject(isin.isin + ": error");
             } else if ("Global Quote" in result && "07. latest trading day" in result["Global Quote"]) {
               // put to db
               var quote = result["Global Quote"];
@@ -78,21 +79,37 @@ module.exports = {
                 },
                 (msg, reportEntity) => {
                   console.log("report created for isin "+isin.isin);
+                  resolve(isin.isin);
                 }
                 );
               }).catch((err) => {
                 console.error("Could not create price for isin "+isin.isin, err.message);
-                reject(isin.isin+": "+err.message);
+                //reject(isin.isin+": "+err.message);
               });
             } else {
-              console.log("skipping due to bad data");
-              var log = {severity: 2, isin: isin.isin, message: result};
-              db.insert(log).into("log").then((result) => {
-                reject(isin.isin+": error");
-              });
+              handleServiceBadData(isin, result, db, reject);
+              //reject(isin.isin + ": error");
             }
-            
           });
         }, timeout);
       })
     }
+
+function handleServiceBadData(isin, result, db) {
+  console.log("skipping due to bad data");
+  var log = { severity: 2, isin: isin.isin, message: result };
+  db.insert(log).into("log").then((result) => {
+    console.error(isin.isin + ": error");
+  }).catch((err) => {
+    console.error("Could not insert log line. Origin: " + isin.isin + ": error");
+  });
+}
+
+function handleServiceErrorResult(isin, result, db) {
+  var log = { severity: 2, isin: isin.isin, message: JSON.stringify(result) };
+  db.insert(log).into("log").then((result) => {
+    // do nothing
+  }).catch((err) => {
+    console.error("batch: "+err);
+  });
+}
