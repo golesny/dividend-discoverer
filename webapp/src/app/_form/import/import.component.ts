@@ -2,9 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PriceDatePair } from 'src/app/_interface/price-date-pair';
 import { NotifyService } from 'src/app/_service/notify.service';
 import { DataService } from 'src/app/_service/data.service';
-import { stringify } from '@angular/core/src/util';
 import { ISIN } from 'src/app/_interface/isin';
-import { ExpectedConditions } from 'protractor';
 
 @Component({
   selector: 'app-import',
