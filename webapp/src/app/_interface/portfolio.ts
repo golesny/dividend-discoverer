@@ -5,6 +5,7 @@ export interface Portfolio {
     name: string;
     currency: string;
     symbol: string;
+    sector: string;
     amount: number;
     entryprice: number;
     lastprice: number;

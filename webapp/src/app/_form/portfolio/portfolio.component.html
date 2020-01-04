@@ -16,7 +16,19 @@
     </tr>
     </tbody>
 </table>
-
+<h3>Chart</h3>
+<div class="container-fluid" *ngIf="chartDataLoaded">
+    <canvas mdbChart class="container-sm" style="max-width: 500px"
+        [chartType]="chartType"
+        [datasets]="chartDatasets"
+        [labels]="chartLabels"
+        [colors]="chartColors"
+        [options]="chartOptions"
+        [legend]="true"
+        (chartHover)="chartHovered($event)"
+        (chartClick)="chartClicked($event)">
+    </canvas>
+</div>
 <h3>Detail progress</h3>
 <table class="table table-striped table-bordered table-sm" *ngIf="portfolio_overview">
   <thead class="thead-dark">

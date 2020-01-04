@@ -3,16 +3,16 @@ import { ISIN } from 'src/app/_interface/isin';
 import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from 'src/app/_service/notify.service';
 import { Router } from '@angular/router';
+import { DataserviceUi } from '../_abstract/dataservice-ui';
 
 @Component({
   selector: 'stock-form',
   templateUrl: './stock-form.component.html',
   styleUrls: ['./stock-form.component.sass']
 })
-export class StockFormComponent {
+export class StockFormComponent extends DataserviceUi {
   public isinlist:ISIN[];
   public allisinlist:ISIN[];
-  currencies:Map<string, number>;
   public model:ISIN;
   public mode:string;
   symbolselection: string;
@@ -25,8 +25,7 @@ export class StockFormComponent {
   constructor(private dataService:DataService,
               private notifyService: NotifyService,
               private router: Router) {
-    this.currencies = new Map();
-    this.currencies.set("EUR", 1);
+    super(dataService, notifyService);
     this.pageSize = 30;
     this.page = 1;
     this.filter_name = "";
@@ -71,18 +70,6 @@ export class StockFormComponent {
         this.notifyService.showError("error ", error.message);
       }
       );
-  }
-
-  loadRates(): void {
-    this.dataService.getExchangeRates()
-    .subscribe((data: Map<string, number>) => {
-      this.currencies = data;        
-      console.log('currencies loaded %s', this.currencies);
-    }, error => {
-      console.error('ERROR: ${error.message}');
-      this.notifyService.showError("error ", error.message);
-    }
-    );
   }
 
   getAlphaVantageSymbol() {

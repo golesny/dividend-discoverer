@@ -33,7 +33,7 @@ router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 router.get('/', (req, res, next) => {
     const db = req.app.locals.db;
     var user_id = res.locals.userid;
-    db.raw("SELECT isin.isin, isin.name, isin.currency,"+        
+    db.raw("SELECT isin.isin, isin.name, isin.currency, isin.sector, "+        
            "(select sum(p2.amount) from portfolio p2 where type in ('BUY', 'SELL') and p2.isin = isin.isin) as amount, "+
            "(select sum(p3.pricetotal) from portfolio p3 where type in ('BUY', 'SELL') and p3.isin = isin.isin) as entryprice, "+
            "(select price from price where price.isin = isin.isin order by date desc limit 1) as lastprice "+
