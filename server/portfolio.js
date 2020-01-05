@@ -285,18 +285,30 @@ function handleRowsForAnnualOverview(rows, resultObj) {
     } else {
       p = 1; // abort
     }
-  } while (p < 0.9995 || p > 1.0005);
+  } while (p < 0.9998 || p > 1.0002);
 }
 
 function internalDepotExpectedValue(annualentries, percentage) {
   var yearNow = new Date().getUTCFullYear();
   var expectedSum = 0;
+  // Full Year is 1, but to calculate only the part until now we take the amount of days to date 
+  var yearToDate = 1 / 365 * daysOfYear(new Date());
   annualentries.forEach((entry) => {
     // =B3*POW(1+$C$1;Year(now())-A3+1)
-    //console.log("internalDepotExpectedValue: yearNow="+yearNow+" entry.year="+entry.year+" percentage="+percentage);
-    var expected = entry.cashinyear * Math.pow(1+percentage, yearNow - entry.year + 1);
+    //console.log("internalDepotExpectedValue: yearNow="+yearNow+" entry.year="+entry.year+" percentage="+percentage);    
+    var expected = entry.cashinyear * Math.pow(1+percentage, yearNow - entry.year + yearToDate);
+    //console.log(Date.now() + " portfolio: ("+entry.year+") cashIn="+entry.cashinyear+" expected="+expected);
     entry["expected_value"] = expected;
     expectedSum += expected;
   });
   return expectedSum;
+}
+
+/**
+ * Returns the Days in current year.
+ * 
+ * @param {Date} date 
+ */
+function daysOfYear(date) {
+  return (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(date.getFullYear(), 0,0)) / 24 / 60 / 60 / 1000;
 }
