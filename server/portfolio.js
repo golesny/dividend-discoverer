@@ -35,15 +35,16 @@ router.get('/', (req, res, next) => {
     var user_id = res.locals.userid;
     db.raw("SELECT isin.isin, isin.name, isin.currency, isin.sector, "+        
            "(select sum(p2.amount) from portfolio p2 where type in ('BUY', 'SELL') and p2.isin = isin.isin) as amount, "+
-           "(select sum(p3.pricetotal) from portfolio p3 where type in ('BUY', 'SELL') and p3.isin = isin.isin) as entryprice, "+
-           "(select price from price where price.isin = isin.isin order by date desc limit 1) as lastprice "+
+           "(select sum(p3.pricetotal) from portfolio p3 where type in ('BUY', 'SELL', 'DIV') and p3.isin = isin.isin) as entryprice, "+
+           "(select price from price where price.isin = isin.isin order by date desc limit 1) as lastprice, "+
+           "(select datediff(date, NOW()) from price where price.isin = isin.isin order by date desc limit 1) as lastpricedatediff "+
            "FROM portfolio, isin "+
            "where isin.isin = portfolio.isin and user_id = '"+user_id+"' "+
            "group by isin.isin "+
            "having amount > 0")
            /*
-        isin  name  currency  amount  lastprice
-        DE0.. Mun.. EUR       100     220.00
+        isin  name  currency  amount  lastprice lastpricedatediff
+        DE0.. Mun.. EUR       100     220.00    -4
          */
       .then((rows) => {        
         var result = handleRowsforOverview(rows);
@@ -175,6 +176,7 @@ function handleRowsforOverview(rows) {
     obj.stock_sum += (entry.amount * priceInEUR);
     // convert entryprice in isin currency (from EUR)
     entry.entryprice = entry.entryprice * rate;
+    entry.lastpricedatediff = entry.lastpricedatediff;
     //
     obj.overview.push(entry);
   });

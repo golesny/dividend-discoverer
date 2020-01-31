@@ -9,6 +9,7 @@ export interface Portfolio {
     amount: number;
     entryprice: number;
     lastprice: number;
+    lastpricedatediff: number;
 
     timeseries: Map<string,TimeseriesPair>;
 }
