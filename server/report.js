@@ -74,7 +74,7 @@ function internalCreateReportEntity(isin, rawResLst, currency, lastPrice) {
   for (let i = 0; i < percentages.length;i+=diff) {
     avgDivs.push( percentages[i] );
   }
-  if (percentages.length % 4 == 0 && percentages.length <= 16) {
+  if (percentages.length > 0 && percentages.length % 4 == 0 && percentages.length <= 16) {
     console.log("adding one previous value (percentages.length("+percentages.length+") % 4)="+(percentages.length % 4));
     avgDivs.push( percentages[percentages.length - 1] );
   }
@@ -138,7 +138,7 @@ function internalCreateReportEntity(isin, rawResLst, currency, lastPrice) {
  * @param {*} percentageList 
  */
 function calculateWeightedAvg(percentageList) {
-  console.log("calculateWeightedAvg: "+JSON.stringify(percentageList));
+  console.log("calculateWeightedAvg-In: "+JSON.stringify(percentageList));
   if (percentageList == undefined || percentageList.length == 0) {
     return 0.0;
   }
@@ -149,7 +149,7 @@ function calculateWeightedAvg(percentageList) {
     weightedResult += (weightFactor * percentageList[i]);
     count += weightFactor--;
   }
-  console.log("calculateWeightedAvg: "+weightedResult+" / "+count);
+  console.log("calculateWeightedAvg-Out: "+weightedResult+" / "+count);
   return weightedResult / count;
 }
 

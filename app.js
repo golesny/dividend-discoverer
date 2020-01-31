@@ -64,7 +64,12 @@ app.get('/api/symbolsearch/:keyword', (req, res, next) => {
 app.use('/api/portfolio', require('./server/portfolio.js'));
 // Batch calls
 app.get('/api/updateallprices', (req, res, next) => {
-  batch.loadCurrentPrices(req.app.locals.db);
+  batch.loadCurrentPrices(req.app.locals.db, "");
+  res.json({msg: "Batch Queued"});
+});
+// Batch call only user portfolio
+app.get('/api/updateallpricesuser', (req, res, next) => {
+  batch.loadCurrentPrices(req.app.locals.db, res.locals.userid);
   res.json({msg: "Batch Queued"});
 });
 // user

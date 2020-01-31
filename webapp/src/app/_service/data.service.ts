@@ -64,10 +64,10 @@ export class DataService {
     return null;
   }
 
-  updateAllPrices(): Observable<string> {
+  updateAllPrices(userPrices:boolean): Observable<string> {
     if (this.isUserLoggedIn()) {
       console.log("dataservice:loading exchange rates");
-      return this.http.get<string>(environment.apiUrl + "/updateallprices", this.createHttpHeader());
+      return this.http.get<string>(environment.apiUrl + "/updateallprices"+(userPrices?"":"user"), this.createHttpHeader());
     }
     return null;
   }

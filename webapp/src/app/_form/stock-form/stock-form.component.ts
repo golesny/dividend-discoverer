@@ -136,7 +136,7 @@ export class StockFormComponent extends DataserviceUi {
   }
 
   updateAllPrices() {
-    this.dataService.updateAllPrices().subscribe(
+    this.dataService.updateAllPrices(true).subscribe(
       data => {
         this.notifyService.showSuccess(data["msg"]);
       },

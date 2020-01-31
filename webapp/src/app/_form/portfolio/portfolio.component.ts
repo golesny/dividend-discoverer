@@ -87,4 +87,16 @@ public chartDataLoaded: boolean = false;
   
   public chartClicked(e: any): void { }
   public chartHovered(e: any): void { }
+
+  
+  updateMyPortfolioPrices() {
+    this.dataService.updateAllPrices(false).subscribe(
+      data => {
+        this.notifyService.showSuccess(data["msg"]);
+      },
+      err => {
+        this.notifyService.showError("Could not start batch:", err);
+      }
+    )
+  }
 } 

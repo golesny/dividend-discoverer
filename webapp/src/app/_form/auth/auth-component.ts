@@ -2,18 +2,18 @@ import { DataService } from 'src/app/_service/data.service';
 
 export class AuthComponent  {
     
-    constructor(protected dataService: DataService) {
+    constructor(private ds: DataService) {
     }
     
   hasUserRights(role: string): boolean {
-    if ( this.dataService.getUserInfo() == undefined ) {
+    if ( this.ds.getUserInfo() == undefined ) {
       return false;
     }
-    var hasRight = this.dataService.getUserInfo().rights.includes(role);
+    var hasRight = this.ds.getUserInfo().rights.includes(role);
     return hasRight;
   }
 
   get userInfo() {
-    return this.dataService.userInfo;
+    return this.ds.userInfo;
   }
 }

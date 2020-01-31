@@ -33,7 +33,7 @@
 <table class="table table-striped table-bordered table-sm" *ngIf="portfolio_overview">
   <thead class="thead-dark">
     <tr>
-      <th></th>
+      <th><button (click)="updateMyPortfolioPrices()" *ngIf="hasUserRights('alphavantage')">Update my prices</button></th>
       <th>Stock</th>
       <th *ngFor="let d of portfolio_overview.overview_cols">{{d.yyyymm}}<br>{{d.timestr}}</th>
     </tr>

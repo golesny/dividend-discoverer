@@ -20,14 +20,29 @@ const report = require("./report");
 const fixer_io = require("./fixer_io");
 
 module.exports = {
-    loadCurrentPrices: function (db) {
+    loadCurrentPrices: function (db, userId) {
       var promises = [];
-      db.raw("select isin.*, max(price.date) as lastdate from isin "+
-             "left join price on isin.isin = price.isin "+
-             "where symbol != '' "+
-             "group by isin.isin "+
-             "order by lastdate ASC "+
-             "limit 300")
+      var query = "";
+      if (userId != "") {
+        // only user portfolio stocks
+        query = "SELECT isin.isin, isin.name, isin.currency, isin.sector, isin.symbol, isin.symbolcurrency, "+
+        "(select sum(p2.amount) from portfolio p2 where type in ('BUY', 'SELL') and p2.isin = isin.isin and user_id = '"+userId+"') as amount, "+
+        "(select date from price where price.isin = isin.isin order by date desc limit 1) as lastdate " +
+        "FROM isin, portfolio "+
+        "where isin.isin = portfolio.isin and user_id = '"+userId+"' "+
+        "group by isin.isin having amount > 0 and datediff(now(), lastdate) > 1 "+
+        "limit 300";
+      } else {
+        // first 300 stocks
+        query = "select isin.*, max(price.date) as lastdate from isin "+
+        "left join price on isin.isin = price.isin "+
+        "where symbol != ''"+
+        "group by isin.isin "+
+        "having datediff(now(), lastdate) > 1 "+
+        "order by lastdate ASC "+
+        "limit 300";
+      }
+      db.raw(query)
         .then((rows) => {
             rows[0].forEach((entry) => {
               promises.push(createPromise(db, entry, promises.length * 13000)); // we are allowed to make every 13 s a call (5/minute is maximum)
