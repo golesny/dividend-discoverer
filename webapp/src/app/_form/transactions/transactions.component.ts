@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Transaction } from 'src/app/_interface/transaction';
 import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from 'src/app/_service/notify.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-transactions',
@@ -14,7 +15,8 @@ export class TransactionsComponent implements OnInit {
   transactions: Transaction[];
   mode:string;
 
-  constructor(private dataService: DataService,
+  constructor(private route:  ActivatedRoute,
+              private dataService: DataService,
               private notifyService: NotifyService) {
     this.resetForm();
     this.transactions = [];
@@ -29,6 +31,11 @@ export class TransactionsComponent implements OnInit {
         this.notifyService.showError("Could not load transactions", err);
       }
     );
+    
+    this.route.params.subscribe(p => {
+      this.model.isin = p['isin'];
+      this.model.amount = p['amount'];
+    });
   }
 
   edit(t: Transaction) {

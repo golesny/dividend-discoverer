@@ -23,6 +23,7 @@ const routes: Routes = [
       } },
   { path: 'portfolio', component: PortfolioComponent },
   { path: 'transactions', component: TransactionsComponent },
+  { path: 'transactions/:isin/:amount', component: TransactionsComponent },
   { path: 'import', component: ImportComponent }
 ];
 
