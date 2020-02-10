@@ -39,7 +39,7 @@
     </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let p of portfolio_overview.overview">
+  <tr *ngFor="let p of filteredTableEntries">
     <td>
         <button [routerLink]="['/price/',p.isin, p.name, p.currency, p.symbol]"><span class="oi oi-dollar"></span></button>
         <button [routerLink]="['/transactions/',p.isin,p.amount]"><span class="oi oi-document"></span></button>

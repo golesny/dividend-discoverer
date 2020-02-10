@@ -3,6 +3,7 @@ import { DataService } from 'src/app/_service/data.service';
 import { NotifyService } from 'src/app/_service/notify.service';
 import { PortfolioContainer } from 'src/app/_interface/portfolio-container';
 import { DataserviceUi } from '../_abstract/dataservice-ui';
+import { Portfolio } from 'src/app/_interface/portfolio';
 
 @Component({
   selector: 'app-portfolio',
@@ -11,6 +12,7 @@ import { DataserviceUi } from '../_abstract/dataservice-ui';
 })
 export class PortfolioComponent extends DataserviceUi implements OnInit {
   portfolio_overview: PortfolioContainer;
+  filteredTableEntries: Portfolio[];
   constructor(private dataService:DataService,
               private notifyService: NotifyService) {
       super(dataService, notifyService);
@@ -76,6 +78,7 @@ public chartDataLoaded: boolean = false;
   ngOnInit() {
     this.dataService.getPortfolio().subscribe(data => {      
       this.portfolio_overview = data;
+      this.filteredTableEntries = data.overview;
       this.fillChartData(data);
     }, e => {
       this.notifyService.showError("Could not load portfolio. ", e);
@@ -85,9 +88,16 @@ public chartDataLoaded: boolean = false;
 
 
   
-  public chartClicked(e: any): void { }
+  public chartClicked(e: any): void {
+    var selectedCategory = this.chartLabels[e.active[0]._index];
+    console.log("chartClicked:"+selectedCategory);
+    this.filteredTableEntries = this.filterEntries(selectedCategory);
+   }
   public chartHovered(e: any): void { }
 
+  public filterEntries(cat: string): Portfolio[] {
+    return this.portfolio_overview.overview.filter(e => {return e.sector == cat});
+  }
   
   updateMyPortfolioPrices() {
     this.dataService.updateAllPrices(false).subscribe(
