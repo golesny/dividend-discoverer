@@ -22,7 +22,7 @@ const https = require('https');
  * get exchange rates 
  */
 module.exports = {
-  getExchangeRates: function () {
+  getExchangeRates: function (locals) {
     if (this.updateNeeded()) {
       const path = "/api/latest?access_key=" + config.FIXER_IO_ACCESS_TOKEN + "&symbols=" + config.EXCHANGE_LIST + "&format=1";
       console.log("loading exchange rates");
@@ -35,14 +35,16 @@ module.exports = {
         };
 
         this.getJSON(options, (statusCode, result) => {
-          console.log(`loaded exchange rates: (${statusCode})\n${JSON.stringify(result)}`);
+          console.log(`loaded exchange rates: (${statusCode});\n${JSON.stringify(result)}`);
           // for London stock exchange we have to add GPpence
           if ("GBP" in result.rates) {
             result.rates["GB_"] = result.rates["GBP"] * 100;
             console.log("add GP_(pence) as currency for London stock exchange.");
           }
-          global.ratesObj = result;          
+          global.ratesObj = result;
+          this.storeExchange(locals);
         });
+        return undefined;
       }
       if (global.ratesObj != undefined) {
         return global.ratesObj.rates;
@@ -87,5 +89,22 @@ module.exports = {
     }
     console.debug("exchange rates: using cached. now="+timeInDay+ " lastLoaded="+lastLoaded);
     return false;
-  }
+  },
+  storeExchange: function(appLocal) {
+    var entities = [];
+    // create entities
+    var keysArr = Array.from(Object.keys(global.ratesObj.rates));
+    keysArr.forEach(currency => {
+        entities.push({currency: currency, date: global.ratesObj.date, exhange_rate: global.ratesObj.rates[currency]});
+    });
+    //console.log("store exchange rates: "+JSON.stringify(entities));
+    // store in db
+    appLocal.db.insert(entities).from("exchange").then((rows) => {
+        global.ratesObjDate = global.ratesObj.date;
+        console.log("stored exchange rates with date "+global.ratesObj.date);
+    })
+    .catch((err) => {
+        console.error("Could not insert exchange rates:", err.message);
+    });
+}
 }

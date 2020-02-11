@@ -85,7 +85,7 @@ module.exports = {
                 console.log("converted "+p+" "+isin.symbolcurrency+" -> "+priceInEUR+" EUR "+" -> "+pInTargetCurr+" "+isin.currency);
                 p = pInTargetCurr;
               }
-              var priceentity = {isin: isin.isin, date: quote["07. latest trading day"], price: p};
+              var priceentity = {isin: isin.isin, date: quote["07. latest trading day"], price: p, exchange_date: global.ratesObjDate};
               db.insert(priceentity).into('price').then((result) => {
                 console.log("created price", result);
                 report.updateReportForISIN(db, isin.isin, isin.currency, (errormsg) => {

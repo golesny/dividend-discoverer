@@ -19,13 +19,13 @@ console.log("startup: isDevMode="+isDevMode);
 const path = require('path');
 const express = require('express');
 const fixerIO = require('./server/fixer_io.js');
-global.ratesObj;
-fixerIO.getExchangeRates(); // first pre-load
 const alphavantage = require('./server/alphavantage.js');
 const batch = require('./server/batch.js');
 
 const app = express();
 
+global.ratesObj;
+fixerIO.getExchangeRates(app.locals); // first pre-load
 const database = require("./server/db");
 app.locals.db = database.connect();
 database.initUsers(app.locals);

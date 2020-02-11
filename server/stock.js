@@ -232,7 +232,7 @@ function handleGetList(type, req, res) {
     console.log("creating ", util.inspect(priceentity, false, null, isDevMode /* enable colors */));
     var fields = [];
     for (let i = 0; i < priceentity.length; i++) {
-      fields.push({isin: priceentity[i].isin, date: priceentity[i].date, price: priceentity[i].price});
+      fields.push({isin: priceentity[i].isin, date: priceentity[i].date, price: priceentity[i].price, exchange_date: global.ratesObjDate});
     }
     db.insert(fields).into("price").then((result) => {      
       console.log("created price ", JSON.stringify(fields));

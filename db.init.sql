@@ -20,6 +20,7 @@ CREATE TABLE `price` (
  `isin` varchar(20) NOT NULL,
  `date` date NOT NULL,
  `price` decimal(10,6) NOT NULL,
+ `exchange_date` date NOT NULL,
  PRIMARY KEY (`isin`,`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -63,6 +64,12 @@ CREATE TABLE `user` (
   `targetyear` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `exchange` (
+  `currency` varchar(3) NOT NULL,
+  `date` date NOT NULL,
+  `exhange_rate` decimal(10,6) NOT NULL,
+  PRIMARY KEY (`currency`, `date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
