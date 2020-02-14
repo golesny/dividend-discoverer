@@ -23,11 +23,12 @@ const alphavantage = require('./server/alphavantage.js');
 const batch = require('./server/batch.js');
 
 const app = express();
+const database = require("./server/db");
+app.locals.db = database.connect();
 
 global.ratesObj;
 fixerIO.getExchangeRates(app.locals); // first pre-load
-const database = require("./server/db");
-app.locals.db = database.connect();
+
 database.initUsers(app.locals);
 
 app.disable('etag');
