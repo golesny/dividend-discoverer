@@ -25,11 +25,12 @@ const batch = require('./server/batch.js');
 const app = express();
 const database = require("./server/db");
 app.locals.db = database.connect();
-
-global.ratesObj;
-fixerIO.getExchangeRates(app.locals); // first pre-load
-
+// first check db by reading the users
 database.initUsers(app.locals);
+
+// prepare and store exchange
+global.ratesObj;
+fixerIO.getExchangeRates(app.locals);
 
 app.disable('etag');
 app.set('views', path.join(__dirname, 'views'));

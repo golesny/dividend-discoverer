@@ -60,6 +60,7 @@ module.exports = {
         })
         .catch((err) => {
             console.error("Could not read users from database", err.message);
+            throw new Error("Could not read users from database" + err.message);
         });
     }
 }
