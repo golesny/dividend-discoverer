@@ -67,7 +67,7 @@ CREATE TABLE `user` (
 CREATE TABLE `exchange` (
   `currency` varchar(3) NOT NULL,
   `date` date NOT NULL,
-  `exhange_rate` decimal(10,6) NOT NULL,
+  `exchange_rate` decimal(10,6) NOT NULL,
   PRIMARY KEY (`currency`, `date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

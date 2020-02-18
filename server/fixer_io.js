@@ -95,7 +95,7 @@ module.exports = {
     // create entities
     var keysArr = Array.from(Object.keys(global.ratesObj.rates));
     keysArr.forEach(currency => {
-        entities.push({currency: currency, date: global.ratesObj.date, exhange_rate: global.ratesObj.rates[currency]});
+        entities.push({currency: currency, date: global.ratesObj.date, exchange_rate: global.ratesObj.rates[currency]});
     });
     //console.log("store exchange rates: "+JSON.stringify(entities));
     // store in db
