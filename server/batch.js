@@ -29,7 +29,7 @@ module.exports = {
         "(select sum(p2.amount) from portfolio p2 where type in ('BUY', 'SELL') and p2.isin = isin.isin and user_id = '"+userId+"') as amount, "+
         "(select date from price where price.isin = isin.isin order by date desc limit 1) as lastdate " +
         "FROM isin, portfolio "+
-        "where isin.isin = portfolio.isin and user_id = '"+userId+"' "+
+        "where isin.isin = portfolio.isin and user_id = '"+userId+"' and isin.symbol != '' "+
         "group by isin.isin having amount > 0 and datediff(now(), lastdate) > 1 "+
         "limit 300";
       } else {
