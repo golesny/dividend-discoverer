@@ -26,6 +26,7 @@ module.exports = {
             user: config.SQL_USER,
             password: config.SQL_PASSWORD,
             database: config.SQL_DATABASE,
+            multipleStatements: true,
             timezone: 'UTC',
             typeCast: function (field, next) {
             if (field.type == 'DATE') {

@@ -48,12 +48,36 @@ router.get('/', (req, res, next) => {
          */
       .then((rows) => {        
         var result = handleRowsforOverview(rows);
-        db.raw("SELECT year(date) as year, sum(pricetotal) as cashinyear," +
+        /*db.raw("SELECT year(date) as year, sum(pricetotal) as cashinyear," +
                "(select sum(pricetotal) FROM `portfolio` WHERE user_id = '"+user_id+"') as currentcash " +
-               "FROM `portfolio` WHERE user_id = '"+user_id+"' and type = 'CASH' group by year(date) order by year asc")
+               "FROM `portfolio` WHERE user_id = '"+user_id+"' and type = 'CASH' group by year(date) order by year asc")*/
+        db.raw("CREATE TEMPORARY TABLE stockvals(isin varchar(20), year int, value decimal(20,6)); "+
+        "CREATE TEMPORARY TABLE stockvalsyears "+
+        "SELECT year(date) as year "+
+        "FROM `portfolio` WHERE user_id = '"+user_id+"' group by year(date); "+
+        "insert into stockvals (isin, year, value) "+
+        "select portfolio.isin, stockvalsyears.year, "+
+        "  (select price / exchange_rate * sum(portfolio.amount) from price, exchange, isin "+
+        "     where price.isin = portfolio.isin and YEAR(price.date) <= stockvalsyears.year "+
+        "     and isin.isin = portfolio.isin "+
+        "     and price.exchange_date = exchange.date and price.exchange_date = exchange.date and exchange.currency = isin.currency "+
+        "     order by price.date desc limit 1 "+
+        " ) as stockvalue "+
+        "from portfolio, stockvalsyears "+
+        "where user_id = '"+user_id+"' and type in ('BUY', 'SELL') and YEAR(portfolio.date) <= stockvalsyears.year "+
+        "group by portfolio.isin, stockvalsyears.year "+
+        "having sum(portfolio.amount) > 0; "+
+        "SELECT year(date) as year, sum(pricetotal) as cashinyear, "+
+        "(select sum(p2.pricetotal) FROM `portfolio` p2 WHERE p2.user_id = '"+user_id+"' and year(p2.date) <= year) as endyearcash, "+
+        "(select sum(value) from stockvals where year = year(date)) as stockvalue "+
+        "FROM `portfolio` WHERE user_id = '"+user_id+"' and type = 'CASH' group by year(date) order by year asc; "+
+        "DROP TEMPORARY TABLE IF EXISTS stockvals; "+
+        "DROP TEMPORARY TABLE IF EXISTS stockvalsyears;"
+        )
+
                /*
-                * year   cashinyear    currentcash
-                * 2016   53000         3722.6696281433105
+                * year   cashinyear    endyearcash         stockvalue
+                * 2016   53000         3722.6696281433105  17123.455
                 */
         .then((rows2) => {
           handleRowsForAnnualOverview(rows2, result);
@@ -246,10 +270,21 @@ function handleRowsForAnnualOverview(rows, resultObj) {
   resultObj["totaldeposit"] = 0;
   resultObj["currentcash"] = 0;
 
-  rows[0].forEach((entry) => {
-    resultObj.annualoverview.push(entry);
-    resultObj.totaldeposit += entry.cashinyear;
-    resultObj.currentcash = entry.currentcash; // each line the same
+  /* year   cashinyear    endyearcash         stockvalue */
+  var lastYearValue = 0;
+  rows[0][3].forEach((entry) => {
+    console.log("[handleRowsForAnnualOverview] year="+entry.year+": "+JSON.stringify(entry));
+    if (entry.year != undefined) {
+      resultObj.annualoverview.push(entry);
+      resultObj.totaldeposit += entry.cashinyear;
+      if (lastYearValue != 0) {
+        entry["deltaPerc"] = (((entry.endyearcash + entry.stockvalue - entry.cashinyear) / lastYearValue) - 1) * 100;
+      } else {
+        entry["deltaPerc"] = 0;
+      }
+      lastYearValue = entry.endyearcash + entry.stockvalue;
+      resultObj.currentcash = entry.endyearcash;
+    }
   });
   //
   resultObj.depot_total_value = resultObj.stock_sum + resultObj.currentcash;

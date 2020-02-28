@@ -2,17 +2,18 @@
 
 <table class="table table-striped table-bordered table-sm" *ngIf="portfolio_overview">
     <tbody>
-    <tr><td>Cash</td><td style="text-align: right">{{portfolio_overview.currentcash | number:'1.0-0':'de'}} {{portfolio_overview.currency}}</td></tr>
-    <tr><td>Stock value</td><td style="text-align: right">{{portfolio_overview.stock_sum | number:'1.0-0':'de'}} {{portfolio_overview.currency}}</td></tr>
-    <tr><td>Depot Total</td><td style="text-align: right">{{portfolio_overview.depot_total_value | number:'1.0-0':'de'}} {{portfolio_overview.currency}}</td></tr>
-    <tr><td>Profit %</td><td style="text-align: right">{{portfolio_overview.totalprofit_perc * 100 | number:'1.0-2':'de'}}%</td></tr>
-    <tr><td>Profit % p.a.</td><td style="text-align: right">{{portfolio_overview.depotAnnualPercentage * 100 | number:'1.0-2':'de'}}%</td></tr>
+    <tr><td>Cash</td><td style="text-align: right" colspan="2">{{portfolio_overview.currentcash | number:'1.0-0':'de'}} {{portfolio_overview.currency}}</td></tr>
+    <tr><td>Stock value</td><td style="text-align: right" colspan="2">{{portfolio_overview.stock_sum | number:'1.0-0':'de'}} {{portfolio_overview.currency}}</td></tr>
+    <tr><td>Depot Total</td><td style="text-align: right" colspan="2">{{portfolio_overview.depot_total_value | number:'1.0-0':'de'}} {{portfolio_overview.currency}}</td></tr>
+    <tr><td>Profit %</td><td style="text-align: right" colspan="2">{{portfolio_overview.totalprofit_perc * 100 | number:'1.0-2':'de'}}%</td></tr>
+    <tr><td>Profit % p.a.</td><td style="text-align: right" colspan="2">{{portfolio_overview.depotAnnualPercentage * 100 | number:'1.0-2':'de'}}%</td></tr>
     <tr>
       <td>Deposit</td>
-      <td style="text-align: right">{{portfolio_overview.totaldeposit | number:'1.0-0':'de'}} {{portfolio_overview.currency}}</td>
+      <td style="text-align: right" colspan="2">{{portfolio_overview.totaldeposit | number:'1.0-0':'de'}} {{portfolio_overview.currency}}</td>
     <tr *ngFor="let yearentry of portfolio_overview.annualoverview">
       <td class="small">Deposit {{yearentry.year}}</td>
       <td class="small" style="text-align: right">{{yearentry.cashinyear | number:'1.0-0':'de'}} {{portfolio_overview.currency}}</td>
+      <td class="small" style="text-align: right">Perf. {{ yearentry.deltaPerc | number:'1.1-1':'de' }}%</td>
     </tr>
     </tbody>
 </table>
@@ -45,7 +46,7 @@
         <button [routerLink]="['/transactions/',p.isin,p.amount]"><span class="oi oi-document"></span></button>
     </td>
     <td>{{p.name}} <span class="small"><br>
-        {{p.amount}}x | {{ ((p.lastprice / (-1 * p.entryprice / p.amount)) - 1) * 100 | number:'1.1-1':'de' }}% |
+        {{p.amount}}x | {{p.lastprice * p.amount | number:'1.0-0':'de'}}&nbsp;{{p.currency}} | {{ ((p.lastprice / (-1 * p.entryprice / p.amount)) - 1) * 100 | number:'1.1-1':'de' }}% |
         {{p.lastpricedatediff}}d
       </span>
     </td>
