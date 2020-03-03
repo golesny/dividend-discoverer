@@ -30,6 +30,7 @@ database.initUsers(app.locals);
 
 // prepare and store exchange
 global.ratesObj;
+global.ratesObjDate;
 fixerIO.getExchangeRates(app.locals);
 
 app.disable('etag');
