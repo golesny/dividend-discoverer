@@ -29,7 +29,7 @@
     "cover": "nyc --cache npm test; nyc report --reporter=html"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "google-auth-library": "^4.2.6",
     "knex": "^0.19.5",
     "mysql": "^2.18.1"
