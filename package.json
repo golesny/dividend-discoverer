@@ -31,7 +31,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "google-auth-library": "^4.2.6",
-    "knex": "^0.19.5",
+    "knex": "^2.4.0",
     "mysql": "^2.18.1"
   },
   "devDependencies": {
